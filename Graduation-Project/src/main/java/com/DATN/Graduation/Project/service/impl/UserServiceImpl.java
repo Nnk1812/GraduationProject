@@ -61,16 +61,7 @@ public class UserServiceImpl implements UserService {
                     throw new AppException(ErrorCode.USER_EXISTED);
                 }
             }
-        }
-        UserEntity  user  = userMapper.toUserEntity(dto);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassWord(passwordEncoder.encode(dto.getPassWord()));
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        if(!ObjectUtils.isEmpty(dto.getDateIn())){
-            user.setDateIn(dto.getDateIn());
-        }
-        else{
-            user.setDateIn(now);
+
         }
         if (ObjectUtils.isEmpty(dto.getIsDeleted())) {
             dto.setIsDeleted(false);
@@ -87,6 +78,16 @@ public class UserServiceImpl implements UserService {
         }
         if(userRepository.findAllPhone().contains(dto.getPhone())){
             throw new AppException(ErrorCode.PHONE_EXISTED);
+        }
+        UserEntity  user  = userMapper.toUserEntity(dto);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassWord(passwordEncoder.encode(dto.getPassWord()));
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        if(!ObjectUtils.isEmpty(dto.getDateIn())){
+            user.setDateIn(dto.getDateIn());
+        }
+        else{
+            user.setDateIn(now);
         }
         user.setRole("User");
         CartEntity cart = new CartEntity();

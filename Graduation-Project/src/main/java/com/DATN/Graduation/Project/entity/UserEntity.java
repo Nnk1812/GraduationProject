@@ -63,4 +63,8 @@ public class UserEntity {
     @Basic
     @Column(name = "role")
     private  String role;
+
+    @Basic
+    @Column(name = "sex")
+    private String sex;
 }
