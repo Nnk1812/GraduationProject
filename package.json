@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build:css": "tailwindcss -i D:\\GraduationProject\\Graduation-Project\\src\\main\\resources\\static\\css\\input.css -o D:\\GraduationProject\\Graduation-Project\\src\\main\\resources\\static\\dist\\ouput.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.5"
+  }
+}

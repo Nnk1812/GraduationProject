@@ -1,0 +1,30 @@
+package com.DATN.Graduation.Project.constant.enums;
+
+import lombok.Getter;
+
+@Getter
+public enum OrderStatusEnum {
+    CHUA_XAC_NHAN(1,"Chưa xác nhận"),
+    DA_XAC_NHAN(2,"Đã xác nhận"),
+    DA_CHUYEN_GIAO(3,"Đã chuyển giao tới đơn vị giao hàng"),
+    DA_GIAO_HANG(4,"Đã giao hàng"),
+    DA_NHAN_HANG(5,"Khách hàng đã nhận hàng"),
+    HUY_DON_HANG(6,"Đơn hàng đã hủy");
+
+    private final Integer value;
+    private final String VNValue;
+
+    OrderStatusEnum(Integer value, String VNValue) {
+        this.value = value;
+        this.VNValue = VNValue;
+    }
+
+    public static String fromValue(Integer value) {
+        for (OrderStatusEnum type : OrderStatusEnum.values()) {
+            if (type.getValue().equals(value)) {
+                return type.getVNValue();
+            }
+        }
+        return null;
+    }
+}

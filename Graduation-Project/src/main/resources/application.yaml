@@ -1,0 +1,29 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /DATN
+
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3310/GraduationProject
+    hikari:
+      username: root
+      password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+jwt:
+  signerKey : "MkWQyt/xyXTA6Rp2xQgQc6ifd82qDMwbxxTWqTG/eJGXd9JDFHVzgnEKffNW63SK"
