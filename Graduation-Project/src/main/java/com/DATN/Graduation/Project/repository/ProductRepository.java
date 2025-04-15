@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Integer findMaxCodeByPrefix();
 
     @Query("SELECT new com.DATN.Graduation.Project.dto.ProductDto(p.id, p.code, p.name, p.isDeleted, p.isActive, " +
-            "p.brand, p.quantity, p.price, p.discount, p.description) FROM ProductEntity p " +
+            "p.brand, p.quantity, p.price, p.discount, p.description ,p.image) FROM ProductEntity p " +
             "where p.id IN :ids and p.isDeleted = false ")
     List<ProductDto> findProduct(List<Long> ids);
 
@@ -46,4 +46,15 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     @Query(value = "select a.name from product a",nativeQuery = true)
     List<String> getProductNames();
+
+    @Query(value = "SELECT a.*, SUM(b.quantity) AS total_quantity " +
+            "FROM product a " +
+            "LEFT JOIN order_detail b ON a.code = b.product " +
+            "LEFT JOIN `orders` c ON c.code = b.orderCode " +
+            "GROUP BY a.code " +
+            "ORDER BY total_quantity DESC " +
+            "LIMIT 4", nativeQuery = true)
+    List<ProductEntity> findTop4ByQuantity();
+
+
 }

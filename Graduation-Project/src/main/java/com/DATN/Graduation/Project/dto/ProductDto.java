@@ -32,10 +32,12 @@ public class ProductDto {
 
     private Long realPrice;
 
+    private String image;
+
     private ProductDetailDto productDetail;
 
     public ProductDto(Long id, String code, String name, Boolean isDeleted, Boolean isActive,
-                      String brand, Integer quantity, Long price, String discount, String description) {
+                      String brand, Integer quantity, Long price, String discount, String description,String image) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -46,6 +48,7 @@ public class ProductDto {
         this.price = price;
         this.discount = discount;
         this.description = description;
+        this.image = image;
     }
 
 }

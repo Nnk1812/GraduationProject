@@ -59,4 +59,8 @@ public class ProductEntity {
     @Basic
     private Long realPrice;
 
+    @Column(name = "image")
+    @Basic
+    private String image;
+
 }

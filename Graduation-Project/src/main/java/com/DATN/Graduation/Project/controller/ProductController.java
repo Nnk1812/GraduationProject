@@ -61,4 +61,10 @@ public class ProductController {
         response.setData(productsService.findAllProducts());
         return response;
     }
+    @GetMapping("/findOutstanding")
+    public ApiResponse<List<ProductEntity>> findOutstandingProduct() {
+        ApiResponse<List<ProductEntity>> response = new ApiResponse<>();
+        response.setData(productsService.findOutstandingProduct());
+        return response;
+    }
 }

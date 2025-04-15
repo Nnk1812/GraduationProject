@@ -26,5 +26,4 @@ public class ProductDetailDto {
 
     private String origin;
 
-    private String image;
 }

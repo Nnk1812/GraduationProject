@@ -55,7 +55,5 @@ public class ProductDetailEntity {
     @Basic
     private String origin;
 
-    @Column(name = "image")
-    @Basic
-    private String image;
+
 }

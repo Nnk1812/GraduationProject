@@ -274,6 +274,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductEntity> findAllProducts(){
         return productsRepository.findAll();
     }
+
+    public List<ProductEntity> findOutstandingProduct(){
+        return productsRepository.findTop4ByQuantity();
+    }
 }
 
 

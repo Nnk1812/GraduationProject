@@ -23,4 +23,7 @@ public interface ProductService {
     ReviewsDto reviewProduct(ReviewsDto dto);
 
     RatingDto ratingProduct(String code);
+
+    List<ProductEntity> findOutstandingProduct();
 }
+
