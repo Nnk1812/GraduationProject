@@ -6,6 +6,7 @@
     <title>Cửa Hàng Đồng Hồ Hải Nam</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="/DATN/js/common.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -39,23 +40,124 @@
     </div>
 </header>
 
-<!-- Category Navigation Bar -->
-<nav class="bg-white border-t border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-center space-x-20 py-4 text-sm font-medium text-gray-700">
+<div id="navigation-bar"></div>
 
-            <a href="#" class="hover:text-blue-600 transition">NAM</a>
-            <a href="#" class="hover:text-blue-600 transition">NỮ</a>
-            <a href="#" class="hover:text-blue-600 transition">PHỤ KIỆN</a>
-            <a href="#" class="hover:text-blue-600 transition">TREO TƯỜNG</a>
-            <a href="#" class="hover:text-blue-600 transition">TIN TỨC</a>
-            <a href="#" class="hover:text-blue-600 transition">LIÊN HỆ</a>
-
+<!-- Checkout UI with address API integration -->
+<div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 space-y-6">
+    <!-- Product Info -->
+    <div class="flex gap-4 border-b pb-4">
+        <img src="/path/to/product-image.jpg" alt="Product Image" class="w-20 h-20 object-cover rounded">
+        <div class="flex flex-col justify-between">
+            <div>
+                <h3 class="text-base font-semibold">Casio MTP Nam MTP-1374L-7AVDF</h3>
+                <div class="flex gap-2 text-sm text-gray-500">
+                    <span class="text-red-600 font-semibold text-base">1.589.000₫</span>
+                    <span class="line-through">2.270.000₫</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <label>Số lượng:</label>
+                <input type="number" value="1" class="w-16 border px-2 py-1 rounded" />
+            </div>
         </div>
     </div>
-</nav>
 
+    <!-- Total -->
+    <div class="text-right text-lg font-bold text-red-600">
+        Tổng: 1.589.000₫
+    </div>
 
+    <!-- Customer Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" placeholder="Họ và Tên" class="border rounded px-4 py-2" />
+        <input type="text" placeholder="Số điện thoại" class="border rounded px-4 py-2" />
+        <input type="email" placeholder="Email" class="md:col-span-2 border rounded px-4 py-2" />
+    </div>
+
+    <!-- Address Dropdowns -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <select id="province-select" class="border rounded px-3 py-2">
+            <option value="">Chọn tỉnh/thành</option>
+        </select>
+        <select id="district-select" class="border rounded px-3 py-2" disabled>
+            <option value="">Chọn quận/huyện</option>
+        </select>
+        <select id="ward-select" class="border rounded px-3 py-2" disabled>
+            <option value="">Chọn phường/xã</option>
+        </select>
+    </div>
+    <input type="text" placeholder="Số nhà, tên đường..." class="border rounded px-4 py-2 w-full" />
+
+    <!-- Payment -->
+    <div class="space-y-2">
+        <div class="font-semibold">Phương thức thanh toán:</div>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="payment-method" checked />
+            Thanh toán khi nhận hàng (COD)
+        </label>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="payment-method" />
+            Chuyển khoản ngân hàng
+        </label>
+    </div>
+
+    <!-- Submit -->
+    <div class="pt-4">
+        <button class="bg-blue-600 text-white w-full py-3 rounded font-bold text-lg hover:bg-blue-500">
+            Hoàn tất đơn hàng
+        </button>
+    </div>
+</div>
+
+<footer class="bg-red-800 text-white py-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
+
+        <!-- Phần 1: Hotline & Chính sách -->
+        <div>
+            <h3 class="text-xl font-bold mb-4">Hotline</h3>
+            <div class="text-3xl font-extrabold mb-4 border-dashed border-2 border-white inline-block px-4 py-2">
+                1900.6777
+            </div>
+            <h4 class="text-lg font-semibold mt-6 mb-2">Chính sách</h4>
+            <ul class="space-y-1">
+                <li><a href="#" class="hover:underline">Chính sách đổi hàng</a></li>
+                <li><a href="#" class="hover:underline">Chính sách bảo hành</a></li>
+            </ul>
+        </div>
+
+        <!-- Phần 2: Thông tin -->
+        <div>
+            <h3 class="text-xl font-bold mb-4">Thông tin</h3>
+            <ul class="space-y-1">
+                <li><a href="#" class="hover:underline">Thông tin liên hệ</a></li>
+                <li><a href="#" class="hover:underline">Thanh toán - Trả góp</a></li>
+                <li><a href="#" class="hover:underline">Liên hệ đối tác doanh nghiệp</a></li>
+                <li><a href="#" class="hover:underline">Vận chuyển & Giao nhận</a></li>
+            </ul>
+        </div>
+
+        <!-- Phần 3: Tham khảo -->
+        <div>
+            <h3 class="text-xl font-bold mb-4">Tham khảo</h3>
+            <ul class="space-y-1">
+                <li><a href="#" class="hover:underline">Điều khoản sử dụng</a></li>
+                <li><a href="#" class="hover:underline">Bảo mật thông tin</a></li>
+                <li><a href="#" class="hover:underline">Tra cứu đồng hồ bảo hành</a></li>
+            </ul>
+        </div>
+
+        <!-- Phần 4: Về cửa hàng Hải Nam -->
+        <div>
+            <h3 class="text-xl font-bold mb-4">Về cửa hàng Hải Nam</h3>
+            <ul class="space-y-1">
+                <li><a href="#" class="hover:underline">Giới thiệu về cửa hàng</a></li>
+                <li><a href="#" class="hover:underline">Tin tức công ty</a></li>
+                <li><a href="#" class="hover:underline">Kiến thức đồng hồ</a></li>
+            </ul>
+        </div>
+
+    </div>
+</footer>
 <!-- Footer -->
 <footer class="bg-blue-900 text-white py-8">
     <div class="container mx-auto px-4 text-center">

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa Hàng Đồng Hồ Hải Nam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="/DATN/js/common.js"></script>
+    <script src="/DATN/js/login.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Header -->
+<header class="bg-blue-900 text-white py-4">
+    <div class="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+
+        <!-- Tên cửa hàng -->
+        <div class="text-center sm:text-left">
+            <a href="/DATN/home.html">
+                <h1 class="text-3xl font-semibold">Cửa Hàng Đồng Hồ Hải Nam</h1>
+            </a>
+        </div>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="relative w-full sm:w-1/3">
+            <input type="text" class="w-full py-2 px-4 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tìm kiếm đồng hồ...">
+            <button class="absolute top-0 right-0 mt-2 mr-3 text-blue-500 hover:text-blue-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 0V2m0 0L6.5 6.5m4.5-4.5L16.5 6.5" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Giỏ hàng & đăng nhập -->
+        <div class="flex justify-center sm:justify-end items-center space-x-4 px-2 py-1 rounded text-black">
+
+            <!-- Giỏ hàng -->
+            <div class="relative group">
+                <a href="/DATN/pages/shoppingcart.html" class="text-white hover:text-yellow-300 transition duration-200">
+                    <i class="fas fa-shopping-cart text-2xl"></i>
+                    <span id="cartCount"
+                          class="absolute -top-2 -right-3 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+
+                    </span>
+                </a>
+            </div>
+
+            <!-- Khu vực đăng nhập -->
+            <div class="bg-white relative inline-block" id="loginArea">
+                <!-- Link đăng nhập -->
+                <a href="/DATN/pages/login.html" class="hover:text-red-500 cursor-pointer px-2 py-1 rounded border border-gray-300" id="loginLink">Đăng nhập</a>
+
+                <!-- Dropdown khi đã đăng nhập -->
+                <div id="userDropdown" class="hidden relative">
+          <span id="userInfo" class="hover:text-red-500 cursor-pointer px-2 py-1 rounded">
+            <span id="usernameDisplay" class="font-semibold"></span> ▼
+          </span>
+
+                    <!-- Dropdown Menu -->
+                    <div id="dropdownMenu"
+                         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20 hidden">
+                        <a href="#"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Tài Khoản Của Tôi</a>
+                        <a href="#"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Đơn hàng</a>
+                        <a href="/DATN/pages/managerProduct.html"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Quản Lý Sản phẩm</a>
+                        <button id="logoutBtn"
+                                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500 hover:text-white">Đăng Xuất</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<!-- Category Navigation Bar -->
+<div id="navigation-bar"> </div>
+
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h1 class="text-2xl font-bold mb-6 text-center text-blue-900">Thêm Sản Phẩm Mới</h1>
+
+    <!-- Tên sản phẩm -->
+    <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">Tên sản phẩm</label>
+        <input id="productName" type="text" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nhập tên sản phẩm">
+    </div>
+
+    <!-- Nhãn hàng -->
+    <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">Nhãn hàng</label>
+        <select id="brandSelect" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Chọn nhãn hàng</option>
+        </select>
+    </div>
+
+    <!-- Số lượng và Giá -->
+    <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-2">Giá (VNĐ)</label>
+            <input id="price" type="text" min="0" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
+    </div>
+
+    <div class="mb-4">
+        <label for="productType" class="block text-sm font-medium text-gray-700">Loại sản phẩm</label>
+        <select id="productType" name="productType" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            <option value="" disabled selected hidden>Chọn loại sản phẩm</option>
+            <option value="1">Đồng hồ nam</option>
+            <option value="2">Đồng hồ nữ</option>
+            <option value="3">Phụ kiện</option>
+            <option value="4">Treo tường</option>
+        </select>
+    </div>
+
+    <!-- Phiếu giảm giá -->
+    <div class="mb-4">
+        <label class="block text-gray-700 font-medium mb-2">Phiếu giảm giá</label>
+        <select id="discountSelect" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Không áp dụng</option>
+        </select>
+    </div>
+
+    <!-- Link ảnh -->
+    <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2">Link ảnh sản phẩm</label>
+        <input id="imageUrl" type="text" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
+    </div>
+
+    <!-- Mô tả -->
+    <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-2">Miêu tả</label>
+        <input id="description" type="text" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Miêu tả...">
+    </div>
+
+    <!-- Chi tiết sản phẩm -->
+    <h2 class="text-lg font-semibold mb-4 text-blue-800">Chi tiết sản phẩm</h2>
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+            <label class="block text-gray-700 mb-1">Chất liệu vỏ</label>
+            <input id="caseMaterial" type="text" class="w-full border rounded px-3 py-2" placeholder="Chất liệu vỏ...">
+        </div>
+        <div>
+            <label class="block text-gray-700 mb-1">Chất liệu dây</label>
+            <input id="strapMaterial" type="text" class="w-full border rounded px-3 py-2" placeholder="Chất liệu dây...">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+            <label class="block text-gray-700 mb-1">Loại máy</label>
+            <input id="movementType" type="text" class="w-full border rounded px-3 py-2" placeholder="Loại máy...">
+        </div>
+        <div>
+            <label class="block text-gray-700 mb-1">Chống nước</label>
+            <input id="waterResistance" type="text" class="w-full border rounded px-3 py-2" placeholder="Chống nước...">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="block text-gray-700 mb-1">Kích cỡ mặt</label>
+            <input id="dialSize" type="text" class="w-full border rounded px-3 py-2" placeholder="Kích cỡ mặt...">
+        </div>
+        <div>
+            <label class="block text-gray-700 mb-1">Xuất xứ</label>
+            <input id="origin" type="text" class="w-full border rounded px-3 py-2" placeholder="Xuất xứ...">
+        </div>
+    </div>
+
+
+    <!-- Nút gửi -->
+    <div class="text-center">
+        <button id="submitProduct" class="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-medium">
+            Thêm sản phẩm
+        </button>
+    </div>
+</div>
+
+<div id="footer-placeholder"> </div>
+<script src="/DATN/js/addProduct.js"></script>
+</body>
+</html>

@@ -3,16 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cửa Hàng Đồng Hồ Hải Nam</title>
+    <title>Quản lý giảm giá</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="/DATN/js/common.js"></script>
-    <script src="/DATN/js/login.js"></script>
-    <script src="/DATN/js/home.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
-
 <header class="bg-blue-900 text-white py-4">
     <div class="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
 
@@ -81,7 +75,7 @@
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Tài Khoản</a>
                         <a href="#" id="manageBrandLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhãn Hàng</a>
-                        <a href="/DATN/pages/managerDiscount.html" id="manageDiscountLink"
+                        <a href="#" id="manageDiscountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Giảm Giá</a>
                         <a href="#" id="manageOrderLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Đơn Hàng</a>
@@ -104,55 +98,43 @@
         </div>
     </div>
 </header>
-
-<div id ="navigation-bar"></div>
-
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Mẫu mã đa dạng</h3>
-                <p class="text-sm text-gray-600">Hàng chính hãng, phong cách thời thượng</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Giao hàng toàn quốc</h3>
-                <p class="text-sm text-gray-600">Nhanh chóng - An toàn - Đảm bảo</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Bảo hành 5 năm</h3>
-                <p class="text-sm text-gray-600">Chính sách minh bạch - yên tâm sử dụng</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">1 đổi 1 trong 7 ngày</h3>
-                <p class="text-sm text-gray-600">Áp dụng lỗi do nhà sản xuất</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Thanh toán linh hoạt</h3>
-                <p class="text-sm text-gray-600">Trả trước hoặc trả góp 0%</p>
-            </div>
-
-        </div>
+<div class="p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold">Quản lý mã giảm giá</h1>
+        <a href="/DATN/pages/AddDiscount.html" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Add New
+        </a>
     </div>
-</section>
 
-
-<!-- Brand Section -->
-<div id="brand-section"></div>
-
-<section class="py-16 bg-gray-100">
-    <div class="container mx-auto text-center">
-        <h2 class="text-3xl font-semibold mb-8">Sản Phẩm Nổi Bật</h2>
-        <div id="outstanding-products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-
-        </div>
+    <!-- Search -->
+    <div class="mb-4">
+        <input id="searchInput" type="text" placeholder="Tìm kiếm tên hoặc mã..." class="w-full p-2 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
     </div>
-</section>
 
-<div id="footer-placeholder"></div>
+    <!-- Discount Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border rounded-lg shadow">
+            <thead class="bg-gray-100 text-gray-700">
+            <tr>
+                <th class="px-4 py-2 border">Tên khuyến mãi</th>
+                <th class="px-4 py-2 border">Mã</th>
+                <th class="px-4 py-2 border">Hiệu lực</th>
+                <th class="px-4 py-2 border">Ngày bắt đầu</th>
+                <th class="px-4 py-2 border">Ngày kết thúc</th>
+                <th class="px-4 py-2 border">Loại khuyến mãi</th>
+                <th class="px-4 py-2 border">Giá trị</th>
+                <th class="px-4 py-2 border">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="discountTable" class="text-center">
+            <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <div id="pagination" class="flex justify-center gap-2 mt-4 flex-wrap"></div>
+</div>
+
+<script src="/DATN/js/managerDiscount.js"></script>
 </body>
 </html>

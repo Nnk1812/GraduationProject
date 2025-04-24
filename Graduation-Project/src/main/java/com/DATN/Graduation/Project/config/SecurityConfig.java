@@ -33,6 +33,7 @@ public class SecurityConfig {
 //                        .requestMatchers(HttpMethod.POST,"/auth/log-in").permitAll()
 //                        .requestMatchers(HttpMethod.GET,"/order/detail").hasRole("ADMIN")
 //                        .requestMatchers(HttpMethod.POST,"/user/saveUser").permitAll());
+
                         .anyRequest().permitAll());
         http.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer -> jwtConfigurer.

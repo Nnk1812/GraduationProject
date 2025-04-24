@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 public class CartDto {
     private Long id;
+    private String code;
     private String user;
     private Long totalPrice;
     private Integer totalQuantity;

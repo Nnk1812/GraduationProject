@@ -1,9 +1,6 @@
 package com.DATN.Graduation.Project.service.impl;
 
-import com.DATN.Graduation.Project.dto.ProductDetailDto;
-import com.DATN.Graduation.Project.dto.ProductDto;
-import com.DATN.Graduation.Project.dto.RatingDto;
-import com.DATN.Graduation.Project.dto.ReviewsDto;
+import com.DATN.Graduation.Project.dto.*;
 import com.DATN.Graduation.Project.entity.ProductDetailEntity;
 import com.DATN.Graduation.Project.entity.ProductEntity;
 import com.DATN.Graduation.Project.entity.ReviewsEntity;
@@ -19,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -71,9 +70,9 @@ public class ProductServiceImpl implements ProductService {
                 throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
             }
         }
-        if(productsRepository.getProductNames().contains(productsDto.getName())){
-            throw new AppException(ErrorCode.PRODUCT_EXISTED);
-        }
+//        if(productsRepository.getProductNames().contains(productsDto.getName())){
+//            throw new AppException(ErrorCode.PRODUCT_EXISTED);
+//        }
 
 
         if (ObjectUtils.isEmpty(productsDto.getIsDeleted())) {
@@ -112,24 +111,15 @@ public class ProductServiceImpl implements ProductService {
         modelMapper.map(productsDto, productsEntity);
         ProductEntity savedProduct = productsRepository.save(productsEntity);
         ProductDetailEntity productDetailEntity;
-//                = productDetailsRepository.findByProduct(savedProduct.getCode())
-//                .orElseGet(() -> {
-//                    ProductDetailsEntity newEntity = new ProductDetailsEntity();
-//                    newEntity.setProduct(savedProduct.getCode()); // Đảm bảo không set ID thủ công
-//                    return newEntity;
-//                });
 
         if (productsDto.getProductDetail() != null) {
             ProductDetailDto productDetailDto = productsDto.getProductDetail();
 
             if (!ObjectUtils.isEmpty(productDetailDto.getProductCode())) {
-                if(!productDetailDto.getProductCode().equals(productsDto.getCode())){
-                    throw new AppException(ErrorCode.CODE_DOSE_NOT_MATCH);
-                }else {
                     // Nếu có code => Tìm trong DB để cập nhật
-                    productDetailEntity = productDetailsRepository.findByProduct(productsDto.getCode())
+                    productDetailEntity = productDetailsRepository.findByProduct(productDetailDto.getProductCode())
                             .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_DETAIL_NOT_EXISTED));
-                }
+
             } else {
                 // Nếu không có code => Tạo mới entity
                 productDetailEntity = new ProductDetailEntity();
@@ -166,7 +156,6 @@ public class ProductServiceImpl implements ProductService {
             }
             // Convert ProductsEntity -> ProductsDto
             ProductDto result = modelMapper.map(savedProduct, ProductDto.class);
-
             // Lấy productDetail từ database và set vào DTO
             productDetailsRepository.findByProduct(savedProduct.getCode())
                     .ifPresent(detail -> {
@@ -205,14 +194,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public String deleteProduct(Long id)
+    public String deleteProduct(String code)
     {
-        ProductEntity entity = productsRepository.findById(id).orElseThrow(
+        ProductEntity entity = productsRepository.findByCode(code).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
         );
-        if(ObjectUtils.isEmpty(entity)) {
-            productsRepository.delete(entity);
-        }
+        productsRepository.delete(entity);
         ProductDetailEntity detail = productDetailsRepository.findByProduct(entity.getCode()).orElse(null);
         if(!ObjectUtils.isEmpty(detail)) {
             productDetailsRepository.delete(detail);
@@ -220,8 +207,8 @@ public class ProductServiceImpl implements ProductService {
         return "Product deleted successfully";
     }
     @Override
-    public String hiddenProduct (Long id){
-        ProductEntity entity = productsRepository.findById(id).orElseThrow(
+    public String hiddenProduct (String code){
+        ProductEntity entity = productsRepository.findByCode(code).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
         );
         entity.setIsDeleted(true);
@@ -271,12 +258,27 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    public List<ProductEntity> findAllProducts(){
-        return productsRepository.findAll();
+    public List<FindOutStandingDto> findAllProducts(){
+        return productsRepository.findAllProduct();
     }
 
-    public List<ProductEntity> findOutstandingProduct(){
-        return productsRepository.findTop4ByQuantity();
+    public List<FindOutStandingDto> findOutstandingProduct(Pageable pageable){
+        return productsRepository.findTopFourByQuantity((Pageable) pageable);
+    }
+    public ProductDetailEntity getProductDetail(String code){
+        return productDetailsRepository.findByProduct(code).orElse(null);
+    }
+    public List<FindOutStandingDto> findByBrand(String brand){
+        return productsRepository.findByBrand(brand);
+    }
+    public List<FindAllProductDto> findAll(){
+        return productsRepository.findAllProducts();
+    }
+    public FindProductDetailDto findProductDetail(String code){
+        return productsRepository.findAllProductsDetail(code);
+    }
+    public List<FindOutStandingDto> findByName(String name){
+        return productsRepository.findByProductNameIgnoreCase(name);
     }
 }
 

@@ -39,10 +39,6 @@ public class ProductEntity {
     @Basic
     private String brand;
 
-    @Column(name = "quantity")
-    @Basic
-    private Integer quantity;
-
     @Column(name = "price")
     @Basic
     private Long price;
@@ -62,5 +58,9 @@ public class ProductEntity {
     @Column(name = "image")
     @Basic
     private String image;
+
+    @Column(name = "type")
+    @Basic
+    private Integer type;
 
 }

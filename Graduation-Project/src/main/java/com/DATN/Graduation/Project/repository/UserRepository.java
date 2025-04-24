@@ -16,7 +16,8 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from user where code like 'NV%' ", nativeQuery = true)
     Integer findMaxCodeByPrefix();
-
+    @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from cart where code like 'C%' ", nativeQuery = true)
+    Integer findMaxCodeByPrefixCart();
     @Query(value = "select code " +
             "from user",nativeQuery = true)
     List<String> findAllCode();

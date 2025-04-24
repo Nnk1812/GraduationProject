@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
         user.setRole("User");
         CartEntity cart = new CartEntity();
         cart.setUser(dto.getCode());
+        cart.setCode(generateNextCodeCart());
         cartRepository.save(cart);
         return userRepository.save(user);
     }
@@ -102,6 +103,13 @@ public class UserServiceImpl implements UserService {
             return "NV001";
         }
         return "NV" + String.format("%03d", ++maxCode);
+    }
+    public String generateNextCodeCart(){
+        Integer maxCode = userRepository.findMaxCodeByPrefixCart();
+        if(maxCode == null){
+            return "C001";
+        }
+        return "C" + String.format("%03d", ++maxCode);
     }
 
     @Override

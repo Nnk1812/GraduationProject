@@ -39,54 +39,6 @@
     </div>
 
 </div>
-
-<script>
-    document.getElementById("loginForm").addEventListener("submit", async function (event) {
-        event.preventDefault(); // Ngăn form gửi theo cách mặc định
-
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
-
-        try {
-            const response = await fetch("http://localhost:8080/DATN/auth/log-in", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            });
-
-            if (!response.ok) {
-                Swal.fire({
-                    icon: 'error',
-
-                    text: 'Tài khoản hoặc mật khẩu không đúng',
-                });
-                return;
-            }
-
-            const result = await response.json();
-            const token = result.data.token;
-
-            // ✅ Lưu token vào localStorage nếu cần dùng cho những lần request sau
-            localStorage.setItem("token", token);
-
-            // ✅ Chuyển đến trang home.html
-            window.location.href = "/DATN/home.html";
-
-        } catch (error) {
-            console.error("Lỗi đăng nhập:", error);
-            // Sử dụng sweetalert2 để hiển thị thông báo lỗi
-            Swal.fire({
-                icon: 'error',
-                title: 'Đã xảy ra lỗi',
-                text: 'Vui lòng thử lại sau!',
-            });
-        }
-    });
-</script>
+<script src="/DATN/js/logicLogin.js"></script>
 </body>
 </html>

@@ -43,6 +43,10 @@ public class CartItemEntity {
     @Basic
     private Integer quantity;
 
+    @Column(name = "price_pre_discount")
+    @Basic
+    private Long pricePreDiscount;
+
     @Column(name = "totalPrice")
     @Basic
     private Long totalPrice;

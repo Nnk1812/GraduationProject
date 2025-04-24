@@ -21,6 +21,10 @@ public class CartEntity {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "code")
+    @Basic
+    private String code;
+
     @Column(name = "user")
     @Basic
     private String user;
