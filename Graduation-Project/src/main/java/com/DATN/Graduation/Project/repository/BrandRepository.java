@@ -23,4 +23,6 @@ public interface BrandRepository extends JpaRepository<BrandEntity, Long> {
 
     @Query(value = "select  a.name from brand a" ,nativeQuery = true)
     List<String> findBrandName();
+
+    BrandEntity findByCode(String code);
 }

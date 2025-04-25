@@ -15,9 +15,10 @@
     <div class="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
 
         <!-- Tên cửa hàng -->
-        <div class="text-center sm:text-left">
-            <a href="/DATN/home.html">
-                <h1 class="text-3xl font-semibold">Cửa Hàng Đồng Hồ Hải Nam</h1>
+        <div class="flex items-center space-x-3 text-center sm:text-left">
+            <a href="/DATN/home.html" class="flex items-center space-x-2 hover:scale-105 transition-transform duration-300">
+                <img src="/DATN/assets/images/logo-watch.png" alt="Logo" class="w-10 h-10 object-contain">
+                <h1 class="text-3xl font-bold text-white tracking-wide">Đồng Hồ Hải Nam</h1>
             </a>
         </div>
 
@@ -32,7 +33,7 @@
         </div>
 
         <!-- Giỏ hàng & đăng nhập -->
-        <div class="flex justify-center sm:justify-end items-center space-x-4 px-2 py-1 rounded text-black">
+        <div class="flex justify-center sm:justify-end items-center space-x-24 px-2 py-1 rounded text-black">
 
             <!-- Giỏ hàng -->
             <div class="relative group">
@@ -45,28 +46,55 @@
                 </a>
             </div>
 
-            <!-- Khu vực đăng nhập -->
-            <div class="bg-white relative inline-block" id="loginArea">
+            <div class="relative inline-block text-black" id="loginArea">
                 <!-- Link đăng nhập -->
-                <a href="/DATN/pages/login.html" class="hover:text-red-500 cursor-pointer px-2 py-1 rounded border border-gray-300" id="loginLink">Đăng nhập</a>
+                <a href="/DATN/pages/login.html"
+                   class="hover:text-blue-600 cursor-pointer flex items-center gap-2 px-2 py-1 border border-gray-300 rounded-lg bg-white shadow-sm transition duration-200 ease-in-out hover:shadow-md"
+                   id="loginLink">
+                    <i class="fas fa-sign-in-alt text-blue-600"></i>
+                    <span>Đăng nhập</span>
+                </a>
 
-                <!-- Dropdown khi đã đăng nhập -->
-                <div id="userDropdown" class="hidden relative">
-          <span id="userInfo" class="hover:text-red-500 cursor-pointer px-2 py-1 rounded">
-            <span id="usernameDisplay" class="font-semibold"></span> ▼
-          </span>
+                <!-- Dropdown sau khi đã đăng nhập -->
+                <div id="userDropdown" class="hidden">
+                    <div id="userInfo"
+                         class="flex items-center gap-2 px-2 py-1 border border-gray-300 rounded-lg bg-white shadow-sm hover:bg-gray-100 cursor-pointer transition duration-200 ease-in-out">
+                        <i class="fas fa-user-circle text-blue-600 text-xl"></i>
+                        <span id="usernameDisplay" class="font-medium text-gray-800"></span>
+                        <svg class="w-4 h-4 ml-1 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.292l3.71-4.06a.75.75 0 1 1 1.08 1.04l-4.25 4.65a.75.75 0 0 1-1.08 0l-4.25-4.65a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
 
-                    <!-- Dropdown Menu -->
+                    <!-- Menu dropdown -->
                     <div id="dropdownMenu"
-                         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20 hidden">
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Tài Khoản Của Tôi</a>
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Đơn hàng</a>
-                        <a href="/DATN/pages/managerProduct.html"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Quản Lý Sản phẩm</a>
+                         class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-30 hidden">
+                        <a href="#" id="accountLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Tài Khoản Của Tôi</a>
+                        <a href="#" id="orderLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Đơn hàng</a>
+
+                        <!-- Quản trị -->
+                        <a href="#" id="manageAccountLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Tài Khoản</a>
+                        <a href="/DATN/pages/managerBrand.html" id="manageBrandLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhãn Hàng</a>
+                        <a href="/DATN/pages/managerDiscount.html" id="manageDiscountLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Giảm Giá</a>
+                        <a href="#" id="manageOrderLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Đơn Hàng</a>
+                        <a href="/DATN/pages/managerProduct.html" id="manageProductLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Sản Phẩm</a>
+                        <a href="#" id="manageImportLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhập Hàng</a>
+                        <a href="#" id="manageWarehouseLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Kho</a>
+
+                        <!-- Đăng xuất -->
                         <button id="logoutBtn"
-                                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500 hover:text-white">Đăng Xuất</button>
+                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 hover:text-red-800 transition duration-200">
+                            Đăng Xuất
+                        </button>
                     </div>
                 </div>
             </div>
@@ -78,8 +106,13 @@
 <div id="navigation-bar"> </div>
 
 <div class="flex flex-col md:flex-row justify-center items-start gap-6">
-    <!-- Hình ảnh sản phẩm -->
     <div class="md:w-1/2 w-full px-2 flex flex-col items-center">
+        <p class="text-lg font-semibold text-gray-800 mb-2 text-left">
+            Nhãn hàng:
+            <a id="brand-name" href="#" class="text-blue-600 hover:underline"></a>
+        </p>
+
+        <!-- Hình ảnh sản phẩm -->
         <h1 id="product-name" class="text-3xl font-bold text-gray-800 mb-4"></h1>
         <div class="relative w-full max-w-[600px]">
             <img id="product-img" src="" alt="" class="w-full h-72 object-contain rounded shadow" />

@@ -11,6 +11,7 @@ public class ShoppingCartDto
     private String name;
     private String img;
     private Long price;
+    private String discount;
     private Integer quantity;
     private Long realPrice;
 }

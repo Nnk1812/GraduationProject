@@ -9,6 +9,7 @@ function renderProducts(page) {
     const start = (page - 1) * PRODUCTS_PER_PAGE;
     const end = start + PRODUCTS_PER_PAGE;
     const paginatedProducts = products.slice(start, end);
+    const hasDiscount = product.discount && product.discount > 0;
 
     paginatedProducts.forEach(product => {
         const html = `
@@ -23,11 +24,13 @@ function renderProducts(page) {
             </a>
 
 
-            <div class="mt-2">
-                <span class="text-red-600 text-2xl font-bold">
+             <div class="mt-2">
+                <span class="${hasDiscount ? 'text-red-600' : 'text-black'} text-2xl font-bold">
                     ${product.realPrice.toLocaleString()}₫
                 </span>
             </div>
+
+            ${hasDiscount ? `
             <div class="flex items-center justify-center space-x-2 mt-1">
                 <span class="line-through text-gray-500 text-base">
                     ${product.price.toLocaleString()}₫
@@ -36,7 +39,7 @@ function renderProducts(page) {
                     -${product.discount}%
                 </span>
             </div>
-
+            ` : ''}
             <a href="#" class="mt-4 inline-block bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500">Mua Ngay</a>
         </div>
 

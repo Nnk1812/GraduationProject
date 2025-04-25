@@ -1,24 +1,52 @@
 const product = JSON.parse(localStorage.getItem("selectedProduct"));
-console.log(localStorage.getItem("selectedProduct"));
 
 if (product) {
     // Gán dữ liệu vào HTML
     const nameEl = document.getElementById("productName");
     if (nameEl) nameEl.textContent = product.name;
+
     const imgEl = document.getElementById("product-img");
     if (imgEl) {
         imgEl.src = product.img;
         imgEl.alt = product.name;
     }
-    const priceEl = document.querySelector(".text-red-600.text-3xl");
+
+    const brandEl = document.getElementById("brand-name");
+    if (brandEl) brandEl.textContent = `${product.brand || "Chưa có nhãn hàng"}`;
+    brandEl.href= `brand.html?code=${product.brand}`;
+
+    const priceEl = document.querySelector(".text-red-600.text-3xl, .text-black.text-3xl");
     const oldPriceEl = document.querySelector(".line-through.text-gray-500");
     const discountEl = document.querySelector(".bg-red-100.text-red-600");
     const descriptionEl = document.getElementById("description");
 
-    document.getElementById("product-name").textContent = product.name ;
-    if (priceEl) priceEl.textContent = `${product.realPrice.toLocaleString()}₫`;
-    if (oldPriceEl) oldPriceEl.textContent = `${product.price.toLocaleString()}₫`;
-    if (discountEl) discountEl.textContent = `-${product.discount}%`;
+    document.getElementById("product-name").textContent = product.name;
+
+    // Kiểm tra giảm giá
+    if (product.discount && product.discount > 0) {
+        if (priceEl) {
+            priceEl.textContent = `${product.realPrice.toLocaleString()}₫`;
+            priceEl.classList.remove("text-black");
+            priceEl.classList.add("text-red-600");
+        }
+        if (oldPriceEl) {
+            oldPriceEl.textContent = `${product.price.toLocaleString()}₫`;
+            oldPriceEl.style.display = "inline";
+        }
+        if (discountEl) {
+            discountEl.textContent = `-${product.discount}%`;
+            discountEl.style.display = "inline-block";
+        }
+    } else {
+        if (priceEl) {
+            priceEl.textContent = `${product.price.toLocaleString()}₫`;
+            priceEl.classList.remove("text-red-600");
+            priceEl.classList.add("text-black");
+        }
+        if (oldPriceEl) oldPriceEl.style.display = "none";
+        if (discountEl) discountEl.style.display = "none";
+    }
+
     if (descriptionEl) descriptionEl.textContent = product.description || "Không có mô tả.";
 
     fetch(`http://localhost:8080/DATN/products/productDetail?code=${product.code}`)
@@ -34,15 +62,13 @@ if (product) {
         })
         .catch(error => {
             console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
-            document.getElementById("product-name").textContent = "Lỗi không lấy được thông tin sản phẩm" ;
+            document.getElementById("product-name").textContent = "Lỗi không lấy được thông tin sản phẩm";
         });
 } else {
-    // Nếu không có sản phẩm, có thể redirect hoặc hiển thị thông báo
-    document.getElementById("product-name").textContent = "Không có sản phẩm" ;
+    document.getElementById("product-name").textContent = "Không có sản phẩm";
 }
 
-    //mua hàng
-
+// Mua hàng
 document.getElementById("order").addEventListener("click", function () {
     const username = localStorage.getItem("username");
     const payload = {
@@ -50,7 +76,7 @@ document.getElementById("order").addEventListener("click", function () {
         quantity: 1
     };
 
-        fetch(`http://localhost:8080/DATN/cart/save?user=${username}`, {
+    fetch(`http://localhost:8080/DATN/cart/save?user=${username}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -72,5 +98,3 @@ document.getElementById("order").addEventListener("click", function () {
             alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
         });
 });
-
-

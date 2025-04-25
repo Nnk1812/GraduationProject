@@ -1,5 +1,8 @@
 fetch("http://localhost:8080/DATN/products/findOutstanding")
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+        return response.json();
+    })
     .then(data => {
         const container = document.querySelector("#outstanding-products");
         container.innerHTML = "";
@@ -8,19 +11,26 @@ fetch("http://localhost:8080/DATN/products/findOutstanding")
 
         if (Array.isArray(products)) {
             products.forEach(product => {
+                const hasDiscount = !!product.discount;
                 const html = `
-                    <div class="product bg-white p-4 shadow-md rounded-lg text-center relative">
-                        <a href="/DATN/pages/productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
-                            <img src="${product.img}" alt="${product.name}" class="w-full h-64 object-cover rounded-lg">
-                        </a>
-                        <a href="/DATN/pages/productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
-                            <h3 class="text-xl font-semibold mt-4 hover:underline">${product.name}</h3>
-                        </a>
-                        <div class="mt-2">
-                            <span class="text-red-600 text-2xl font-bold">
-                                ${product.realPrice.toLocaleString()}₫
+                        <div class="product bg-white p-4 shadow-md rounded-lg text-center relative">
+            <a href="productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
+
+                <img src="${product.img}" alt="${product.name}" class="w-full h-64 object-cover rounded-lg">
+            </a>
+            <a href="productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
+
+                <h3 class="text-xl font-semibold mt-4 hover:underline">${product.name}</h3>
+            </a>
+
+
+               <div class="mt-2">
+                            <span class="${hasDiscount ? 'text-red-600' : 'text-black'} text-2xl font-bold">
+                                ${hasDiscount ? product.realPrice.toLocaleString() : product.price.toLocaleString()}₫
                             </span>
                         </div>
+
+                        ${hasDiscount ? `
                         <div class="flex items-center justify-center space-x-2 mt-1">
                             <span class="line-through text-gray-500 text-base">
                                 ${product.price.toLocaleString()}₫
@@ -29,8 +39,11 @@ fetch("http://localhost:8080/DATN/products/findOutstanding")
                                 -${product.discount}%
                             </span>
                         </div>
-                        <a href="#" class="buy-now mt-4 inline-block bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500">Mua Ngay</a>
-                    </div>`;
+                        ` : ''}
+            <a href="#" class="buy-now mt-4 inline-block bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500">Mua Ngay</a>
+        </div>
+
+            `;
 
                 container.insertAdjacentHTML("beforeend", html);
 

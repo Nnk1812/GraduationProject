@@ -103,13 +103,15 @@
         </div>
     </div>
 </header>
-<div id="discountId" class="hidden"></div>
+<!-- ID ẩn để cập nhật -->
+<div id="brandId" class="hidden"></div>
+
 <div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-    <h1 class="text-2xl font-bold mb-6 text-center">Chi tiết khuyến mãi</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center">Chi tiết nhãn hàng</h1>
     <table class="table-auto w-full border border-gray-300">
         <tbody>
         <tr>
-            <td class="border px-4 py-2 font-semibold">Tên khuyến mãi</td>
+            <td class="border px-4 py-2 font-semibold">Tên nhãn hàng</td>
             <td class="border px-4 py-2">
                 <input id="name" type="text" class="w-full border p-2 rounded" />
             </td>
@@ -121,45 +123,28 @@
             </td>
         </tr>
         <tr>
-            <td class="border px-4 py-2 font-semibold">Hiệu lực</td>
+            <td class="border px-4 py-2 font-semibold">Email</td>
             <td class="border px-4 py-2">
-                <select id="isDeleted" class="w-full border p-2 rounded">
-                    <option value="false">Hiệu lực</option>
-                    <option value="true">Vô hiệu lực</option>
-                </select>
+                <input id="email" type="email" class="w-full border p-2 rounded" />
             </td>
         </tr>
         <tr>
-            <td class="border px-4 py-2 font-semibold">Ngày bắt đầu</td>
+            <td class="border px-4 py-2 font-semibold">Số điện thoại</td>
             <td class="border px-4 py-2">
-                <input id="startDate" type="datetime-local" class="w-full border p-2 rounded" />
+                <input id="phone" type="text" class="w-full border p-2 rounded" />
             </td>
         </tr>
         <tr>
-            <td class="border px-4 py-2 font-semibold">Ngày kết thúc</td>
+            <td class="border px-4 py-2 font-semibold">Địa chỉ</td>
             <td class="border px-4 py-2">
-                <input id="endDate"   type="datetime-local" class="w-full border p-2 rounded" />
-            </td>
-        </tr>
-        <tr>
-            <td class="border px-4 py-2 font-semibold">Loại khuyến mãi</td>
-            <td class="border px-4 py-2">
-                <select id="type" class="w-full border p-2 rounded">
-                    <option value="1">Phần trăm (%)</option>
-                    <option value="2">Tiền mặt (VNĐ)</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td class="border px-4 py-2 font-semibold">Giá trị</td>
-            <td class="border px-4 py-2">
-                <input id="value" type="number" class="w-full border p-2 rounded" />
+                <textarea id="address" rows="3" class="w-full border p-2 rounded resize-none"></textarea>
             </td>
         </tr>
         </tbody>
     </table>
+
     <div class="flex justify-center space-x-4 mt-6">
-        <button onclick="saveDiscount()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <button onclick="saveBrand()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Lưu thông tin
         </button>
         <button onclick="history.back()" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
@@ -168,6 +153,7 @@
     </div>
 </div>
 
-<script src="/DATN/js/discountManagerDetail.js"></script>
+
+<script src="/DATN/js/brandManagerDetail.js"></script>
 </body>
 </html>

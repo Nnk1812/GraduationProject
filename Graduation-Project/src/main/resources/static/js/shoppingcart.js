@@ -78,10 +78,22 @@ districtSelect.addEventListener("change", () => {
                 productDiv.className = "flex gap-4 border-b pb-4 items-center";
 
                 // Tính giá ban đầu theo số lượng
-                const totalRealPrice = item.realPrice * item.quantity;
-                const totalOriginalPrice = item.price * item.quantity;
+                const hasDiscount = !!item.discount;
+                const realUnitPrice = hasDiscount ? item.realPrice : item.price;
+                const totalRealPrice = realUnitPrice * item.quantity;
 
-                productDiv.innerHTML = `
+                const priceHtml = `
+                    <div class="flex gap-2 text-sm text-gray-500 items-center">
+                        <span class="${hasDiscount ? 'text-red-600' : 'text-black'} font-semibold text-base real-price">
+                            ${totalRealPrice.toLocaleString()}₫
+                        </span>
+                        <span class="line-through original-price ${!hasDiscount ? 'hidden' : ''}">
+                            ${(item.price * item.quantity).toLocaleString()}₫
+                        </span>
+                    </div>
+                `;
+
+                            productDiv.innerHTML = `
                 <div class="relative flex gap-4 items-start">
                     <!-- Nút xoá -->
                     <button 
@@ -96,10 +108,7 @@ districtSelect.addEventListener("change", () => {
                     <div class="flex flex-col justify-between flex-grow">
                         <div>
                             <h3 class="text-base font-semibold">${item.name}</h3>
-                            <div class="flex gap-2 text-sm text-gray-500">
-                                <span class="text-red-600 font-semibold text-base real-price">${totalRealPrice.toLocaleString()}₫</span>
-                                <span class="line-through original-price">${totalOriginalPrice.toLocaleString()}₫</span>
-                            </div>
+                            ${priceHtml}
                         </div>
                         <div class="flex items-center gap-2">
                             <label>Số lượng:</label>
@@ -109,7 +118,7 @@ districtSelect.addEventListener("change", () => {
                                 min="1"
                                 class="w-16 border px-2 py-1 rounded quantity-input" 
                                 data-code="${item.code}" 
-                                data-real="${item.realPrice}" 
+                                data-real="${realUnitPrice}" 
                                 data-original="${item.price}"
                             />
                         </div>
@@ -128,6 +137,7 @@ districtSelect.addEventListener("change", () => {
                     const code = this.getAttribute("data-code");
                     const realPrice = parseFloat(this.getAttribute("data-real"));
                     const originalPrice = parseFloat(this.getAttribute("data-original"));
+
 
                     // Cập nhật giá hiển thị
                     const realPriceEl = this.closest("div.flex-grow").querySelector(".real-price");
@@ -174,6 +184,7 @@ function updateSummary() {
     const quantityInputs = document.querySelectorAll(".quantity-input");
     let totalPrice = 0;
     let totalSaved = 0;
+    let hasDiscount = false;
 
     quantityInputs.forEach(input => {
         const quantity = parseInt(input.value);
@@ -181,12 +192,22 @@ function updateSummary() {
         const originalPrice = parseFloat(input.getAttribute("data-original"));
 
         totalPrice += realPrice * quantity;
-        totalSaved += (originalPrice - realPrice) * quantity;
+        const saved = (originalPrice - realPrice) * quantity;
+        if (saved > 0) {
+            hasDiscount = true;
+            totalSaved += saved;
+        }
     });
 
     // Hiển thị tổng trước giảm và số tiền tiết kiệm
     document.getElementById("total-price").textContent = totalPrice.toLocaleString() + "₫";
-    document.getElementById("saved-amount").textContent = "Tiết kiệm " + totalSaved.toLocaleString() + "₫";
+    const savedElement = document.getElementById("saved-amount");
+    if (hasDiscount) {
+        savedElement.textContent = "Tiết kiệm " + totalSaved.toLocaleString() + "₫";
+        savedElement.classList.remove("hidden");
+    } else {
+        savedElement.classList.add("hidden");
+    }
 
     // Tính giảm giá
     let discountAmount = 0;
@@ -368,7 +389,7 @@ fetch("http://localhost:8080/DATN/discount/findAll")
 
             li.addEventListener("click", () => {
                 selectedDiscount = discount;
-                document.getElementById("coupon-code").textContent = discount.code;
+                document.getElementById("coupon-code").textContent = discount.name;
                 document.getElementById("discount-dropdown").classList.add("hidden");
                 updateSummary();
             });

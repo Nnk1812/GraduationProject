@@ -13,6 +13,7 @@ public class CartItemDto {
     private Long price;
     private Long realPrice;
     private Integer quantity;
+    private String discount;
     private Long pricePerDiscount;
     private Long totalPrice;
 }

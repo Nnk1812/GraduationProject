@@ -44,4 +44,11 @@ public class BrandController {
         response.setData(brandService.deleteBrand(id));
         return response;
     }
+
+    @GetMapping("/detail")
+    public ApiResponse<BrandEntity> findAll(@RequestParam String code) {
+        ApiResponse<BrandEntity> response = new ApiResponse<>();
+        response.setData(brandService.getDetail(code));
+        return response;
+    }
 }

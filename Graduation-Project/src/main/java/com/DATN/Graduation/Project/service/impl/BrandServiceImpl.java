@@ -45,8 +45,10 @@ public class BrandServiceImpl implements BrandService {
                     () -> new AppException(ErrorCode.BRAND_NOT_EXISTED)
             );
         }
-        if(brandRepository.findBrandName().contains(dto.getName())){
-            throw new AppException(ErrorCode.BRAND_EXISTED);
+        if(ObjectUtils.isEmpty(dto.getCode())){
+            if(brandRepository.findBrandName().contains(dto.getName())){
+                throw new AppException(ErrorCode.BRAND_EXISTED);
+            }
         }
         if(ObjectUtils.isEmpty(dto.getIsActive())){
             dto.setIsActive(true);
@@ -97,5 +99,14 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public List<BrandEntity> findAll(){
         return brandRepository.findAll();
+    }
+
+    @Override
+    public BrandEntity getDetail(String code){
+        BrandEntity entity = brandRepository.findByCode(code);
+        if (ObjectUtils.isEmpty(entity)) {
+            throw new AppException(ErrorCode.BRAND_NOT_EXISTED);
+        }
+        return entity;
     }
 }

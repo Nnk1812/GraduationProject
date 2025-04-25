@@ -60,6 +60,7 @@ public class CartServiceImpl implements CartService {
             cartItemEntity.setUser(user);
             cartItemEntity.setName(entity.getName());
             cartItemEntity.setPrice(entity.getPrice());
+            cartItemEntity.setDiscount(entity.getDiscount());
             cartItemEntity.setRealPrice(entity.getRealPrice());
             cartItemEntity.setQuantity(dto.getQuantity());
             cartItemEntity.setPricePreDiscount(entity.getPrice() * dto.getQuantity());

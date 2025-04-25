@@ -22,10 +22,11 @@ public interface CartItemRepository extends JpaRepository<CartItemEntity, Long> 
     @Query(value = "select a.quantity from cart_item a where a.product =:code ",nativeQuery = true)
     Integer findQuantityOfProduct(String code);
 
-    @Query("select new com.DATN.Graduation.Project.dto.ShoppingCartDto(a.product,b.name,b.image,a.price,a.quantity,a.realPrice)" +
+    @Query("select new com.DATN.Graduation.Project.dto.ShoppingCartDto(a.product,b.name,b.image,a.price,d.code,a.quantity,a.realPrice)" +
             "from CartItemEntity a " +
             "inner join ProductEntity b on a.product = b.code " +
             "inner join UserEntity  c on a.user = c.userName " +
+            "left join DiscountEntity d on d.code = a.discount " +
             "where a.user =:user " )
     List<ShoppingCartDto> findAllProductInCart(String user);
 
