@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa Hàng Đồng Hồ Hải Nam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="/DATN/js/common.js"></script>
+    <script src="/DATN/js/login.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Header -->
+<header class="bg-blue-900 text-white py-4">
+    <div class="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+
+        <!-- Tên cửa hàng -->
+        <div class="text-center sm:text-left">
+            <a href="/DATN/home.html">
+                <h1 class="text-3xl font-semibold">Cửa Hàng Đồng Hồ Hải Nam</h1>
+            </a>
+        </div>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="relative w-full sm:w-1/3">
+            <input type="text" class="w-full py-2 px-4 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tìm kiếm đồng hồ...">
+            <button class="absolute top-0 right-0 mt-2 mr-3 text-blue-500 hover:text-blue-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zm0 0V2m0 0L6.5 6.5m4.5-4.5L16.5 6.5" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Giỏ hàng & đăng nhập -->
+        <div class="flex justify-center sm:justify-end items-center space-x-4 px-2 py-1 rounded text-black">
+
+            <!-- Giỏ hàng -->
+            <div class="relative group">
+                <a href="/DATN/pages/shoppingcart.html" class="text-white hover:text-yellow-300 transition duration-200">
+                    <i class="fas fa-shopping-cart text-2xl"></i>
+                    <span id="cartCount"
+                          class="absolute -top-2 -right-3 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+
+                    </span>
+                </a>
+            </div>
+
+            <!-- Khu vực đăng nhập -->
+            <div class="bg-white relative inline-block" id="loginArea">
+                <!-- Link đăng nhập -->
+                <a href="/DATN/pages/login.html" class="hover:text-red-500 cursor-pointer px-2 py-1 rounded border border-gray-300" id="loginLink">Đăng nhập</a>
+
+                <!-- Dropdown khi đã đăng nhập -->
+                <div id="userDropdown" class="hidden relative">
+          <span id="userInfo" class="hover:text-red-500 cursor-pointer px-2 py-1 rounded">
+            <span id="usernameDisplay" class="font-semibold"></span> ▼
+          </span>
+
+                    <!-- Dropdown Menu -->
+                    <div id="dropdownMenu"
+                         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20 hidden">
+                        <a href="#"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Tài Khoản Của Tôi</a>
+                        <a href="#"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Đơn hàng</a>
+                        <a href="/DATN/pages/managerProduct.html"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-white">Quản Lý Sản phẩm</a>
+                        <button id="logoutBtn"
+                                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500 hover:text-white">Đăng Xuất</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<div id="navigation-bar"> </div>
+
+<form id="checkout-form" class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 space-y-6">
+    <div id="product-list" class="flex gap-4 border-b pb-4">
+        <h1>Không có sản phẩm trong giỏ hàng</h1>
+    </div>
+
+    <!-- Total -->
+    <div id="summary" class="mt-6 space-y-2">
+        <!-- Dòng tổng tiền -->
+        <div class="flex justify-between items-center text-lg font-semibold">
+            <span>Tổng tiền tạm tính:</span>
+            <span id="total-price" class="text-red-600 text-xl font-bold">0₫</span>
+        </div>
+
+        <!-- Dòng tiết kiệm -->
+        <div class="flex justify-between items-center text-sm">
+            <span></span>
+            <span class="text-green-600 " id="saved-amount">Tiết kiệm 0₫</span>
+        </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <input type="text" id="full-name" placeholder="Họ và Tên" class="border rounded px-4 py-2 w-full" />
+            <span class="error text-red-500 text-sm hidden">Vui lòng nhập họ tên</span>
+        </div>
+        <div>
+            <input type="text" id="phone" placeholder="Số điện thoại" class="border rounded px-4 py-2 w-full" />
+            <span class="error text-red-500 text-sm hidden">Số điện thoại không hợp lệ</span>
+        </div>
+        <div class="md:col-span-2">
+            <input type="email" id="email" placeholder="Email" class="border rounded px-4 py-2 w-full" />
+            <span class="error text-red-500 text-sm hidden">Email không hợp lệ</span>
+        </div>
+    </div>
+
+    <!-- Address Dropdowns -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <select id="province-select" class="border rounded px-3 py-2 w-full">
+                <option value="">Chọn tỉnh/thành</option>
+            </select>
+            <span class="error text-red-500 text-sm hidden">Vui lòng chọn tỉnh/thành</span>
+        </div>
+        <div>
+            <select id="district-select" class="border rounded px-3 py-2 w-full" disabled>
+                <option value="">Chọn quận/huyện</option>
+            </select>
+            <span class="error text-red-500 text-sm hidden">Vui lòng chọn quận/huyện</span>
+        </div>
+        <div>
+            <select id="ward-select" class="border rounded px-3 py-2 w-full" disabled>
+                <option value="">Chọn phường/xã</option>
+            </select>
+            <span class="error text-red-500 text-sm hidden">Vui lòng chọn phường/xã</span>
+        </div>
+    </div>
+
+    <!-- Địa chỉ -->
+    <div>
+        <input type="text" id="address" placeholder="Số nhà, tên đường..." class="border rounded px-4 py-2 w-full" />
+        <span class="error text-red-500 text-sm hidden">Vui lòng nhập địa chỉ chi tiết</span>
+    </div>
+
+    <div class="space-y-4">
+        <!-- Thanh chọn mã -->
+        <div class="bg-yellow-50 border border-yellow-200 text-sm rounded p-3 flex justify-between items-center cursor-pointer" id="open-coupon">
+            <strong>Dùng mã giảm giá</strong>
+            <span class="text-gray-500 text-sm">Chọn hoặc nhập mã &rsaquo;</span>
+        </div>
+
+        <!-- Dropdown mã giảm giá (ẩn ban đầu) -->
+        <div id="discount-dropdown" class="hidden border rounded bg-white shadow-md p-4 mt-2 space-y-2">
+            <div class="text-sm font-semibold mb-2">Chọn mã giảm giá:</div>
+            <ul id="discount-list" class="space-y-1 text-sm">
+                <!-- Các mã giảm giá sẽ được thêm ở đây -->
+            </ul>
+        </div>
+
+        <!-- Thông tin mã và tổng tiền -->
+        <div class="space-y-1 text-sm">
+            <div class="flex justify-between">
+                <span>Mã giảm giá:</span>
+                <span id="coupon-code" class="font-medium">-</span>
+            </div>
+            <div class="flex justify-end">
+                <span class="text-green-600 font-semibold">Miễn phí vận chuyển</span>
+            </div>
+            <div class="flex justify-between font-semibold">
+                <span>Cần thanh toán:</span>
+                <span id="final-price" class="text-red-600 text-base"></span>
+            </div>
+        </div>
+
+        <hr class="border-t" />
+    </div>
+    <!-- Payment -->
+    <div class="space-y-2">
+        <div class="font-semibold">Phương thức thanh toán:</div>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="payment-method" value="cod" checked />
+            Thanh toán khi nhận hàng (COD)
+        </label>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="payment-method" value="bank" />
+            Chuyển khoản ngân hàng
+        </label>
+    </div>
+    <div id="bank-transfer-qr" class="mt-4 hidden">
+        <div class="font-semibold mb-2">Quét mã để chuyển khoản:</div>
+        <img id="qr-image" src="" alt="QR chuyển khoản" class="w-64 h-64 rounded border" />
+        <div class="text-sm text-gray-600 mt-2">
+            STK: <strong>1017409232</strong><br/>
+            Ngân hàng: <strong>Vietcombank</strong><br/>
+            Chủ tài khoản: <strong>NGUYEN NGOC KHANH</strong>
+        </div>
+    </div>
+    <div class="pt-4">
+        <button type="submit" id="submit" class="bg-blue-600 text-white w-full py-3 rounded font-bold text-lg hover:bg-blue-500">
+            Hoàn tất đơn hàng
+        </button>
+    </div>
+</form>
+
+<div id="footer-placeholder"></div>
+<script src =/DATN/js/shoppingcart.js></script>
+</body>
+</html>
