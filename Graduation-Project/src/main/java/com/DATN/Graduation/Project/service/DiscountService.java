@@ -10,9 +10,13 @@ public interface DiscountService {
 
     List<DiscountEntity> findAll();
 
-    String hiddenDiscount(Long id);
+    String hiddenDiscount(String code);
 
     String deleteDiscount(Long id);
 
     boolean isDiscountValid(String code);
+
+    String activateDiscount(String code);
+
+    DiscountEntity getDetail(String code);
 }

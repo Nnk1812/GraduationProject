@@ -1,7 +1,7 @@
 window.addEventListener("DOMContentLoaded", function () {
     const username = localStorage.getItem("username");
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");  // Giả sử role được lưu trữ trong localStorage
+    const role = localStorage.getItem("role");
 
     const loginLink = document.getElementById("loginLink");
     const userDropdown = document.getElementById("userDropdown");

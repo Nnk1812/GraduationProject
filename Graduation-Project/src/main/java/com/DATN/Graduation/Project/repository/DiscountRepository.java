@@ -21,6 +21,8 @@ public interface DiscountRepository  extends JpaRepository<DiscountEntity, Long>
     @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from discount where code like 'D%' ", nativeQuery = true)
     Integer findMaxCodeByPrefix();
 
+    DiscountEntity findByCode(String code);
+
     @Query(value = "select a.type " +
             "from discount a " +
             "where a.code =:code",nativeQuery = true)
@@ -34,3 +36,4 @@ public interface DiscountRepository  extends JpaRepository<DiscountEntity, Long>
     @Query("SELECT d FROM DiscountEntity d WHERE d.code = :code AND d.isDeleted = false AND d.isActive = true AND :now BETWEEN d.startDate AND d.endDate")
     Optional<DiscountEntity> findValidDiscountByCode(String code, LocalDateTime now);
 }
+

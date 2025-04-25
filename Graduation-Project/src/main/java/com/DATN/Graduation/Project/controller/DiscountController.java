@@ -30,15 +30,27 @@ public class DiscountController {
         return response;
     }
     @PostMapping("/hidden")
-    public ApiResponse<String> hiddenDiscount(@RequestParam Long id) {
+    public ApiResponse<String> hiddenDiscount(@RequestParam String code) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(discountService.hiddenDiscount(id));
+        response.setData(discountService.hiddenDiscount(code));
         return response;
     }
     @PutMapping("/delete")
     public ApiResponse<String> deleteDiscount(@RequestParam Long id) {
         ApiResponse<String> response = new ApiResponse<>();
         response.setData(discountService.deleteDiscount(id));
+        return response;
+    }
+    @PostMapping("/active")
+    public ApiResponse<String> activeDiscount(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(discountService.activateDiscount(code));
+        return response;
+    }
+    @GetMapping("/detail")
+    public ApiResponse<DiscountEntity> getDetail(@RequestParam String code) {
+        ApiResponse<DiscountEntity> response = new ApiResponse<>();
+        response.setData(discountService.getDetail(code));
         return response;
     }
 }

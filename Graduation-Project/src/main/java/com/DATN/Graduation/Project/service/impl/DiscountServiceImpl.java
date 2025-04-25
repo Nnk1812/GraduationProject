@@ -94,10 +94,11 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     @Transactional
-    public String hiddenDiscount(Long id){
-        DiscountEntity entity = discountRepository.findById(id).orElseThrow(
-                () -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED)
-        );
+    public String hiddenDiscount(String code){
+        DiscountEntity entity = discountRepository.findByCode(code);
+        if(ObjectUtils.isEmpty(entity)){
+            throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
+        }
         entity.setIsDeleted(true);
         discountRepository.save(entity);
         return "Hidden Discount successfully";
@@ -116,5 +117,25 @@ public class DiscountServiceImpl implements DiscountService {
     public boolean isDiscountValid(String code) {
         Optional<DiscountEntity> discountOpt = discountRepository.findValidDiscountByCode(code, LocalDateTime.now());
         return discountOpt.isPresent();
+    }
+
+    @Override
+    public String activateDiscount(String code){
+        DiscountEntity entity = discountRepository.findByCode(code);
+        if(ObjectUtils.isEmpty(entity)){
+            throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
+        }
+        entity.setIsDeleted(false);
+        discountRepository.save(entity);
+        return "Hidden Discount successfully";
+    }
+
+    @Override
+    public DiscountEntity getDetail(String code) {
+        DiscountEntity discountOpt = discountRepository.findByCode(code);
+        if(ObjectUtils.isEmpty(discountOpt)){
+            throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
+        }
+        return discountOpt;
     }
 }
