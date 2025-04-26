@@ -20,15 +20,26 @@ public class WarehouseImportProductEntity {
     @Column(name = "report_import_warehouse")
     private  String reportImportWarehouse;
 
-    @Column(name = "code")
-    private String code;
+    @Column(name = "product")
+    private String product;
+
+    @Column(name = "name")
+    @Basic
+    private String name;
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "discount")
+    @Basic
+    private String discount;
 
     @Column(name = "price")
     private Long price;
 
     @Column(name = "total_price")
     private Long totalPrice;
+
+    @Column(name = "real_price")
+    private Long realPrice;
 }

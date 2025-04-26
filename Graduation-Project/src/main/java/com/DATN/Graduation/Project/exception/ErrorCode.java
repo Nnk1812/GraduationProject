@@ -50,6 +50,14 @@ public enum ErrorCode {
     CANNOT_CHANGE_STATUS_TO_DELIVERY(1605,"Cannot change the status to delivery "),
     CANNOT_CHANGE_STATUS_TO_RECEIVED(1606,"Cannot change the status to received "),
     CANNOT_CHANGE_STATUS_TO_CANCELED(1607,"Cannot change the status to canceled "),
+
+
+    //Exception of Warehouse - 1700
+    REPORT_IMPORT_WAREHOUSE_NOT_EXISTED(1700,"Report import warehouse not existed"),
+    MUST_HAVE_WAREHOUSE_EMPLOYEE(1701,"Must have warehouse employee "),
+    MUST_HAVE_WAREHOUSE_BRAND(1702,"Must have warehouse brand "),
+    STATUS_WRONG(1703,"Status of create report import warehouse must be"),
+    REPORT_MUST_HAVE_PRODUCT(1704,"Report import warehouse must have product"),
     ;
 
 
