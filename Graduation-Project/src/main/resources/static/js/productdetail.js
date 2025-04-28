@@ -1,5 +1,5 @@
 const product = JSON.parse(localStorage.getItem("selectedProduct"));
-
+console.log(product);
 if (product) {
     // Gán dữ liệu vào HTML
     const nameEl = document.getElementById("productName");
@@ -12,9 +12,24 @@ if (product) {
     }
 
     const brandEl = document.getElementById("brand-name");
-    if (brandEl) brandEl.textContent = `${product.brand || "Chưa có nhãn hàng"}`;
-    brandEl.href= `brand.html?code=${product.brand}`;
-
+    if (brandEl) {
+        // Lấy tên nhãn hàng từ API
+        fetch(`http://localhost:8080/DATN/brand/findName?code=${product.brand}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.data) {
+                    // Gán tên nhãn hàng vào phần tử brand-name
+                    brandEl.textContent = data.data || "Chưa có nhãn hàng";
+                    brandEl.href = `brand.html?brand=${data.data}`;
+                } else {
+                    brandEl.textContent = "Chưa có nhãn hàng";
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi khi lấy tên nhãn hàng:", error);
+                brandEl.textContent = "Không thể lấy tên nhãn hàng";
+            });
+    }
     const priceEl = document.querySelector(".text-red-600.text-3xl, .text-black.text-3xl");
     const oldPriceEl = document.querySelector(".line-through.text-gray-500");
     const discountEl = document.querySelector(".bg-red-100.text-red-600");

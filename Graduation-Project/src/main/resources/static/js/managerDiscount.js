@@ -42,17 +42,15 @@ const renderDiscounts = (discounts) => {
                     </a>
                 </td>
                 <td class="px-4 py-2 border">${d.code}</td>
-                <td class="px-4 py-2 border font-bold ${d.isDeleted ? 'text-red-500' : 'text-green-600'}">
-                    ${d.isDeleted ? '❌' : '✅'}
-                </td>
                 <td class="px-4 py-2 border">${formatDate(d.startDate)}</td>
                 <td class="px-4 py-2 border">${formatDate(d.endDate)}</td>
                 <td class="px-4 py-2 border">${getDiscountTypeName(d.type)}</td>
                 <td class="px-4 py-2 border">${d.type === 1 ? `${d.value}%` : formatCurrency(d.value)}</td>
-                
+                <td class="px-4 py-2 border font-bold ${d.isDeleted ? 'text-red-500' : 'text-green-600'}">
+                    ${d.isDeleted ? '❌' : '✅'}
+                </td>
                 <td class="px-4 py-2 border space-x-2">
                   <!-- Hiển thị nút "Kích hoạt" nếu mã giảm giá bị vô hiệu hóa -->
-                    <!-- Hiển thị nút "Kích hoạt" nếu mã giảm giá bị vô hiệu hóa -->
                     ${d.isDeleted
                         ? `<button onclick="handleActivate('${d.code}')" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Kích hoạt</button>`
                         : `<button onclick="handleDisable('${d.code}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Vô hiệu hóa</button>`

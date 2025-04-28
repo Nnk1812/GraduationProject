@@ -1,7 +1,7 @@
 const provinceSelect = document.getElementById("province-select");
 const districtSelect = document.getElementById("district-select");
 const wardSelect = document.getElementById("ward-select");
-
+const username = localStorage.getItem("username");
 // Tải tỉnh/thành
 fetch("https://provinces.open-api.vn/api/?depth=1")
     .then(res => res.json())
@@ -59,7 +59,7 @@ districtSelect.addEventListener("change", () => {
 // hiển thị thông tin sản phẩm
 
     document.addEventListener("DOMContentLoaded", function () {
-    const username = localStorage.getItem("username");
+
 
     fetch(`http://localhost:8080/DATN/cart/findAll?user=${username}`)
         .then(response => response.json())
@@ -69,7 +69,11 @@ districtSelect.addEventListener("change", () => {
                 console.error("Dữ liệu không hợp lệ:", data);
                 return;
             }
-
+            const cartItems = data.map(item => ({
+                product: item.code,
+                quantity: item.quantity
+            }));
+            window.cartItems = cartItems;
             const container = document.getElementById("product-list");
             container.innerHTML = "";
 
@@ -224,6 +228,12 @@ function updateSummary() {
     const finalTotal = Math.max(0, totalPrice - discountAmount);
     document.getElementById("final-price").textContent = finalTotal.toLocaleString() + "₫";
 
+    const shippingFeeElement = document.getElementById('ShippingFee');
+    if (finalTotal.toLocaleString() < 2000000) {
+        shippingFeeElement.innerText = 'Phí vận chuyển: 50.000đ';
+    } else {
+        shippingFeeElement.innerText = 'Miễn phí vận chuyển';
+    }
     updateBankQR();
 }
 
@@ -281,7 +291,6 @@ function validateAll() {
 
     const fullName = document.getElementById("full-name");
     const phone = document.getElementById("phone");
-    const email = document.getElementById("email");
     const address = document.getElementById("address");
 
     const province = document.getElementById("province-select");
@@ -299,13 +308,6 @@ function validateAll() {
         isValid = false;
         if (!firstInvalidElement) firstInvalidElement = phone;
     }
-
-    if (!/^\S+@\S+\.\S+$/.test(email.value.trim())) {
-        showError(email, "Email không hợp lệ");
-        isValid = false;
-        if (!firstInvalidElement) firstInvalidElement = email;
-    }
-
     if (address.value.trim() === "") {
         showError(address, "Vui lòng nhập địa chỉ chi tiết");
         isValid = false;
@@ -353,7 +355,7 @@ document.getElementById("open-coupon").addEventListener("click", () => {
 });
 
 // Gọi API lấy danh sách mã
-fetch("http://localhost:8080/DATN/discount/findAll")
+fetch("http://localhost:8080/DATN/discount/findAllDiscountValid")
     .then(res => res.json())
     .then(result => {
         const discounts = result.data;
@@ -404,6 +406,8 @@ fetch("http://localhost:8080/DATN/discount/findAll")
 function updateBankQR() {
     const selected = document.querySelector('input[name="payment-method"]:checked')?.value;
     const qrContainer = document.getElementById("bank-transfer-qr");
+    const submitButton = document.getElementById("submit");
+    const paymentStatusMessage = document.getElementById("payment-status-message"); // Thông báo trạng thái thanh toán
 
     if (selected === "bank") {
         const amountText = document.getElementById("final-price").textContent.replace(/[^\d]/g, "");
@@ -413,10 +417,59 @@ function updateBankQR() {
         document.getElementById("qr-image").src = qrLink;
 
         qrContainer.classList.remove("hidden");
+
+        // Chắc chắn ẩn nút "Hoàn tất đơn hàng" và hiển thị thông báo yêu cầu thanh toán
+        submitButton.disabled = true;
+        paymentStatusMessage.textContent = "Bạn cần hoàn tất thanh toán trước khi hoàn thành đơn hàng.";
+        paymentStatusMessage.classList.remove("hidden");
     } else {
         qrContainer.classList.add("hidden");
+
+        // Hủy thông báo thanh toán và hiển thị nút "Hoàn tất đơn hàng"
+        paymentStatusMessage.classList.add("hidden");
+        submitButton.disabled = false;
     }
 }
+
+// 1. Khi updateBankQR hiển thị QR thì cũng bật nút "Tôi đã thanh toán"
+const origUpdateBankQR = updateBankQR;
+updateBankQR = function() {
+    origUpdateBankQR(); // giữ nguyên logic hiện tại
+
+    const confirmBtn = document.getElementById("confirmPaymentBtn");
+    // nếu đang chọn chuyển khoản => show nút, ngược lại ẩn
+    if (document.querySelector('input[name="payment-method"]:checked').value === "bank") {
+        confirmBtn.classList.remove("hidden");
+    } else {
+        confirmBtn.classList.add("hidden");
+    }
+};
+
+// 2. Gắn sự kiện cho nút "Tôi đã thanh toán"
+document
+    .getElementById("confirmPaymentBtn")
+    .addEventListener("click", onPaymentSuccess);
+
+// 3. Khởi chạy lần đầu để đảm bảo nút và trạng thái đúng
+window.addEventListener("DOMContentLoaded", updateBankQR);
+
+// Khi thanh toán thành công
+function onPaymentSuccess() {
+    const qrContainer = document.getElementById("bank-transfer-qr");
+    const submitButton = document.getElementById("submit");
+    const paymentStatusMessage = document.getElementById("payment-status-message");
+
+    // Ẩn QR và thông báo thanh toán
+    qrContainer.classList.add("hidden");
+    paymentStatusMessage.textContent = "Thanh toán thành công!";
+    paymentStatusMessage.classList.add("text-green-600"); // Thêm màu xanh để thông báo thành công
+
+    // Kích hoạt lại nút "Hoàn tất đơn hàng"
+    submitButton.disabled = false;
+    submitButton.classList.remove("bg-blue-600", "hover:bg-blue-500");
+    submitButton.classList.add("bg-green-600", "hover:bg-green-500"); // Nút hoàn tất đơn hàng sẽ chuyển sang màu xanh lá khi thanh toán thành công
+}
+
 
 document.querySelectorAll('input[name="payment-method"]').forEach(input => {
     input.addEventListener("change", updateBankQR);
@@ -442,3 +495,70 @@ document.getElementById("product-list").addEventListener("click", function (e) {
         }
     }
 });
+
+function saveOrder(){
+    const fullName = document.getElementById('full-name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const province = document.getElementById('province-select').options[document.getElementById('province-select').selectedIndex].text;
+    const district = document.getElementById('district-select').options[document.getElementById('district-select').selectedIndex].text;
+    const ward = document.getElementById('ward-select').options[document.getElementById('ward-select').selectedIndex].text;
+    const addressDetail = document.getElementById('address').value.trim();
+    const address = `${addressDetail}, ${ward}, ${district}, ${province}`;
+    const note = document.getElementById('note').value.trim();
+
+    const paymentMethodElement = document.querySelector('input[name="payment-method"]:checked');
+    const paymentMethodValue = paymentMethodElement ? paymentMethodElement.value : 'cod';
+    const paymentMethod = paymentMethodValue === 'bank' ? 'BANK_TRANSFER' : 'CASH';
+
+    let paymentstatus = 2; //chưa thanh toán
+
+    if (paymentMethod === 'BANK_TRANSFER') {
+        paymentstatus = 1;
+    }
+    const orderData = {
+        customer:fullName,
+        phone:phone,
+        paymentMethod: paymentMethod,
+        paymentStatus: paymentstatus,
+        address: address,
+        note: note,
+        orderDetails: cartItems
+    };
+    console.log('Order Data:', orderData);
+    fetch("http://localhost:8080/DATN/order/save", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderData) // body là dữ liệu đơn hàng đã chuẩn bị
+    })
+        .then(res => res.json())
+        .then(response => {
+            if (response.code === 200 && response.data && response.data.code) {
+                const orderCode = response.data.code;
+                // Lưu vào localStorage để trang thankyou.html dùng
+                localStorage.setItem('orderCode', orderCode);
+                console.log(orderCode);
+                alert("Đặt hàng thành công!");
+                // Xóa giỏ hàng
+                return fetch(`http://localhost:8080/DATN/cart/clearCart?user=${username}`, {
+                    method: "DELETE"
+                });
+            } else {
+                // nếu API trả về lỗi
+                throw new Error(response.message || 'Lỗi tạo đơn hàng');
+            }
+        })
+        .then(resClear => {
+            if (resClear.ok) {
+                window.location.href = "thankyou.html";
+            } else {
+                console.warn('Xóa giỏ hàng không thành công');
+                window.location.href = "thankyou.html";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert(err.message || "Có lỗi xảy ra, vui lòng thử lại!");
+        });
+}

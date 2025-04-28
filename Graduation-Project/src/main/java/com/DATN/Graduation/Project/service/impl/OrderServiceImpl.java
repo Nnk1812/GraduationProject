@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +49,6 @@ public class OrderServiceImpl implements OrderService {
     private UserRepository userRepository;
 
     public OrderDto saveOrder(OrderDto dto) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if(!ObjectUtils.isEmpty(dto.getCode())){
             if(!ObjectUtils.isEmpty(orderRepository.findByCode(dto.getId(),dto.getCode()))){
                 throw new AppException(ErrorCode.DISCOUNT_EXISTED);
@@ -58,15 +58,7 @@ public class OrderServiceImpl implements OrderService {
         dto.setCreatedAt(now);
         dto.setUpdatedAt(now);
         dto.setStatus(1);
-        UserEntity user = userRepository.findFullNameByUserName(username).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_FOUND)
-        );
-        if(userRepository.findRoleByUserName(username).equals("User")){
-            dto.setCustomer(user.getFullName());
-            dto.setPhone(user.getPhone());
-        }else {
-            dto.setEmployee(user.getFullName());
-        }
+
         OrderEntity orderEntity;
         if(ObjectUtils.isEmpty(dto.getId())){
             orderEntity = new OrderEntity();
@@ -84,7 +76,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
             }
         }
-
         OrderDetailEntity detailEntity ;
         long price=0;
         if(dto.getOrderDetails() != null ){
@@ -101,8 +92,10 @@ public class OrderServiceImpl implements OrderService {
                 ProductEntity entity = productsRepository.findByCode(detail.getProduct()).orElseThrow(
                         ()-> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
                 );
+                detailEntity.setName(entity.getName());
                 detailEntity.setProduct(entity.getCode());
                 detailEntity.setPrice(entity.getRealPrice());
+                detailEntity.setImage(entity.getImage());
                 detailEntity.setTotalPrice(entity.getRealPrice() * detail.getQuantity());
                 price +=entity.getRealPrice() * detail.getQuantity();
                 detailEntity.setQuantity(detail.getQuantity());
@@ -130,6 +123,11 @@ public class OrderServiceImpl implements OrderService {
                 log.warn("Discount code expired");
             }
         }
+        if(realPrice<2000000){
+            dto.setShippingFee(50000L);
+        }else {
+            dto.setShippingFee(0L);
+        }
         dto.setPriceToPay(realPrice+dto.getShippingFee());
 
         // Lưu ID cũ nếu có để tránh lỗi Hibernate
@@ -138,10 +136,21 @@ public class OrderServiceImpl implements OrderService {
         // Map dữ liệu từ DTO vào entity
         modelMapper.map(dto, orderEntity);
         OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
-        // Đảm bảo ID không bị thay đổi (vì map có thể gán null hoặc id khác)
         orderEntity.setId(oldId);
+        List<OrderDetailEntity> savedDetails = orderDetailRepository
+                .findAllByOrderCode(savedOrderEntity.getCode());
 
-        return modelMapper.map(savedOrderEntity, OrderDto.class);
+        // 3) Map từng entity thành DTO
+        List<OrderDetailDto> detailDtos = savedDetails.stream()
+                .map(entity -> modelMapper.map(entity, OrderDetailDto.class))
+                .collect(Collectors.toList());
+
+        // 4) Map OrderEntity về OrderDto
+        OrderDto resultDto = modelMapper.map(savedOrderEntity, OrderDto.class);
+
+        // 5) Gán list details vào DTO
+        resultDto.setOrderDetails(detailDtos);
+        return resultDto;
     }
 
     public String generateNextCode(){
@@ -160,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
         dto.setOrderDetails(detailDto);
         return dto;
     }
-    public String confirmOrder(String code){
+    public String confirmOrder(String code,String user){
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
@@ -172,6 +181,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
+        entity.setEmployee(user);
         orderRepository.save(entity);
         return "Xác nhận đơn hàng thành công";
     }
@@ -193,7 +203,7 @@ public class OrderServiceImpl implements OrderService {
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
         if(Objects.equals(dto.getStatus(), OrderStatusEnum.DA_CHUYEN_GIAO.getValue())){
-            dto.setStatus(OrderStatusEnum.DA_GIAO_HANG.getValue());
+            dto.setStatus(OrderStatusEnum.DANG_GIAO_HANG.getValue());
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_DELIVERY);
         }
@@ -205,7 +215,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
-        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DA_GIAO_HANG.getValue())){
+        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DANG_GIAO_HANG.getValue())){
             dto.setStatus(OrderStatusEnum.DA_NHAN_HANG.getValue());
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RECEIVED);
@@ -218,7 +228,7 @@ public class OrderServiceImpl implements OrderService {
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
-        if(!Objects.equals(dto.getStatus(), OrderStatusEnum.DA_GIAO_HANG.getValue())){
+        if(!Objects.equals(dto.getStatus(), OrderStatusEnum.DANG_GIAO_HANG.getValue())){
             dto.setStatus(OrderStatusEnum.HUY_DON_HANG.getValue());
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_CANCELED);

@@ -36,4 +36,10 @@ public class CartController {
         apiResponse.setData(cartService.deleteCartItem(user,product));
         return apiResponse;
     }
+    @DeleteMapping("/clearCart")
+    public ApiResponse<String> clearCart(@RequestParam String user) {
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setData(cartService.clearCart(user));
+        return apiResponse;
+    }
 }

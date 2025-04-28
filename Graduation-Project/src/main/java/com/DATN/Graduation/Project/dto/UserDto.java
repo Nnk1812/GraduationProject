@@ -21,4 +21,5 @@ public class UserDto {
     private String phone;
     private String role;
     private String sex;
+    private String address;
 }

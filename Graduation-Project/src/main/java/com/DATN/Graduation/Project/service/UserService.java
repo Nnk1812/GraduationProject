@@ -9,14 +9,21 @@ import java.util.List;
 
 public interface UserService {
 
-    String setRole(Long id,String role);
+    String setRole(String code,String role);
 
 
     UserEntity saveUser(UserDto dto);
 
-    UserEntity getUser(Long id);
+    UserEntity getUser(String code);
 
     List<UserEntity> getAllUser();
 
-    String deleteUser(Long id);
+    String deleteUser(String code);
+
+    String hiddenUser(String code);
+
+    String activeUser(String code);
+
+    UserEntity getUserByUserName(String code);
+
 }

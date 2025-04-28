@@ -49,7 +49,7 @@ setTimeout(() => {
 
 async function loadDiscounts() {
     try {
-        const response = await fetch('http://localhost:8080/DATN/discount/findAll');
+        const response = await fetch('http://localhost:8080/DATN/discount/findAllDiscountValid');
         const result = await response.json();
         const discounts = result.data;
 

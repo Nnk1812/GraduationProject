@@ -8,7 +8,7 @@ import java.util.List;
 public interface DiscountService {
     DiscountEntity saveDiscount(DiscountDto dto);
 
-    List<DiscountEntity> findAll();
+    List<DiscountEntity> findAllIsDiscountValid();
 
     String hiddenDiscount(String code);
 
@@ -19,4 +19,6 @@ public interface DiscountService {
     String activateDiscount(String code);
 
     DiscountEntity getDetail(String code);
+
+    List<DiscountEntity> findAll();
 }

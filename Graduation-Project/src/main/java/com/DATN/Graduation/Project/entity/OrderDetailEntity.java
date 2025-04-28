@@ -29,6 +29,14 @@ public class OrderDetailEntity {
     @Basic
     private String product;
 
+    @Column(name = "name")
+    @Basic
+    private String name;
+
+    @Column(name = "image")
+    @Basic
+    private String image;
+
     @Column(name = "price")
     @Basic
     private Long price;

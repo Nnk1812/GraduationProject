@@ -12,4 +12,6 @@ public interface CartService {
     List<ShoppingCartDto> findAllShoppingCart( String user);
 
     String deleteCartItem(String user,String product);
+
+    String clearCart(String user);
 }

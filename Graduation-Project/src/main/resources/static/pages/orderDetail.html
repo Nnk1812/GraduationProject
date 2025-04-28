@@ -6,9 +6,9 @@
     <title>Cửa Hàng Đồng Hồ Hải Nam</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="/DATN/js/common.js"></script>
     <script src="/DATN/js/login.js"></script>
     <script src="/DATN/js/home.js"></script>
+    <script src="/DATN/js/common.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -82,7 +82,7 @@
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhãn Hàng</a>
                         <a href="/DATN/pages/managerDiscount.html" id="manageDiscountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Giảm Giá</a>
-                        <a href="/DATN/pages/managerOrder.html" id="manageOrderLink"
+                        <a href="#" id="manageOrderLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Đơn Hàng</a>
                         <a href="/DATN/pages/managerProduct.html" id="manageProductLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Sản Phẩm</a>
@@ -106,52 +106,44 @@
 
 <div id ="navigation-bar"></div>
 
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
+<main class="container mx-auto px-4 py-8 space-y-6">
 
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Mẫu mã đa dạng</h3>
-                <p class="text-sm text-gray-600">Hàng chính hãng, phong cách thời thượng</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Giao hàng toàn quốc</h3>
-                <p class="text-sm text-gray-600">Nhanh chóng - An toàn - Đảm bảo</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Bảo hành 5 năm</h3>
-                <p class="text-sm text-gray-600">Chính sách minh bạch - yên tâm sử dụng</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">1 đổi 1 trong 7 ngày</h3>
-                <p class="text-sm text-gray-600">Áp dụng lỗi do nhà sản xuất</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Thanh toán linh hoạt</h3>
-                <p class="text-sm text-gray-600">Trả trước hoặc trả góp 0%</p>
-            </div>
-
+    <!-- 1. Địa chỉ nhận hàng -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="bg-gray-100 px-4 py-2 font-semibold">Địa chỉ nhận hàng</div>
+        <div class="px-4 py-4 space-y-1">
+            <p><span class="font-semibold">Khách hàng:</span> <span id="od-customer"></span></p>
+            <p><span class="font-semibold">Điện thoại:</span> <span id="od-phone"></span></p>
+            <p><span class="font-semibold">Địa chỉ:</span> <span id="od-address"></span></p>
         </div>
     </div>
-</section>
 
-
-<!-- Brand Section -->
-<div id="brand-section"></div>
-
-<section class="py-16 bg-gray-100">
-    <div class="container mx-auto text-center">
-        <h2 class="text-3xl font-semibold mb-8">Sản Phẩm Nổi Bật</h2>
-        <div id="outstanding-products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-
+    <!-- 2. Danh sách sản phẩm -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="bg-gray-100 px-4 py-2 font-semibold">Sản phẩm</div>
+        <div id="od-items" class="px-4 py-4 space-y-4">
+            <!-- JS sẽ render từng sản phẩm ở đây -->
+        </div>
+        <div class="px-4 py-4 flex justify-end space-x-8 text-lg font-semibold">
+            <div>Phí vận chuyển: <span id="od-shippingFee"></span></div>
+            <div>Thành tiền: <span id="od-priceToPay" class="text-red-600"></span></div>
         </div>
     </div>
-</section>
+
+    <!-- 3. Phương thức & trạng thái thanh toán -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="bg-gray-100 px-4 py-2 font-semibold">Phương thức thanh toán</div>
+        <div class="px-4 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><span class="font-semibold">Phương thức:</span> <span id="od-paymentMethod"></span></div>
+            <div><span class="font-semibold">Trạng thái:</span> <span id="od-paymentStatus"></span></div>
+        </div>
+    </div>
+
+    <div id="od-actions" class="flex justify-center space-x-4"></div>
+
+</main>
 
 <div id="footer-placeholder"></div>
+<script src="/DATN/js/orderDetail.js"></script>
 </body>
 </html>

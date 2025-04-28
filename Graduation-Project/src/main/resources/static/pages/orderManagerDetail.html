@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cửa Hàng Đồng Hồ Hải Nam</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="/DATN/js/common.js"></script>
     <script src="/DATN/js/login.js"></script>
-    <script src="/DATN/js/home.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
+<!-- Header -->
 <header class="bg-blue-900 text-white py-4">
     <div class="container mx-auto px-4 flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
 
@@ -76,13 +76,13 @@
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Đơn hàng</a>
 
                         <!-- Quản trị -->
-                        <a href="/DATN/pages/managerAccount.html" id="manageAccountLink"
+                        <a href="#" id="manageAccountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Tài Khoản</a>
                         <a href="/DATN/pages/managerBrand.html" id="manageBrandLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhãn Hàng</a>
                         <a href="/DATN/pages/managerDiscount.html" id="manageDiscountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Giảm Giá</a>
-                        <a href="/DATN/pages/managerOrder.html" id="manageOrderLink"
+                        <a href="#" id="manageOrderLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Đơn Hàng</a>
                         <a href="/DATN/pages/managerProduct.html" id="manageProductLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Sản Phẩm</a>
@@ -103,55 +103,37 @@
         </div>
     </div>
 </header>
+<!-- ID ẩn để cập nhật -->
+<div id="orderId" class="hidden"></div>
 
-<div id ="navigation-bar"></div>
+<div class="p-4">
+    <!-- Thông tin đơn hàng -->
+    <h2 class="text-2xl font-bold mb-4">Thông tin đơn hàng</h2>
+    <table class="min-w-full bg-white border mb-8" id="orderInfoTable">
+        <!-- Nội dung sẽ được render bằng JS -->
+    </table>
 
-<section class="py-12 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Mẫu mã đa dạng</h3>
-                <p class="text-sm text-gray-600">Hàng chính hãng, phong cách thời thượng</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Giao hàng toàn quốc</h3>
-                <p class="text-sm text-gray-600">Nhanh chóng - An toàn - Đảm bảo</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Bảo hành 5 năm</h3>
-                <p class="text-sm text-gray-600">Chính sách minh bạch - yên tâm sử dụng</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">1 đổi 1 trong 7 ngày</h3>
-                <p class="text-sm text-gray-600">Áp dụng lỗi do nhà sản xuất</p>
-            </div>
-
-            <div class="block bg-gray-100 p-6 rounded-xl shadow hover:bg-blue-100 transition-all hover:shadow-lg cursor-pointer">
-                <h3 class="text-lg font-semibold mb-2 hover:text-red-500">Thanh toán linh hoạt</h3>
-                <p class="text-sm text-gray-600">Trả trước hoặc trả góp 0%</p>
-            </div>
-
-        </div>
+    <!-- Chi tiết đơn hàng -->
+    <h2 class="text-2xl font-bold mb-4">Chi tiết đơn hàng</h2>
+    <table class="min-w-full bg-white border" id="orderDetailsTable">
+        <thead>
+        <tr class="bg-gray-200">
+            <th class="border px-4 py-2">Tên sản phẩm</th>
+            <th class="border px-4 py-2">Giá tiền</th>
+            <th class="border px-4 py-2">Số lượng</th>
+            <th class="border px-4 py-2">Tổng giá</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Nội dung sẽ render bằng JS -->
+        </tbody>
+    </table>
+    <div class="mt-8 flex justify-end space-x-4">
+        <button id="saveOrderBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Lưu thay đổi</button>
+        <button onclick="history.back()" id="cancelBtn" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Hủy</button>
     </div>
-</section>
+</div>
 
-
-<!-- Brand Section -->
-<div id="brand-section"></div>
-
-<section class="py-16 bg-gray-100">
-    <div class="container mx-auto text-center">
-        <h2 class="text-3xl font-semibold mb-8">Sản Phẩm Nổi Bật</h2>
-        <div id="outstanding-products" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-
-        </div>
-    </div>
-</section>
-
-<div id="footer-placeholder"></div>
+<script src="/DATN/js/orderManagerDetail.js"></script>
 </body>
 </html>

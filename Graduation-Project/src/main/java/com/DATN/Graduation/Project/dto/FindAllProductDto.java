@@ -15,4 +15,5 @@ public class FindAllProductDto {
     private String discountName;
     private Long price;
     private Long realPrice;
+    private Boolean isDeleted;
 }

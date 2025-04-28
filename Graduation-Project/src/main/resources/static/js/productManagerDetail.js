@@ -1,42 +1,11 @@
 let selectedBrandCode = null;
 let selectedDiscountCode = null;
 let discountMap = {}; // Để tính giá sau giảm
+let brandMap  = {};
 
-// Load danh sách nhãn hàng
-async function loadBrands(currentCode = null) {
-    try {
-        const response = await fetch('http://localhost:8080/DATN/brand/findAll');
-        const result = await response.json();
-        const brands = result.data;
-
-        const select = document.getElementById('brandSelect');
-        select.innerHTML = `<option value="">-- Chọn nhãn hàng --</option>`;
-
-        brands.forEach(brand => {
-            if (!brand.isDeleted && brand.isActive) {
-                const option = document.createElement('option');
-                option.value = brand.code;
-                option.textContent = brand.name;
-                if (brand.code === currentCode) {
-                    option.selected = true;
-                    selectedBrandCode = brand.code;
-                }
-                select.appendChild(option);
-            }
-        });
-
-        select.addEventListener('change', (e) => {
-            selectedBrandCode = e.target.value;
-        });
-    } catch (err) {
-        console.error('Lỗi khi gọi API brand:', err);
-    }
-}
-
-// Load danh sách mã giảm giá
 async function loadDiscounts(currentCode = null) {
     try {
-        const response = await fetch('http://localhost:8080/DATN/discount/findAll');
+        const response = await fetch('http://localhost:8080/DATN/discount/findAllDiscountValid');
         const result = await response.json();
         const discounts = result.data;
 
@@ -47,8 +16,8 @@ async function loadDiscounts(currentCode = null) {
         discounts.forEach(discount => {
             if (!discount.isDeleted && discount.isActive && discount.type === 1) {
                 const option = document.createElement('option');
-                option.value = discount.code;
-                option.textContent = `Mã: ${discount.code} - Giảm: ${discount.value}%`;
+                option.value = discount.code; // Vẫn lưu code
+                option.textContent = `Giảm ${discount.value}%`; // Hiển thị chỉ giá trị giảm
                 if (discount.code === currentCode) {
                     option.selected = true;
                     selectedDiscountCode = discount.code;
@@ -58,14 +27,56 @@ async function loadDiscounts(currentCode = null) {
             }
         });
 
-        select.addEventListener('change', (e) => {
-            selectedDiscountCode = e.target.value;
+        // Thêm sự kiện onchange để tính lại giá khi chọn mã giảm giá
+        select.onchange = function() {
+            selectedDiscountCode = select.value;
+            calculateRealPrice(); // Gọi lại hàm tính giá sau khi thay đổi giảm giá
+        };
+
+        // Nếu có giá trị mặc định, tính lại giá ngay lập tức
+        if (currentCode) {
             calculateRealPrice();
-        });
+        }
+
     } catch (err) {
         console.error('Lỗi khi gọi API discount:', err);
     }
 }
+
+
+
+async function loadBrands(currentCode = null) {
+    try {
+        const response = await fetch('http://localhost:8080/DATN/brand/findAll');
+        const result = await response.json();
+        const brands = result.data;
+
+        const select = document.getElementById('brandSelect');
+        select.innerHTML = `<option value="">-- Chọn thương hiệu --</option>`;
+        brandMap = {};
+
+        brands.forEach(brand => {
+            if (!brand.isDeleted && brand.isActive) {
+                const option = document.createElement('option');
+                option.value = brand.code; // Vẫn lưu code
+                option.textContent = brand.name; // Hiển thị tên thương hiệu
+                if (brand.code === currentCode) {
+                    option.selected = true;
+                    selectedBrandCode = brand.code;
+                }
+                brandMap[brand.code] = brand.name;
+                select.appendChild(option);
+            }
+        });
+        select.onchange = function() {
+        selectedBrandCode = this.value;
+        };
+    } catch (err) {
+        console.error('Lỗi khi gọi API brand:', err);
+    }
+}
+
+
 
 // Tính giá sau khi áp dụng giảm giá
 function calculateRealPrice() {
@@ -97,7 +108,7 @@ async function loadProductFromAPI() {
             document.getElementById("price").value = data.price;
             document.getElementById("realPrice").value = data.realPrice;
             document.getElementById("image").value = data.img;
-            document.getElementById("productType").value = data.type;
+            document.getElementById("productType").value = data.productType;
             document.getElementById("description").value = data.description;
 
             document.getElementById("material").value = data.material;
@@ -106,8 +117,7 @@ async function loadProductFromAPI() {
             document.getElementById("waterResistance").value = data.waterResistance;
             document.getElementById("dialSize").value = data.dialSize;
             document.getElementById("origin").value = data.origin;
-            console.log(data.description);
-            console.log(data.material);
+
             await Promise.all([
                 loadBrands(data.brandCode),
                 loadDiscounts(data.discountCode)
@@ -122,45 +132,62 @@ async function loadProductFromAPI() {
     }
 }
 
+
 // Lưu thông tin sản phẩm
 async function saveProduct() {
-    const product = {
-        id: parseInt(document.getElementById("productId").value, 10),
-        code: document.getElementById("code").value,
+    const data = {
+        id: document.getElementById("productId").value,
         name: document.getElementById("name").value,
-        price: parseFloat(document.getElementById("price").value),
-        realPrice: parseFloat(document.getElementById("realPrice").value),
+        code: document.getElementById("code").value,
+        price: document.getElementById("price").value,
+        realPrice: document.getElementById("realPrice").value,
         image: document.getElementById("image").value,
-        type: parseInt(document.getElementById("productType").value),
-        brand: selectedBrandCode,
-        discount: selectedDiscountCode,
+        type: document.getElementById("productType").value,
         description: document.getElementById("description").value,
         material: document.getElementById("material").value,
         strapMaterial: document.getElementById("strapMaterial").value,
         movementType: document.getElementById("movementType").value,
         waterResistance: document.getElementById("waterResistance").value,
         dialSize: document.getElementById("dialSize").value,
-        origin: document.getElementById("origin").value
+        origin: document.getElementById("origin").value,
     };
+
+    // Chỉ thêm brandCode nếu có
+    if (selectedBrandCode) {
+        data.brand = selectedBrandCode;
+    }else{
+        data.brand = "";
+    }
+
+    // Chỉ thêm discountCode nếu có
+    if (selectedDiscountCode) {
+        data.discount = selectedDiscountCode;
+    }else
+    {
+        data.discount="";
+    }
+
     try {
-        const res = await fetch('http://localhost:8080/DATN/products/save', {
-            method: 'POST',
+        const res = await fetch("http://localhost:8080/DATN/products/save", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify(product)
+            body: JSON.stringify(data)
         });
 
-        const result = await res.json();
-        if (result.code === 200) {
+        const json = await res.json();
+
+        if (res.ok && json.code === 200) {
             alert("Cập nhật sản phẩm thành công!");
-            window.location.href = "managerProduct.html";
+            window.location.href = "/DATN/pages/managerProduct.html";
         } else {
-            alert("Cập nhật thất bại: " + result.message);
+            const errorMessage = json.message || "Có lỗi xảy ra!";
+            alert(`Lỗi: ${errorMessage}`);
         }
     } catch (err) {
-        alert("Lỗi khi lưu: " + err.message);
+        console.error("Lỗi khi gửi dữ liệu:", err);
+        alert("Có lỗi khi lưu sản phẩm.");
     }
 }
-
 document.addEventListener('DOMContentLoaded', loadProductFromAPI);

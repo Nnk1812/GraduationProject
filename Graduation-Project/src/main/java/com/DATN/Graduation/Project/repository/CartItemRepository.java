@@ -16,8 +16,8 @@ public interface CartItemRepository extends JpaRepository<CartItemEntity, Long> 
     Optional<CartItemEntity> findByProduct(String product,String user);
 
 
-    @Query(value = "select a.product from cart_item a",nativeQuery = true)
-    List<String> findAllProducts();
+    @Query(value = "select * from cart_item a where a.user =:user",nativeQuery = true)
+    List<CartItemEntity> findAllProductsByUser(String user);
 
     @Query(value = "select a.quantity from cart_item a where a.product =:code ",nativeQuery = true)
     Integer findQuantityOfProduct(String code);

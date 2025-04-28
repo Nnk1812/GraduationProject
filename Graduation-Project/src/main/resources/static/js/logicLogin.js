@@ -15,16 +15,21 @@ document.getElementById("loginForm").addEventListener("submit", async function (
                 password: password
             })
         });
-
+        const result = await response.json();
         if (!response.ok) {
+            let errorMessage = "Tài khoản hoặc mật khẩu không đúng";
+
+            if (result.code === 1008) {
+                errorMessage = result.message;
+            }
+
             Swal.fire({
                 icon: 'error',
-                text: 'Tài khoản hoặc mật khẩu không đúng',
+                text: errorMessage,
             });
             return;
         }
 
-        const result = await response.json();
         const token = result.data.token;
 
         // Giải mã token để lấy payload

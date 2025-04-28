@@ -98,4 +98,10 @@ public class ProductController {
         response.setData(productsService.findByName(name));
         return response;
     }
+    @PostMapping("/active")
+    public ApiResponse<String> activeProduct(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(productsService.activeProduct(code));
+        return response;
+    }
 }

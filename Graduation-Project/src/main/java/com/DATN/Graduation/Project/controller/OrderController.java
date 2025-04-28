@@ -36,9 +36,9 @@ public class OrderController {
         return response;
     }
     @PostMapping("/confirm")
-    public ApiResponse<String> confirmOrder(@RequestParam String code) {
+    public ApiResponse<String> confirmOrder(@RequestParam String code,@RequestParam String user) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(orderService.confirmOrder(code));
+        response.setData(orderService.confirmOrder(code,user));
         return response;
     }
     @PostMapping("/transfer")

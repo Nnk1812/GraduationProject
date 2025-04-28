@@ -35,5 +35,8 @@ public interface DiscountRepository  extends JpaRepository<DiscountEntity, Long>
 
     @Query("SELECT d FROM DiscountEntity d WHERE d.code = :code AND d.isDeleted = false AND d.isActive = true AND :now BETWEEN d.startDate AND d.endDate")
     Optional<DiscountEntity> findValidDiscountByCode(String code, LocalDateTime now);
+
+    @Query("select d from DiscountEntity d where d.isDeleted = false AND :now BETWEEN d.startDate AND d.endDate")
+    List<DiscountEntity> findAllDeleted(LocalDateTime now);
 }
 

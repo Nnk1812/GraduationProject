@@ -51,4 +51,10 @@ public class BrandController {
         response.setData(brandService.getDetail(code));
         return response;
     }
+    @GetMapping("/findName")
+    public ApiResponse<String> findBrandByCode(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(brandService.findBrandByCode(code));
+        return response;
+    }
 }

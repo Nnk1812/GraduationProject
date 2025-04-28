@@ -25,28 +25,46 @@ public class UserController {
     }
 
     @PostMapping("/setRole")
-    public ApiResponse<String> setRole(@RequestParam Long id, @RequestParam String role) {
+    public ApiResponse<String> setRole(@RequestParam String code, @RequestParam String role) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(userService.setRole(id,role));
+        response.setData(userService.setRole(code,role));
         return response;
     }
 
-    @GetMapping("/getUser")
-    public ApiResponse<UserEntity> getUser(@RequestParam Long id) {
+    @GetMapping("/detail")
+    public ApiResponse<UserEntity> getUser(@RequestParam String code) {
         ApiResponse<UserEntity> response = new ApiResponse<>();
-        response.setData(userService.getUser(id));
+        response.setData(userService.getUser(code));
         return response;
     }
-    @GetMapping("/getAll")
+    @GetMapping("/findAll")
     public ApiResponse<List<UserEntity>> getAllUser() {
         ApiResponse<List<UserEntity>> response = new ApiResponse<>();
         response.setData(userService.getAllUser());
         return response;
     }
-    @PutMapping
-    public ApiResponse<String> deleteUser(@RequestParam Long id) {
+    @PutMapping("/delete")
+    public ApiResponse<String> deleteUser(@RequestParam String code) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(userService.deleteUser(id));
+        response.setData(userService.deleteUser(code));
+        return response;
+    }
+    @PostMapping("/hidden")
+    public ApiResponse<String> hiddenUser(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(userService.hiddenUser(code));
+        return response;
+    }
+    @PostMapping("/active")
+    public ApiResponse<String> activeUser(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(userService.activeUser(code));
+        return response;
+    }
+    @GetMapping("/findUser")
+    public ApiResponse<UserEntity> findByUserName(@RequestParam String user) {
+        ApiResponse<UserEntity> response = new ApiResponse<>();
+        response.setData(userService.getUserByUserName(user));
         return response;
     }
 

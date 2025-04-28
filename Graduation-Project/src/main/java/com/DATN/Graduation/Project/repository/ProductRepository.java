@@ -81,17 +81,16 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand " )
     List<FindOutStandingDto> findByBrand(String brand);
 
-    @Query("select new com.DATN.Graduation.Project.dto.FindAllProductDto(a.code,a.name,a.type,b.code,b.name,c.code,c.name,a.price,a.realPrice) " +
+    @Query("select new com.DATN.Graduation.Project.dto.FindAllProductDto(a.code,a.name,a.type,b.code,b.name,c.code,c.name,a.price,a.realPrice,a.isDeleted) " +
             "from ProductEntity a " +
             "inner join BrandEntity b on a.brand = b.code " +
-            "left join DiscountEntity c on c.code = a.discount " +
-            "where a.isDeleted = false ")
+            "left join DiscountEntity c on c.code = a.discount " )
     List<FindAllProductDto> findAllProducts();
 
     @Query("select new com.DATN.Graduation.Project.dto.FindProductDetailDto(a.id,a.code,a.name,a.type,b.code,b.name,c.code,c.name,a.price,a.realPrice,a.image,a.description,d.material,d.strapMaterial,d.movementType,d.waterResistance,d.dialSize,d.origin) " +
             "from ProductEntity a " +
             "inner join BrandEntity b on a.brand = b.code " +
-            "inner join DiscountEntity c on c.code = a.discount " +
+            "left join DiscountEntity c on c.code = a.discount " +
             "inner join ProductDetailEntity d on d.product = a.code " +
             "where a.isDeleted = false and a.code =:code ")
     FindProductDetailDto findAllProductsDetail(String code);

@@ -88,8 +88,9 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     @Override
-    public List<DiscountEntity> findAll(){
-        return discountRepository.findAll();
+    public List<DiscountEntity> findAllIsDiscountValid(){
+        LocalDateTime now = LocalDateTime.now();
+        return discountRepository.findAllDeleted(now);
     }
 
     @Override
@@ -137,5 +138,9 @@ public class DiscountServiceImpl implements DiscountService {
             throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
         }
         return discountOpt;
+    }
+    @Override
+    public List<DiscountEntity> findAll() {
+        return discountRepository.findAll();
     }
 }

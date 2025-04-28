@@ -16,8 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from user where code like 'NV%' ", nativeQuery = true)
     Integer findMaxCodeByPrefix();
-    @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from cart where code like 'C%' ", nativeQuery = true)
-    Integer findMaxCodeByPrefixCart();
+
     @Query(value = "select code " +
             "from user",nativeQuery = true)
     List<String> findAllCode();
@@ -28,9 +27,11 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
             "from  user ", nativeQuery = true)
     List<String> findAllPhone();
     @Query(value = "select * from user " +
-            "where username = :username",nativeQuery = true)
+            "where username = :username and is_deleted = 0 ",nativeQuery = true)
     Optional<UserEntity> findByUserName(String username);
-
+    @Query(value = "select * from user " +
+            "where username = :username and is_deleted = 1 ",nativeQuery = true)
+    UserEntity findByUserNameAndDelete(String username);
     @Query(value = "select * " +
             "from user a " +
             "where a.code = :code ",nativeQuery = true)
@@ -39,4 +40,5 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
     Optional<UserEntity> findFullNameByUserName(String userName);
     @Query(value = "select a.role from user a where a.username =:userName",nativeQuery = true)
     String findRoleByUserName(String userName);
+
 }

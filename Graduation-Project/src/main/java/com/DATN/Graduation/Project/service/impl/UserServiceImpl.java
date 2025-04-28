@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -40,11 +41,16 @@ public class UserServiceImpl implements UserService {
 //    }
 
     @Override
-    public String setRole(Long id,String role) {
-        UserEntity user =  userRepository.findById(id).orElseThrow(
+    public String setRole(String code,String role) {
+        UserEntity user =  userRepository.findByCode(code).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_EXISTED)
         );
-        user.setRole(role);
+//        if(Objects.equals(user.getRole(), "ADMIN")){
+            user.setRole(role);
+//        }
+//        else {
+//            throw new AppException(ErrorCode.YOU_DO_NOT_HAVE_PERMISSION);
+//        }
         userRepository.save(user);
         return "success";
     }
@@ -73,12 +79,6 @@ public class UserServiceImpl implements UserService {
         } else {
             dto.setIsActive(dto.getIsActive());
         }
-        if(userRepository.findAllEmail().contains(dto.getEmail())){
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
-        if(userRepository.findAllPhone().contains(dto.getPhone())){
-            throw new AppException(ErrorCode.PHONE_EXISTED);
-        }
         UserEntity  user  = userMapper.toUserEntity(dto);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassWord(passwordEncoder.encode(dto.getPassWord()));
@@ -89,11 +89,16 @@ public class UserServiceImpl implements UserService {
         else{
             user.setDateIn(now);
         }
-        user.setRole("User");
-        CartEntity cart = new CartEntity();
-        cart.setUser(dto.getCode());
-        cart.setCode(generateNextCodeCart());
-        cartRepository.save(cart);
+        if(ObjectUtils.isEmpty(dto.getCode()))
+        {
+            if(userRepository.findAllEmail().contains(dto.getEmail())){
+                throw new AppException(ErrorCode.EMAIL_EXISTED);
+            }
+            if(userRepository.findAllPhone().contains(dto.getPhone())){
+                throw new AppException(ErrorCode.PHONE_EXISTED);
+            }
+            user.setRole("USER");
+        }
         return userRepository.save(user);
     }
 
@@ -104,17 +109,11 @@ public class UserServiceImpl implements UserService {
         }
         return "NV" + String.format("%03d", ++maxCode);
     }
-    public String generateNextCodeCart(){
-        Integer maxCode = userRepository.findMaxCodeByPrefixCart();
-        if(maxCode == null){
-            return "C001";
-        }
-        return "C" + String.format("%03d", ++maxCode);
-    }
+
 
     @Override
-    public UserEntity getUser(Long id) {
-        return userRepository.findById(id).orElseThrow(
+    public UserEntity getUser(String code) {
+        return userRepository.findByCode(code).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
     }
@@ -124,8 +123,49 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public String deleteUser(String code) {
+        UserEntity user = userRepository.findByCode(code).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+//        if(Objects.equals(user.getRole(), "ADMIN")){
+            userRepository.delete(user);
+//        }else {
+//            throw new AppException(ErrorCode.YOU_DO_NOT_HAVE_PERMISSION);
+//        }
         return "success";
+    }
+    @Override
+    public String hiddenUser(String code) {
+        UserEntity user = userRepository.findByCode(code).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+//        if(Objects.equals(user.getRole(), "ADMIN")){
+            user.setIsDeleted(true);
+//        }else {
+//            throw new AppException(ErrorCode.YOU_DO_NOT_HAVE_PERMISSION);
+//        }
+        userRepository.save(user);
+        return "success";
+    }
+
+    @Override
+    public String activeUser(String code) {
+        UserEntity user = userRepository.findByCode(code).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+//        if(Objects.equals(user.getRole(), "ADMIN")){
+            user.setIsDeleted(false);
+//        }else {
+//            throw new AppException(ErrorCode.YOU_DO_NOT_HAVE_PERMISSION);
+//        }
+        userRepository.save(user);
+        return "success";
+    }
+
+    @Override
+    public UserEntity getUserByUserName(String user) {
+        return userRepository.findByUserName(user).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
     }
 }

@@ -109,4 +109,13 @@ public class BrandServiceImpl implements BrandService {
         }
         return entity;
     }
+
+    @Override
+    public String findBrandByCode(String code){
+        BrandEntity brandEntity = brandRepository.findByCode(code);
+        if (ObjectUtils.isEmpty(brandEntity)) {
+            throw new AppException(ErrorCode.BRAND_NOT_EXISTED);
+        }
+        return brandEntity.getName();
+    }
 }

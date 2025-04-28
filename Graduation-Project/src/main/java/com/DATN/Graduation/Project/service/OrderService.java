@@ -10,7 +10,7 @@ public interface OrderService {
 
     OrderDto orderDetail(String code);
 
-    String confirmOrder(String code);
+    String confirmOrder(String code,String user);
     String transferOrder(String code);
     String delivery(String code);
     String receive(String code);

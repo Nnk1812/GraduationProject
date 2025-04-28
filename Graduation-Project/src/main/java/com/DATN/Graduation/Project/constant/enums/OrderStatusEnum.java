@@ -7,8 +7,8 @@ public enum OrderStatusEnum {
     CHUA_XAC_NHAN(1,"Chưa xác nhận"),
     DA_XAC_NHAN(2,"Đã xác nhận"),
     DA_CHUYEN_GIAO(3,"Đã chuyển giao tới đơn vị giao hàng"),
-    DA_GIAO_HANG(4,"Đã giao hàng"),
-    DA_NHAN_HANG(5,"Khách hàng đã nhận hàng"),
+    DANG_GIAO_HANG(4,"Đang giao hàng"),
+    DA_NHAN_HANG(5,"Đã giao hàng"),
     HUY_DON_HANG(6,"Đơn hàng đã hủy");
 
     private final Integer value;

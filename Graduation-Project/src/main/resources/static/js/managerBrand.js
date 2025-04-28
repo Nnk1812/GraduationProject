@@ -24,7 +24,7 @@ const renderBrands = (brands) => {
             <tr>
                 <td class="px-4 py-2 border">${startIndex + index + 1}</td>
                 <td class="px-4 py-2 border">
-                    <a href="brandManagerDetail.html?code=${b.code}" class="text-blue-600 hover:underline">
+                    <a href="accountManagerDetail.html?code=${b.code}" class="text-blue-600 hover:underline">
                         ${b.name}
                     </a>
                 </td>
@@ -124,48 +124,6 @@ const handleDelete = async (code) => {
         }
     } catch (error) {
         console.error("Lỗi khi xóa nhãn hàng:", error);
-        alert("Lỗi kết nối server!");
-    }
-};
-
-// Ẩn nhãn hàng
-const handleDisable = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn ẩn nhãn hàng này?")) return;
-
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/brand/hidden?code=${code}`, {
-            method: 'POST'
-        });
-
-        if (res.ok) {
-            alert("Đã ẩn nhãn hàng!");
-            fetchBrands();
-        } else {
-            alert("Ẩn thất bại!");
-        }
-    } catch (error) {
-        console.error("Lỗi khi ẩn nhãn hàng:", error);
-        alert("Lỗi kết nối server!");
-    }
-};
-
-// Kích hoạt lại nhãn hàng
-const handleActivate = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn kích hoạt lại nhãn hàng này?")) return;
-
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/brand/active?code=${code}`, {
-            method: 'POST',
-        });
-
-        if (res.ok) {
-            alert("Đã kích hoạt nhãn hàng!");
-            fetchBrands();
-        } else {
-            alert("Kích hoạt thất bại!");
-        }
-    } catch (error) {
-        console.error("Lỗi khi kích hoạt nhãn hàng:", error);
         alert("Lỗi kết nối server!");
     }
 };

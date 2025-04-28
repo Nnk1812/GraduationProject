@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto saveProduct(ProductDto productsDto) {
         if (!ObjectUtils.isEmpty(productsDto.getCode())) {
             if (!ObjectUtils.isEmpty(productsRepository.findByCode(productsDto.getId(), productsDto.getCode()))) {
-                throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
+                throw new AppException(ErrorCode.PRODUCT_EXISTED);
             }
         }
         ProductEntity productsEntity;
@@ -279,6 +279,14 @@ public class ProductServiceImpl implements ProductService {
     }
     public List<FindOutStandingDto> findByName(String name){
         return productsRepository.findByProductNameIgnoreCase(name);
+    }
+    public String activeProduct(String code){
+        ProductEntity entity = productsRepository.findByCode(code).orElseThrow(
+                () -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
+        );
+        entity.setIsDeleted(false);
+        productsRepository.save(entity);
+        return "Product activated successfully";
     }
 }
 

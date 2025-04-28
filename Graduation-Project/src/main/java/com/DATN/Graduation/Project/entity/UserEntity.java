@@ -67,4 +67,8 @@ public class UserEntity {
     @Basic
     @Column(name = "sex")
     private String sex;
+
+    @Basic
+    @Column(name = "address")
+    private String address;
 }

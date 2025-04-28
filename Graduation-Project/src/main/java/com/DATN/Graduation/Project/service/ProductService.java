@@ -33,5 +33,7 @@ public interface ProductService {
     FindProductDetailDto findProductDetail(String code);
 
     List<FindOutStandingDto> findByName(String productName);
+
+    String activeProduct(String code);
 }
 

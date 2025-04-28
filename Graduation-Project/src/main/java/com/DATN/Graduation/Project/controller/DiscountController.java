@@ -53,4 +53,10 @@ public class DiscountController {
         response.setData(discountService.getDetail(code));
         return response;
     }
+    @GetMapping("/findAllDiscountValid")
+    public ApiResponse<List<DiscountEntity>> findAllDiscountValid() {
+        ApiResponse<List<DiscountEntity>> response = new ApiResponse<>();
+        response.setData(discountService.findAllIsDiscountValid());
+        return response;
+    }
 }

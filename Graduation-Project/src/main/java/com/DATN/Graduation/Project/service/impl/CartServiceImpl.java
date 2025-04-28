@@ -36,6 +36,7 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private DiscountRepository discountRepository;
 
+    @Override
     public CartItemDto addCartItem(CartItemDto dto,String user) {
         // Tìm sản phẩm trong DB theo mã
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -73,14 +74,23 @@ public class CartServiceImpl implements CartService {
         // Trả kết quả
         return modelMapper.map(saved, CartItemDto.class);
     }
+    @Override
     public List<ShoppingCartDto> findAllShoppingCart(String user){
         return cartItemRepository.findAllProductInCart(user);
     }
+    @Override
     public String deleteCartItem(String user,String product){
         CartItemEntity entity = cartItemRepository.findByUserAndProduct(user,product).orElseThrow(
                 () -> new AppException(ErrorCode.CART_NOT_EXISTED)
         );
         cartItemRepository.delete(entity);
+        return "success";
+    }
+
+    @Override
+    public String clearCart(String user){
+        List<CartItemEntity> entities = cartItemRepository.findAllProductsByUser(user);
+        cartItemRepository.deleteAll(entities);
         return "success";
     }
 

@@ -137,10 +137,6 @@
             <input type="text" id="phone" placeholder="Số điện thoại" class="border rounded px-4 py-2 w-full" />
             <span class="error text-red-500 text-sm hidden">Số điện thoại không hợp lệ</span>
         </div>
-        <div class="md:col-span-2">
-            <input type="email" id="email" placeholder="Email" class="border rounded px-4 py-2 w-full" />
-            <span class="error text-red-500 text-sm hidden">Email không hợp lệ</span>
-        </div>
     </div>
 
     <!-- Address Dropdowns -->
@@ -170,6 +166,9 @@
         <input type="text" id="address" placeholder="Số nhà, tên đường..." class="border rounded px-4 py-2 w-full" />
         <span class="error text-red-500 text-sm hidden">Vui lòng nhập địa chỉ chi tiết</span>
     </div>
+    <div>
+        <input type="text" id="note" placeholder="Ghi chú..." class="border rounded px-4 py-2 w-full" />
+    </div>
 
     <div class="space-y-4">
         <!-- Thanh chọn mã -->
@@ -193,7 +192,7 @@
                 <span id="coupon-code" class="font-medium">-</span>
             </div>
             <div class="flex justify-end">
-                <span class="text-green-600 font-semibold">Miễn phí vận chuyển</span>
+                <span id="ShippingFee" class="text-green-600 font-semibold">Miễn phí vận chuyển</span>
             </div>
             <div class="flex justify-between font-semibold">
                 <span>Cần thanh toán:</span>
@@ -223,9 +222,22 @@
             Ngân hàng: <strong>Vietcombank</strong><br/>
             Chủ tài khoản: <strong>NGUYEN NGOC KHANH</strong>
         </div>
+        <!-- sau <img id="qr-image" …> và thông tin STK -->
+        <button
+                id="confirmPaymentBtn"
+                type="button"
+                class="mt-4 bg-green-600 text-white w-full py-2 rounded font-semibold hover:bg-green-700 hidden"
+        >
+            Tôi đã thanh toán
+        </button>
+        <div
+                id="payment-status-message"
+                class="hidden mt-2 text-red-600 text-sm"
+        ></div>
+
     </div>
     <div class="pt-4">
-        <button type="submit" id="submit" class="bg-blue-600 text-white w-full py-3 rounded font-bold text-lg hover:bg-blue-500">
+        <button onclick="saveOrder()" type="submit" id="submit" class="bg-blue-600 text-white w-full py-3 rounded font-bold text-lg hover:bg-blue-500">
             Hoàn tất đơn hàng
         </button>
     </div>

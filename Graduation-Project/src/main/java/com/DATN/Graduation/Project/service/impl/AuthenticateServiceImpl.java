@@ -37,6 +37,9 @@ public class AuthenticateServiceImpl implements AuthenticateService {
     protected String signerKey;
     @Override
     public AuthenticateResponse authenticate(AuthenticateRequest request) {
+        if(userRepository.findByUserNameAndDelete(request.getUsername())!=null){
+            throw new AppException(ErrorCode.DISABLE_ACCOUNT);
+        }
         UserEntity user = userRepository.findByUserName(request.getUsername()).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );

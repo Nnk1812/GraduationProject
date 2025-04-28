@@ -3,6 +3,7 @@ package com.DATN.Graduation.Project.exception;
 import com.DATN.Graduation.Project.dto.response.ApiResponse;
 import org.hibernate.boot.MappingException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -15,8 +16,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> runtimeExceptionHandler(AppException e) {
         
         ApiResponse apiResponse = new ApiResponse();
-
-        apiResponse.setCode(1001);
+        apiResponse.setCode(e.getCode().getCode());
         apiResponse.setMessage(e.getMessage());
 
         return ResponseEntity.badRequest().body(apiResponse);
@@ -44,6 +44,20 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(value = MappingException.class)
     ResponseEntity<ApiResponse> runtimeExceptionHandler(MappingException e) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(400);
+        apiResponse.setMessage(e.getMessage());
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+    @ExceptionHandler(value = InvalidDataAccessApiUsageException.class)
+    ResponseEntity<ApiResponse> runtimeExceptionHandler(InvalidDataAccessApiUsageException e) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(400);
+        apiResponse.setMessage(e.getMessage());
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+    @ExceptionHandler(value = NullPointerException.class)
+    ResponseEntity<ApiResponse> runtimeExceptionHandler(NullPointerException e) {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(400);
         apiResponse.setMessage(e.getMessage());
