@@ -63,4 +63,11 @@ public class GlobalExceptionHandler {
         apiResponse.setMessage(e.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    ResponseEntity<ApiResponse> runtimeExceptionHandler(IllegalArgumentException e) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(400);
+        apiResponse.setMessage(e.getMessage());
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
 }

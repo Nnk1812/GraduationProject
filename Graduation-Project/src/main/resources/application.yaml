@@ -18,6 +18,21 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nnk18122002@gmail.com
+    password: your-app-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 springdoc:
   api-docs:
@@ -27,3 +42,5 @@ springdoc:
     path: /swagger-ui.html
 jwt:
   signerKey : "MkWQyt/xyXTA6Rp2xQgQc6ifd82qDMwbxxTWqTG/eJGXd9JDFHVzgnEKffNW63SK"
+
+

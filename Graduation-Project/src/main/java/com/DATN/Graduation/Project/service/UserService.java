@@ -26,4 +26,8 @@ public interface UserService {
 
     UserEntity getUserByUserName(String code);
 
+    String changePassword(String code,String password,String newPassword);
+
+    String setPassword(String code,String password);
+
 }

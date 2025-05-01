@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.config.authentication.PasswordEncoderParser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private  UserMapper userMapper;
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private JavaMailSender mailSender;
 //    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
 //        this.userRepository = userRepository;
 //        this.userMapper = userMapper;
@@ -167,5 +170,33 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUserName(user).orElseThrow(
                 () -> new AppException(ErrorCode.USER_NOT_FOUND)
         );
+    }
+    @Override
+    public String changePassword(String code,String password,String newPassword){
+        UserEntity user = userRepository.findByCode(code).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        if (!passwordEncoder.matches(password, user.getPassWord())) {
+            throw new AppException(ErrorCode.INVALID_OLD_PASSWORD); // hoặc tạo thêm mã lỗi riêng
+        }
+
+        // Encode password mới và lưu
+        user.setPassWord(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return "Đổi mật khẩu thành công!";
+    }
+    @Override
+    public String setPassword(String code,String password){
+        UserEntity user = userRepository.findByCode(code).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND)
+        );
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassWord(passwordEncoder.encode(password));
+
+        userRepository.save(user);
+        return "success";
     }
 }

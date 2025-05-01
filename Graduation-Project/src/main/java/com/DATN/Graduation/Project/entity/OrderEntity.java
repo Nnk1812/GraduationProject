@@ -33,6 +33,10 @@ public class OrderEntity {
     @Basic
     private String customer;
 
+    @Column(name = "username_customer")
+    @Basic
+    private String userNameCustomer;
+
     @Column(name = "status")
     @Basic
     private Integer status;

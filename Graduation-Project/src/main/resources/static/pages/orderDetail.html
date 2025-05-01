@@ -70,9 +70,9 @@
                     <!-- Menu dropdown -->
                     <div id="dropdownMenu"
                          class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-30 hidden">
-                        <a href="#" id="accountLink"
+                        <a href="/DATN/pages/accountDetail.html" id="accountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Tài Khoản Của Tôi</a>
-                        <a href="#" id="orderLink"
+                        <a href="/DATN/pages/order.html" id="orderLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Đơn hàng</a>
 
                         <!-- Quản trị -->
@@ -82,7 +82,7 @@
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhãn Hàng</a>
                         <a href="/DATN/pages/managerDiscount.html" id="manageDiscountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Giảm Giá</a>
-                        <a href="#" id="manageOrderLink"
+                        <a href="/DATN/pages/managerOrder.html" id="manageOrderLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Đơn Hàng</a>
                         <a href="/DATN/pages/managerProduct.html" id="manageProductLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Sản Phẩm</a>
@@ -115,6 +115,16 @@
             <p><span class="font-semibold">Khách hàng:</span> <span id="od-customer"></span></p>
             <p><span class="font-semibold">Điện thoại:</span> <span id="od-phone"></span></p>
             <p><span class="font-semibold">Địa chỉ:</span> <span id="od-address"></span></p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden mt-4">
+        <div class="bg-gray-100 px-4 py-2 font-semibold">Thông tin đơn hàng</div>
+        <div class="px-4 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><span class="font-semibold">Nhân viên:</span> <span id="od-employee"></span></div>
+            <div><span class="font-semibold">Ngày tạo:</span> <span id="od-createdDate"></span></div>
+            <div><span class="font-semibold">Ngày cập nhật:</span> <span id="od-updatedDate"></span></div>
+            <div><span class="font-semibold">Trạng thái đơn hàng:</span> <span id="od-orderStatus"></span></div>
         </div>
     </div>
 

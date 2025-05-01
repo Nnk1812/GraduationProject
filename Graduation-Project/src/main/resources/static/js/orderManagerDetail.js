@@ -36,67 +36,99 @@ const renderOrderInfo = (order) => {
     const orderId = document.getElementById("orderId");
     orderId.textContent = order.id;
 
-    // Xóa nội dung hiện tại trong bảng (nếu có)
+    // Xóa nội dung hiện tại
     orderInfoTable.innerHTML = '';
 
+    // Tạo thead (nếu muốn)
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+        <tr>
+            <th class="text-left py-2 px-4">Thông tin</th>
+            <th class="text-left py-2 px-4">Chi tiết</th>
+        </tr>
+    `;
+    orderInfoTable.appendChild(thead);
+
+    // Tạo tbody
     const tbody = document.createElement('tbody');
 
-    // Tạo các dòng dữ liệu
-    tbody.innerHTML = `
-        ${generateRow("Mã đơn hàng", order.code)}
-        ${generateFormGroup("Tên khách hàng", `<input type="text" id="customer" value="${order.customer || ''}" class="input-field" />`)}
-        ${generateFormGroup("Địa chỉ", `<input type="text" id="address" value="${order.address || ''}" class="input-field" />`)}
-        ${generateFormGroup("Số điện thoại", `<input type="text" id="phone" value="${order.phone || ''}" class="input-field" />`)}
-        ${generateRow("Giảm giá", order.discount || "Không có")}
-        ${generateRow("Nhân viên xử lý", order.employee || "Chưa có")}
-        ${generateRow("Ngày tạo", formatDate(order.createdAt))}
-        ${generateRow("Ngày cập nhật", formatDate(order.updatedAt))}
-        ${generateRow("Trạng thái đơn hàng", convertOrderStatus(order.status))}
-        ${generateRow("Tổng tiền hàng", formatCurrency(order.totalPrice))}
-        ${generateRow("Phí vận chuyển", formatCurrency(order.shippingFee))}
-        ${generateRow("Tổng tiền hóa đơn", formatCurrency(order.realPrice))}
-        ${generateFormGroup("Phương thức thanh toán", `
-            <select id="paymentMethod" class="input-field">
-                <option value="CASH" ${order.paymentMethod === "CASH" ? "selected" : ""}>Tiền mặt</option>
-                <option value="BANK_TRANSFER" ${order.paymentMethod === "BANK_TRANSFER" ? "selected" : ""}>Chuyển khoản</option>
-            </select>
-        `)}
-        
-        ${generateFormGroup("Trạng thái thanh toán", `
-            <select id="paymentStatus" class="input-field">
-                <option value="1" ${order.paymentStatus === 1 ? "selected" : ""}>Đã thanh toán</option>
-                <option value="2" ${order.paymentStatus === 2 ? "selected" : ""}>Chưa thanh toán</option>
-            </select>
-        `)}
-    `;
+    const rows = [
+        generateRow("Mã đơn hàng", order.code),
+        generateInputRow("Tên khách hàng", "customer", order.customer),
+        generateInputRow("Địa chỉ", "address", order.address),
+        generateInputRow("Số điện thoại", "phone", order.phone),
+        generateRow("Giảm giá", order.discount || "Không có"),
+        generateRow("Nhân viên xử lý", order.employee || "Chưa có"),
+        generateRow("Ngày tạo", formatDate(order.createdAt)),
+        generateRow("Ngày cập nhật", formatDate(order.updatedAt)),
+        generateRow("Trạng thái đơn hàng", convertOrderStatus(order.status)),
+        generateRow("Tổng tiền hàng", formatCurrency(order.totalPrice)),
+        generateRow("Phí vận chuyển", formatCurrency(order.shippingFee)),
+        generateRow("Tổng tiền hóa đơn", formatCurrency(order.realPrice)),
+        generateSelectRow("Phương thức thanh toán", "paymentMethod", [
+            { value: "CASH", label: "Tiền mặt" },
+            { value: "BANK_TRANSFER", label: "Chuyển khoản" }
+        ], order.paymentMethod),
+        generateSelectRow("Trạng thái thanh toán", "paymentStatus", [
+            { value: 1, label: "Đã thanh toán" },
+            { value: 2, label: "Chưa thanh toán" }
+        ], order.paymentStatus)
+    ];
 
-    // Thêm tbody vào bảng
+    // Thêm tất cả rows vào tbody
+    rows.forEach(row => {
+        tbody.appendChild(row);
+    });
+
     orderInfoTable.appendChild(tbody);
 };
 
+// Helper: Tạo dòng thường
 const generateRow = (label, value) => {
-    return `
-        <tr>
-            <td class="font-bold">${label}</td>
-            <td>${value}</td>
-        </tr>
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="border py-2 px-4 font-medium">${label}</td>
+        <td class="border py-2 px-4">${value}</td>
     `;
+    return tr;
 };
 
-const generateFormGroup = (label, inputHtml) => {
-    return `
-        <tr>
-            <td class="font-bold">${label}</td>
-            <td>${inputHtml}</td>
-        </tr>
+// Helper: Tạo dòng có input
+const generateInputRow = (label, id, value = '') => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td class="border py-2 px-4 font-medium">${label}</td>
+        <td class="border py-2 px-4">
+            <input type="text" id="${id}" value="${value}" class="input-field w-full p-2 border rounded" />
+        </td>
     `;
+    return tr;
 };
+
+// Helper: Tạo dòng có select
+const generateSelectRow = (label, id, options, selectedValue) => {
+    const tr = document.createElement('tr');
+    const optionHtml = options.map(opt => `
+        <option value="${opt.value}" ${opt.value == selectedValue ? 'selected' : ''}>${opt.label}</option>
+    `).join('');
+
+    tr.innerHTML = `
+        <td class="border py-2 px-4 font-medium">${label}</td>
+        <td class="border py-2 px-4">
+            <select id="${id}" class="input-field w-full p-2 border rounded">
+                ${optionHtml}
+            </select>
+        </td>
+    `;
+    return tr;
+};
+
 
 const renderOrderDetails = (details) => {
     const orderDetailsTable = document.getElementById('orderDetailsTable').querySelector('tbody');
     orderDetailsTable.innerHTML = details.map(d => `
       <tr>
-        <td class="border px-4 py-2">${d.productName}</td>
+        <td class="border px-4 py-2">${d.name}</td>
         <td class="border px-4 py-2">${formatCurrency(d.price)}</td>
         <td class="border px-4 py-2">${d.quantity}</td>
         <td class="border px-4 py-2">${formatCurrency(d.totalPrice)}</td>
@@ -165,6 +197,8 @@ document.getElementById('saveOrderBtn').addEventListener('click', async () => {
         realPrice: currentOrderData.realPrice,
         shippingFee: currentOrderData.shippingFee,
         orderDetails: currentOrderData.orderDetails.map(d => ({
+            id : d.id,
+            orderCode : d.orderCode,
             product: d.product,
             quantity: d.quantity
         })) // Chuyển các chi tiết đã cập nhật
@@ -179,7 +213,7 @@ document.getElementById('saveOrderBtn').addEventListener('click', async () => {
 
         if (res.ok) {
             alert('Cập nhật đơn hàng thành công');
-            window.location.href = "/managerOrder.html"; // Quay lại danh sách đơn hàng
+            window.location.href = "/DATN/pages/managerOrder.html"; // Quay lại danh sách đơn hàng
         } else {
             alert('Cập nhật đơn hàng thất bại');
         }

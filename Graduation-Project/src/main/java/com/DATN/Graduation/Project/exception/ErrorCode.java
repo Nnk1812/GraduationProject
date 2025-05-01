@@ -17,6 +17,7 @@ public enum ErrorCode {
     PHONE_EXISTED(1006,"Phone already existed"),
     YOU_DO_NOT_HAVE_PERMISSION(1007,"You don't have permission to perform this action "),
     DISABLE_ACCOUNT(1008,"Tài khoản đã bị vô hiệu hóa"),
+    INVALID_OLD_PASSWORD(1009,"invalid old password"),
 
     //Exception of Product -1100
     PRODUCT_NOT_EXISTED(1100,"Product not existed"),

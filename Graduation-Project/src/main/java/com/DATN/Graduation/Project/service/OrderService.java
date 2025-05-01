@@ -17,4 +17,6 @@ public interface OrderService {
     String cancel(String code);
 
     List<OrderEntity> historyOrder();
+
+    List<OrderDto> userOrder(String code);
 }

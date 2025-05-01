@@ -25,5 +25,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
             "FROM OrderEntity o WHERE o.code = :code")
     Optional<OrderDto> findOrderDtoById(String code);
 
+    @Query(value = "select * from orders a where a.username_customer =:code ",nativeQuery = true)
+    List<OrderEntity> findOrdersByCustomerCode(String code);
+
 
 }

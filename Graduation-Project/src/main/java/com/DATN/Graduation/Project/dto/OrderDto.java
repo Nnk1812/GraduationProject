@@ -15,6 +15,7 @@ public class OrderDto {
     private String code;
     private String employee;
     private String customer;
+    private String userNameCustomer;
     private Integer status;
     private Long totalPrice;
     private String discount;

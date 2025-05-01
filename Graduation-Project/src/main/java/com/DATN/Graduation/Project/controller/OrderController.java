@@ -65,5 +65,11 @@ public class OrderController {
         response.setData(orderService.cancel(code));
         return response;
     }
+    @GetMapping("/findByCode")
+    public ApiResponse<List<OrderDto>> userOrder(@RequestParam String code) {
+        ApiResponse<List<OrderDto>> response = new ApiResponse<>();
+        response.setData(orderService.userOrder(code));
+        return response;
+    }
 }
 

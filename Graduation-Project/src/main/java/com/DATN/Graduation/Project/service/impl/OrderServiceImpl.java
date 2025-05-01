@@ -240,4 +240,27 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderEntity> historyOrder(){
         return orderRepository.findAll();
     }
+    public List<OrderDto> userOrder(String user){
+
+        List<OrderEntity> entities = orderRepository.findOrdersByCustomerCode(user);
+        return entities.stream()
+                .map(orderEntity -> {
+                    // 1. Map từ OrderEntity -> OrderDto
+                    OrderDto orderDto = modelMapper.map(orderEntity, OrderDto.class);
+
+                    // 2. Sau đó, tìm list OrderDetailEntity theo orderId
+                    List<OrderDetailEntity> orderDetails = orderDetailRepository.findAllByOrderCode(orderEntity.getCode());
+
+                    // 3. Map list OrderDetailEntity -> list OrderDetailDto
+                    List<OrderDetailDto> detailDtos = orderDetails.stream()
+                            .map(detail -> modelMapper.map(detail, OrderDetailDto.class))
+                            .collect(Collectors.toList());
+
+                    // 4. Set vào OrderDto
+                    orderDto.setOrderDetails(detailDtos);
+
+                    return orderDto;
+                })
+                .collect(Collectors.toList());
+    }
 }
