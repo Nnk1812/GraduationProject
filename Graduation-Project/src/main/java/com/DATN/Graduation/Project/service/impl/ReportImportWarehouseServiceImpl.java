@@ -2,12 +2,11 @@ package com.DATN.Graduation.Project.service.impl;
 
 import com.DATN.Graduation.Project.constant.enums.DiscountTypeEnum;
 import com.DATN.Graduation.Project.constant.enums.StatusImportWarehouseEnum;
+import com.DATN.Graduation.Project.dto.OrderDetailDto;
 import com.DATN.Graduation.Project.dto.OrderDto;
 import com.DATN.Graduation.Project.dto.ReportImportWarehouseDto;
 import com.DATN.Graduation.Project.dto.WarehouseImportProductDto;
-import com.DATN.Graduation.Project.entity.ProductEntity;
-import com.DATN.Graduation.Project.entity.ReportImportWarehouseEntity;
-import com.DATN.Graduation.Project.entity.WarehouseImportProductEntity;
+import com.DATN.Graduation.Project.entity.*;
 import com.DATN.Graduation.Project.exception.AppException;
 import com.DATN.Graduation.Project.exception.ErrorCode;
 import com.DATN.Graduation.Project.repository.*;
@@ -22,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,13 +45,15 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
     private ProductRepository productRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private StockRepository stockRepository;
 
     @Override
     @Transactional
     public ReportImportWarehouseDto saveWarehouse(ReportImportWarehouseDto dto) {
         if (!ObjectUtils.isEmpty(dto.getCode())) {
             if (!ObjectUtils.isEmpty(reportImportWarehouseRepository.findByCode(dto.getId(), dto.getCode()))) {
-                throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
+                throw new AppException(ErrorCode.REPORT_IMPORT_WAREHOUSE_NOT_EXISTED);
             }
         }
         ReportImportWarehouseEntity warehouseEntity;
@@ -65,15 +69,8 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
         if(ObjectUtils.isEmpty(dto.getEmployee())) {
             throw new AppException(ErrorCode.MUST_HAVE_WAREHOUSE_EMPLOYEE);
         }else {
-            if(!userRepository.findAllCode().contains(dto.getEmployee())) {
+            if(!userRepository.findAllFullName().contains(dto.getEmployee())) {
                 throw new AppException(ErrorCode.USER_NOT_EXISTED);
-            }
-        }
-        if(ObjectUtils.isEmpty(dto.getBrand())) {
-            throw new AppException(ErrorCode.MUST_HAVE_WAREHOUSE_BRAND);
-        }else {
-            if(!brandRepository.findBrand().contains(dto.getBrand())) {
-                throw new AppException(ErrorCode.BRAND_NOT_EXISTED);
             }
         }
         if(!ObjectUtils.isEmpty(dto.getDiscount())) {
@@ -84,20 +81,36 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
         if (ObjectUtils.isEmpty(dto.getStatus())) {
             dto.setStatus(StatusImportWarehouseEnum.DANG_TAO.getValue());
         }else {
-            if(!dto.getStatus().equals(StatusImportWarehouseEnum.DANG_TAO.getValue())){
+            if(!dto.getStatus().equals(StatusImportWarehouseEnum.DANG_TAO.getValue())&& ObjectUtils.isEmpty(dto.getId())){
                 throw new AppException(ErrorCode.STATUS_WRONG);
             }
         }
+        LocalDateTime now = LocalDateTime.now();
         if (ObjectUtils.isEmpty(dto.getImportDate())) {
-            LocalDateTime now = LocalDateTime.now();
             dto.setImportDate(now);
         }
         WarehouseImportProductEntity importProductEntity;
+
         long price =0  ;
         if(dto.getProducts() != null) {
+            if (dto.getId() != null) {
+                List<WarehouseImportProductEntity> existingProducts =
+                        warehouseImportProductRepository.findByCode(warehouseEntity.getCode());
+
+                Set<Long> incomingProductIds = dto.getProducts().stream()
+                        .map(WarehouseImportProductDto::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+
+                for (WarehouseImportProductEntity existingProduct : existingProducts) {
+                    if (!incomingProductIds.contains(existingProduct.getId())) {
+                        warehouseImportProductRepository.deleteById(existingProduct.getId());
+                    }
+                }
+            }
             List<WarehouseImportProductDto> importProductDto = dto.getProducts();
             for(WarehouseImportProductDto productDto : importProductDto) {
-                if(!ObjectUtils.isEmpty(productDto.getReportImportWarehouse())) {
+                if(!ObjectUtils.isEmpty(productDto.getReportImportWarehouse())&&!ObjectUtils.isEmpty(productDto.getId())) {
                     importProductEntity = warehouseImportProductRepository.findById(productDto.getId()).orElseThrow(
                             ()-> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
                     );
@@ -112,7 +125,9 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
                 long realPrice=0;
                 importProductEntity.setProduct(product.getCode());
                 importProductEntity.setName(product.getName());
-                importProductEntity.setPrice(product.getPrice());
+                String brandName = brandRepository.findBrandNameByCode(product.getBrand());
+                importProductEntity.setBrand(brandName);
+                importProductEntity.setPrice(productDto.getPrice());
                 importProductEntity.setDiscount(productDto.getDiscount());
                 importProductEntity.setQuantity(productDto.getQuantity());
                 importProductEntity.setTotalPrice(totalPrice);
@@ -130,13 +145,32 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
                 }
                 price +=realPrice;
                 warehouseImportProductRepository.save(importProductEntity);
+
             }
+            if (dto.getStatus() == 3) {
+                for (WarehouseImportProductDto productDto : importProductDto) {
+                    long sellingPrice = productDto.getPrice();
+                    ProductEntity product = productRepository.findByCode(productDto.getProduct())
+                            .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+                    StockEntity stockEntity = new StockEntity();
+                    stockEntity.setProduct(product.getCode());
+                    stockEntity.setReport(dto.getCode());
+                    stockEntity.setQuantity(productDto.getQuantity());
+                    stockEntity.setImportDate(now);
+                    stockEntity.setName(product.getName());
+                    stockEntity.setImportPrice(sellingPrice);
+                    stockEntity.setNote("Nhập kho từ phiếu: " + warehouseEntity.getCode());
+                    stockEntity.setSellingPrice((sellingPrice + (sellingPrice * 10/100) + 12000000/200 + 25000000/200)*( 1+ 30/100));
+                    stockRepository.save(stockEntity);
+                }
+            }
+
         }else {
             throw new AppException(ErrorCode.REPORT_MUST_HAVE_PRODUCT);
         }
-        warehouseEntity.setPrice(price);
+        warehouseEntity.setPrice(price + price *10/100);
         warehouseEntity.setDiscount(dto.getDiscount());
-        if(dto.getDiscount() != null) {
+        if(dto.getDiscount() != null && !ObjectUtils.isEmpty(dto.getDiscount())) {
             long realPrice = 0;
             if(Objects.equals(discountRepository.getDiscountType(dto.getDiscount()), DiscountTypeEnum.TIEN_MAT.getValue())){
                 long priceAfterDiscount = price - discountRepository.getDiscountValue(dto.getDiscount());
@@ -169,4 +203,29 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
 
         return "W" + String.format("%03d", ++maxCode);
     }
+    @Override
+    public List<ReportImportWarehouseEntity> findAllReportImportWarehouse() {
+        return reportImportWarehouseRepository.findAll();
+    }
+
+    @Override
+    public ReportImportWarehouseDto findReportImportWarehouseDetail(String code){
+        ReportImportWarehouseEntity entity = reportImportWarehouseRepository.findByCode(code);
+        if(ObjectUtils.isEmpty(entity)) {
+            throw new AppException(ErrorCode.REPORT_IMPORT_WAREHOUSE_NOT_EXISTED);
+        }
+        ReportImportWarehouseDto dto = new ReportImportWarehouseDto();
+        modelMapper.map(entity,dto);
+        List<WarehouseImportProductEntity> entities = warehouseImportProductRepository.findByCode(entity.getCode());
+        if(ObjectUtils.isEmpty(entities)) {
+            throw new AppException(ErrorCode.WAREHOUSE_IMPORT_PRODUCT_NOT_EXISTED);
+        }
+        List<WarehouseImportProductDto> productDtos = entities.stream()
+                .map(product -> modelMapper.map(product, WarehouseImportProductDto.class))
+                .collect(Collectors.toList());
+
+        dto.setProducts(productDtos);
+        return dto;
+    }
 }
+

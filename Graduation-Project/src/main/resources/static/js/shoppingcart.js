@@ -522,7 +522,9 @@ function saveOrder(){
         paymentStatus: paymentstatus,
         address: address,
         note: note,
+        discount : selectedDiscount ? selectedDiscount.code : null,
         userNameCustomer : username,
+
         orderDetails: cartItems
     };
     console.log('Order Data:', orderData);

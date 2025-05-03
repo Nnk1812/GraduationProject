@@ -2,13 +2,13 @@ package com.DATN.Graduation.Project.controller;
 
 import com.DATN.Graduation.Project.dto.ReportImportWarehouseDto;
 import com.DATN.Graduation.Project.dto.response.ApiResponse;
+import com.DATN.Graduation.Project.entity.ReportImportWarehouseEntity;
 import com.DATN.Graduation.Project.service.ReportImportWarehouseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/warehouse")
@@ -22,5 +22,16 @@ public class ReportImportWarehouseController {
         apiResponse.setData(reportImportWarehouseService.saveWarehouse(reportImportWarehouseDto));
         return apiResponse;
     }
-
+    @GetMapping("/findAll")
+    public ApiResponse<List<ReportImportWarehouseEntity>> findAll() {
+        ApiResponse<List<ReportImportWarehouseEntity>> apiResponse = new ApiResponse<>();
+        apiResponse.setData(reportImportWarehouseService.findAllReportImportWarehouse());
+        return apiResponse;
+    }
+    @GetMapping("/detail")
+    public ApiResponse<ReportImportWarehouseDto> findDetail(@RequestParam String code) {
+        ApiResponse<ReportImportWarehouseDto> apiResponse = new ApiResponse<>();
+        apiResponse.setData(reportImportWarehouseService.findReportImportWarehouseDetail(code));
+        return apiResponse;
+    }
 }

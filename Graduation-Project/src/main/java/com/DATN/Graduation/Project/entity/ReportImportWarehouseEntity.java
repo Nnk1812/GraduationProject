@@ -33,10 +33,6 @@ public class ReportImportWarehouseEntity {
     @Basic
     private LocalDateTime importDate;
 
-    @Column(name = "brand")
-    @Basic
-    private String brand;
-
     @Column(name = "note")
     @Basic
     private String note;

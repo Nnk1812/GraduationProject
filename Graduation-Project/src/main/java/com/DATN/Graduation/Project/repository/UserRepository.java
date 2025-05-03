@@ -20,6 +20,9 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
     @Query(value = "select code " +
             "from user",nativeQuery = true)
     List<String> findAllCode();
+    @Query(value = "select full_name " +
+            "from user",nativeQuery = true)
+    List<String> findAllFullName();
     @Query(value = "select email " +
             "from user",nativeQuery = true)
     List<String> findAllEmail();

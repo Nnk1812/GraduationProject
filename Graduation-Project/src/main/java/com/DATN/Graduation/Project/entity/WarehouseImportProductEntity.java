@@ -27,8 +27,12 @@ public class WarehouseImportProductEntity {
     @Basic
     private String name;
 
+    @Column(name = "brand")
+    @Basic
+    private String brand;
+
     @Column(name = "quantity")
-    private Integer quantity;
+    private Long quantity;
 
     @Column(name = "discount")
     @Basic

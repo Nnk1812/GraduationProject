@@ -10,7 +10,8 @@ public class WarehouseImportProductDto {
     private String reportImportWarehouse;
     private String product;
     private String name;
-    private Integer quantity;
+    private String brand;
+    private Long quantity;
     private String discount;
     private Long price;
     private Long totalPrice;

@@ -3,6 +3,7 @@ package com.DATN.Graduation.Project.repository;
 import com.DATN.Graduation.Project.entity.ReportImportWarehouseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,4 +14,9 @@ public interface ReportImportWarehouseRepository extends JpaRepository<ReportImp
 
     @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from report_import_warehouse where code like 'W%' ", nativeQuery = true)
     Integer findMaxCodeByPrefix();
+
+    @Query(value = "select *" +
+            "from report_import_warehouse a " +
+            "where a.code =:code ",nativeQuery = true)
+    ReportImportWarehouseEntity findByCode(String code);
 }

@@ -13,7 +13,6 @@ public class ReportImportWarehouseDto {
     private String code;
     private String name;
     private LocalDateTime importDate;
-    private String brand;
     private String note;
     private String employee;
     private String discount;

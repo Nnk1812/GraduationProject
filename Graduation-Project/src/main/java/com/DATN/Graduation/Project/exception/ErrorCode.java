@@ -61,6 +61,7 @@ public enum ErrorCode {
     MUST_HAVE_WAREHOUSE_BRAND(1702,"Must have warehouse brand "),
     STATUS_WRONG(1703,"Status of create report import warehouse must be"),
     REPORT_MUST_HAVE_PRODUCT(1704,"Report import warehouse must have product"),
+    WAREHOUSE_IMPORT_PRODUCT_NOT_EXISTED(1700,"Warehouse import product not existed"),
     ;
 
 

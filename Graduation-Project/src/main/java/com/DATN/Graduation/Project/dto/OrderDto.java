@@ -36,7 +36,7 @@ public class OrderDto {
     public OrderDto(Long id, String code, String employee, String customer, Integer status,
                     Long totalPrice, String discount, Long realPrice, String paymentMethod,
                     Long priceToPay, Integer paymentStatus, String address, String phone, Long shippingFee,
-                    String note, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                    String note, LocalDateTime createdAt, LocalDateTime updatedAt,String userNameCustomer) {
         this.id = id;
         this.code = code;
         this.employee = employee;
@@ -54,5 +54,6 @@ public class OrderDto {
         this.note = note;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userNameCustomer = userNameCustomer;
     }
 }
