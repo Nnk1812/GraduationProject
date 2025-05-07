@@ -24,7 +24,7 @@ const renderBrands = (brands) => {
             <tr>
                 <td class="px-4 py-2 border">${startIndex + index + 1}</td>
                 <td class="px-4 py-2 border">
-                    <a href="accountManagerDetail.html?code=${b.code}" class="text-blue-600 hover:underline">
+                    <a href="brandManagerDetail.html?code=${b.code}" class="text-blue-600 hover:underline">
                         ${b.name}
                     </a>
                 </td>

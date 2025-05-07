@@ -495,7 +495,23 @@ document.getElementById("product-list").addEventListener("click", function (e) {
     }
 });
 
-function saveOrder(){
+async function getUserCode(userName) {
+    try {
+        const response = await fetch(`http://localhost:8080/DATN/user/findUser?user=${username}`);
+        const result = await response.json();
+
+        if (result.code === 200 && result.data && result.data.code) {
+            return result.data.code; // Trả về mã nhân viên/khách hàng
+        } else {
+            console.warn("Không tìm thấy mã người dùng.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Lỗi khi lấy mã người dùng:", error);
+        return null;
+    }
+}
+async function saveOrder() {
     const fullName = document.getElementById('full-name').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const province = document.getElementById('province-select').options[document.getElementById('province-select').selectedIndex].text;
@@ -508,22 +524,22 @@ function saveOrder(){
     const paymentMethodElement = document.querySelector('input[name="payment-method"]:checked');
     const paymentMethodValue = paymentMethodElement ? paymentMethodElement.value : 'cod';
     const paymentMethod = paymentMethodValue === 'bank' ? 'BANK_TRANSFER' : 'CASH';
-
+    const codeCustomer = await getUserCode(username);
     let paymentstatus = 2; //chưa thanh toán
 
     if (paymentMethod === 'BANK_TRANSFER') {
         paymentstatus = 1;
     }
     const orderData = {
-        customer:fullName,
-        phone:phone,
+        customer: fullName,
+        phone: phone,
         paymentMethod: paymentMethod,
         paymentStatus: paymentstatus,
         address: address,
         note: note,
-        discount : selectedDiscount ? selectedDiscount.code : null,
-        userNameCustomer : username,
-
+        discount: selectedDiscount ? selectedDiscount.code : null,
+        userNameCustomer: username,
+        codeCustomer:codeCustomer,
         orderDetails: cartItems
     };
     console.log('Order Data:', orderData);
@@ -540,9 +556,7 @@ function saveOrder(){
                 const orderCode = response.data.code;
                 // Lưu vào localStorage để trang thankyou.html dùng
                 localStorage.setItem('orderCode', orderCode);
-                console.log(orderCode);
                 alert("Đặt hàng thành công!");
-                // Xóa giỏ hàng
                 return fetch(`http://localhost:8080/DATN/cart/clearCart?user=${username}`, {
                     method: "DELETE"
                 });

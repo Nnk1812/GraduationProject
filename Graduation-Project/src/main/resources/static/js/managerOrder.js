@@ -14,7 +14,8 @@ const orderStatusMap = {
     3: "Đã chuyển giao tới đơn vị giao hàng",
     4: "Đang giao hàng",
     5: "Đã hoàn thành",
-    6: "Đơn hàng đã hủy"
+    6: "Đơn hàng đã hủy",
+    7: "Trả hàng"
 };
 const paymentStatusMap = {
     1: "Đã thanh toán",
@@ -49,11 +50,15 @@ const renderOrders = (orders) => {
 
         let updateBtn = '';
         if (o.status === 1) {
-            updateBtn = `<button onclick="handleConfirm('${o.code}')" class="bg-yellow-600 text-white w-full h-full rounded hover:bg-yellow-700">Xác nhận đơn</button>`;
+            updateBtn = `<button onclick="handleConfirm('${o.code}')" class="bg-yellow-500 text-white w-full h-full rounded hover:bg-yellow-600">Xác nhận đơn</button>`;
         } else if (o.status === 2) {
-            updateBtn = `<button onclick="handleTranfer('${o.code}')" class="bg-blue-600 text-white w-full h-full rounded hover:bg-blue-700">Đóng gói</button>`;
+            updateBtn = `<button onclick="handleTranfer('${o.code}')" class="bg-blue-500 text-white w-full h-full rounded hover:bg-blue-600">Đóng gói</button>`;
         } else if (o.status === 3) {
-            updateBtn = `<button onclick="handleDelivery('${o.code}')" class="bg-green-600 text-white w-full h-full rounded hover:bg-green-700">Giao hàng</button>`;
+            updateBtn = `<button onclick="handleDelivery('${o.code}')" class="bg-green-500 text-white w-full h-full rounded hover:bg-green-600">Giao hàng</button>`;
+        } else if (o.status === 4) {
+            updateBtn = `<button disabled class="bg-sky-200 text-sky-800 w-full h-full rounded cursor-not-allowed">Đợi xác nhận</button>`;
+        } else if (o.status === 5) {
+            updateBtn = `<button disabled class="bg-lime-200 text-lime-800 w-full h-full rounded cursor-not-allowed">Hoàn thành đơn</button>`;
         }
 
         const cancelBtn = (o.status < 3 && o.status !== 6)

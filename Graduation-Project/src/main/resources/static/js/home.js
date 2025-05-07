@@ -19,19 +19,21 @@ fetch("http://localhost:8080/DATN/products/findOutstanding")
                 if (rating > 0) {
                     const percentage = Math.min(Math.max(rating * 20, 0), 100); // từ 0–5 sao -> 0–100%
 
+                    const gradientId = `starGradient-${product.code}`;
                     starsHtml = `
-        <svg class="w-6 h-6" viewBox="0 0 24 24">
-            <defs>
-                <linearGradient id="starGradient">
-                    <stop offset="${percentage}%" stop-color="#facc15" /> <!-- màu vàng -->
-                    <stop offset="${percentage}%" stop-color="#d1d5db" /> <!-- màu xám -->
-                </linearGradient>
-            </defs>
-            <path fill="url(#starGradient)" d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.882 
-            1.471 8.312L12 18.896l-7.407 4.604 1.471-8.312L0 
-            9.306l8.332-1.151z"/>
-        </svg>
-    `;
+    <svg class="w-6 h-6" viewBox="0 0 24 24">
+        <defs>
+            <linearGradient id="${gradientId}">
+                <stop offset="${percentage}%" stop-color="#facc15" />
+                <stop offset="${percentage}%" stop-color="#d1d5db" />
+            </linearGradient>
+        </defs>
+        <path fill="url(#${gradientId})" d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.882 
+        1.471 8.312L12 18.896l-7.407 4.604 1.471-8.312L0 
+        9.306l8.332-1.151z"/>
+    </svg>
+`;
+
                 }
 
 

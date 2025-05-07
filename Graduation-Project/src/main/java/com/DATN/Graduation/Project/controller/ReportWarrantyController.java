@@ -1,6 +1,8 @@
 package com.DATN.Graduation.Project.controller;
 
 import com.DATN.Graduation.Project.dto.ReportWarrantyDto;
+import com.DATN.Graduation.Project.dto.WarrantyDetailDto;
+import com.DATN.Graduation.Project.dto.WarrantyDto;
 import com.DATN.Graduation.Project.dto.response.ApiResponse;
 import com.DATN.Graduation.Project.entity.ReportWarrantyEntity;
 import com.DATN.Graduation.Project.service.ReportWarrantyService;
@@ -23,15 +25,21 @@ public class ReportWarrantyController {
         return response;
     }
     @GetMapping("/findAll")
-    public ApiResponse<List<ReportWarrantyEntity>> findAll() {
-        ApiResponse<List<ReportWarrantyEntity>> response = new ApiResponse<>();
+    public ApiResponse<List<WarrantyDto>> findAll() {
+        ApiResponse<List<WarrantyDto>> response = new ApiResponse<>();
         response.setData(reportWarrantyService.findAll());
         return response;
     }
     @GetMapping("/findByUsername")
-    public ApiResponse<List<ReportWarrantyEntity>> findByUsername(@RequestParam String username) {
-        ApiResponse<List<ReportWarrantyEntity>> response = new ApiResponse<>();
-        response.setData(reportWarrantyService.findByUser(username));
+    public ApiResponse<List<WarrantyDto>> findByUsername(@RequestParam String code) {
+        ApiResponse<List<WarrantyDto>> response = new ApiResponse<>();
+        response.setData(reportWarrantyService.findByUser(code));
+        return response;
+    }
+    @GetMapping("/detail")
+    public ApiResponse<WarrantyDetailDto> warrantyDetail(@RequestParam String code) {
+        ApiResponse<WarrantyDetailDto> response = new ApiResponse<>();
+        response.setData(reportWarrantyService.findByCode(code));
         return response;
     }
     @PostMapping("/received")

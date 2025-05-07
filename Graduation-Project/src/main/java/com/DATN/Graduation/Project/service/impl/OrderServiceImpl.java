@@ -1,8 +1,8 @@
 package com.DATN.Graduation.Project.service.impl;
 
 import com.DATN.Graduation.Project.constant.enums.OrderStatusEnum;
-import com.DATN.Graduation.Project.dto.OrderDetailDto;
-import com.DATN.Graduation.Project.dto.OrderDto;
+import com.DATN.Graduation.Project.constant.enums.StatusPaymentEnum;
+import com.DATN.Graduation.Project.dto.*;
 import com.DATN.Graduation.Project.entity.*;
 import com.DATN.Graduation.Project.exception.AppException;
 import com.DATN.Graduation.Project.exception.ErrorCode;
@@ -18,8 +18,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,6 +49,8 @@ public class OrderServiceImpl implements OrderService {
     private UserRepository userRepository;
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     public OrderDto saveOrder(OrderDto dto) {
         if(!ObjectUtils.isEmpty(dto.getCode())){
@@ -56,15 +61,18 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         dto.setCreatedAt(now);
         dto.setUpdatedAt(now);
-        dto.setStatus(1);
 
         OrderEntity orderEntity;
         if(ObjectUtils.isEmpty(dto.getId())){
             orderEntity = new OrderEntity();
+            dto.setStatus(1);
             if(ObjectUtils.isEmpty(dto.getCode())){
                 dto.setCode(generateNextCode());
             }
         }else{
+            if(dto.getStatus()>OrderStatusEnum.DA_CHUYEN_GIAO.getValue()){
+                throw new AppException(ErrorCode.CANNOT_UPDATE_ORDER_IN_STATUS_DA_CHUYEN_GIAO);
+            }
             orderEntity = orderRepository.findById(dto.getId()).orElseThrow(
                     () -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED)
             );
@@ -75,13 +83,14 @@ public class OrderServiceImpl implements OrderService {
                 throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
             }
         }
+
         OrderDetailEntity detailEntity ;
         long price=0;
         if(dto.getOrderDetails() != null ){
             List<OrderDetailDto> orderDetails = dto.getOrderDetails();
             for (OrderDetailDto detail : orderDetails) {
                 if (detail.getOrderCode() != null ) {
-                    detailEntity = orderDetailRepository.findByOrderCode(detail.getOrderCode()).orElseThrow(
+                    detailEntity = orderDetailRepository.findById(detail.getId()).orElseThrow(
                             ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
                     );
                 } else {
@@ -229,6 +238,7 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RECEIVED);
         }
+        dto.setPaymentStatus(StatusPaymentEnum.DA_THANH_TOAN.getValue());
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
         return "Đã nhận đơn hàng thành công";
@@ -246,14 +256,14 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(entity);
         return "Đã hủy đơn hàng thành công";
     }
-    public String review(String code){
+    public String returnProduct(String code){
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
-        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DA_NHAN_HANG.getValue())){
-            dto.setStatus(OrderStatusEnum.DA_DANH_GIA.getValue());
+        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DANG_GIAO_HANG.getValue())){
+            dto.setStatus(OrderStatusEnum.TRA_HANG.getValue());
         }else{
-            throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_REVIEW);
+            throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RETURN);
         }
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
@@ -284,5 +294,47 @@ public class OrderServiceImpl implements OrderService {
                     return orderDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public StatisticalDto findAllStatistical(){
+        return orderRepository.findAllStatistical();
+    }
+    @Override
+    public StatisticalDto findByDate(Date startDate,Date endDate){
+        return orderRepository.findByDate(startDate,endDate);
+    }
+    @Override
+    public List<MonthlyIncomeDto> getMonthlyIncomeByYear(int year) {
+        List<Object[]> result = orderRepository.getMonthlyIncome(year);
+        List<MonthlyIncomeDto> incomeList = new ArrayList<>();
+
+        for (Object[] row : result) {
+            int month = ((Number) row[0]).intValue();
+            BigDecimal income = row[1] != null ? (BigDecimal) row[1] : BigDecimal.ZERO;
+            incomeList.add(new MonthlyIncomeDto(month, income));
+        }
+
+        return incomeList;
+    }
+    @Override
+    public StatisticalReviewDto getStatisticalReview() {
+        StatisticalReviewDto statisticalReviewDto = reviewRepository.getReviewStatistics();
+
+        Long star1 = statisticalReviewDto.getStar1();
+        Long star2 = statisticalReviewDto.getStar2();
+        Long star3 = statisticalReviewDto.getStar3();
+        Long star4 = statisticalReviewDto.getStar4();
+        Long star5 = statisticalReviewDto.getStar5();
+        Long totalReviews = statisticalReviewDto.getTotalReviews();
+
+        Double averageRating = 0.0;
+        if (totalReviews != 0) {
+            averageRating = (star1 * 1.0 + star2 * 2.0 + star3 * 3.0 + star4 * 4.0 + star5 * 5.0) / totalReviews;
+        }
+
+        statisticalReviewDto.setAverageRating(averageRating);
+
+        return statisticalReviewDto;
     }
 }

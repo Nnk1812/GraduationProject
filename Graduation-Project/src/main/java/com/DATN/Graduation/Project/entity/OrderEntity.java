@@ -37,6 +37,10 @@ public class OrderEntity {
     @Basic
     private String userNameCustomer;
 
+    @Column(name = "code_customer")
+    @Basic
+    private String codeCustomer;
+
     @Column(name = "status")
     @Basic
     private Integer status;

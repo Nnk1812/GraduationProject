@@ -24,6 +24,7 @@ public enum ErrorCode {
     PRODUCT_DETAIL_NOT_EXISTED(1101,"Product detail not existed"),
     CODE_DOSE_NOT_MATCH(1102,"Code dose not match"),
     PRODUCT_EXISTED(1100,"Product already existed"),
+    PRODUCT_NOT_EXISTED_IN_ORDER(1100,"Product not existed in order"),
 
     //Exception of Brand -1200
     BRAND_NOT_EXISTED(1200,"Brand not existed"),
@@ -53,7 +54,8 @@ public enum ErrorCode {
     CANNOT_CHANGE_STATUS_TO_DELIVERY(1605,"Cannot change the status to delivery "),
     CANNOT_CHANGE_STATUS_TO_RECEIVED(1606,"Cannot change the status to received "),
     CANNOT_CHANGE_STATUS_TO_CANCELED(1607,"Cannot change the status to canceled "),
-    CANNOT_CHANGE_STATUS_TO_REVIEW(1608,"Cannot change the status to review "),
+    CANNOT_CHANGE_STATUS_TO_RETURN(1608,"Cannot change the status to return "),
+    CANNOT_UPDATE_ORDER_IN_STATUS_DA_CHUYEN_GIAO(1608,"Cannot update order in status da chuyen giao"),
 
 
     //Exception of Warehouse - 1700
@@ -77,6 +79,8 @@ public enum ErrorCode {
     CANNOT_CHANGE_STATUS_WARRANTY_TO_COMPLETED(1809, "Can not change status to completed"),
     CANNOT_CHANGE_STATUS_WARRANTY_TO_RETURNED(1810, "Can not change status to returned"),
     CANNOT_CHANGE_STATUS_WARRANTY_TO_REJECTED(1811, "Can not change status to rejected"),
+    REPORT_WARRANTY_MUST_HAVE_QUANTITY(1812,"Report warrity must have quantity"),
+    QUANTITY_IN_REPORT_MUST_BE_GREATER_THAN_QUANTITY_IN_ORDER(1813,"Quantity in report must be greater than or equal to quantity in order"),
 
     ;
 

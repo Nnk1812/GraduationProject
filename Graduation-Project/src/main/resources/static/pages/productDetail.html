@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="/DATN/js/common.js"></script>
     <script src="/DATN/js/login.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
 <header class="bg-blue-900 text-white py-4">
@@ -70,10 +70,12 @@
                     <!-- Menu dropdown -->
                     <div id="dropdownMenu"
                          class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-30 hidden">
-                        <a href="/DATN/pages/accountDetail.html" id="accountLink"
+                        <a href="accountDetail.html" id="accountLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Tài Khoản Của Tôi</a>
-                        <a href="/DATN/pages/order.html" id="orderLink"
+                        <a href="order.html" id="orderLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Đơn hàng</a>
+                        <a href="warranty.html" id="warrantyLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800">Bảo hành</a>
 
                         <!-- Quản trị -->
                         <a href="/DATN/pages/managerAccount.html" id="manageAccountLink"
@@ -88,8 +90,12 @@
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Sản Phẩm</a>
                         <a href="/DATN/pages/managerReportImportWarehouse.html" id="manageImportLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản Lý Nhập Hàng</a>
+                        <a href="/DATN/pages/managerWarranty.html" id="managerWarrantyLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Quản lý bảo hành</a>
                         <a href="/DATN/pages/managerStock.html" id="manageWarehouseLink"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Kho</a>
+                        <a href="/DATN/pages/statistical.html" id="statisticalLink"
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100 hover:text-blue-800 hidden">Thống kê</a>
                         <!-- Đăng xuất -->
                         <button id="logoutBtn"
                                 class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 hover:text-red-800 transition duration-200">

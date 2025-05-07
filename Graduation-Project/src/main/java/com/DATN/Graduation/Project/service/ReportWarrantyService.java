@@ -1,6 +1,8 @@
 package com.DATN.Graduation.Project.service;
 
 import com.DATN.Graduation.Project.dto.ReportWarrantyDto;
+import com.DATN.Graduation.Project.dto.WarrantyDetailDto;
+import com.DATN.Graduation.Project.dto.WarrantyDto;
 import com.DATN.Graduation.Project.entity.ReportWarrantyEntity;
 
 import java.util.List;
@@ -12,6 +14,7 @@ public interface ReportWarrantyService {
     String complete(String code);
     String returned(String code);
     String rejected(String code);
-    List<ReportWarrantyEntity> findAll();
-    List<ReportWarrantyEntity> findByUser(String username);
+    List<WarrantyDto> findAll();
+    List<WarrantyDto> findByUser(String code);
+    WarrantyDetailDto findByCode(String code);
 }

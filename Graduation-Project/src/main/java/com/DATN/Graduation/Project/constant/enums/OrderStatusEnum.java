@@ -10,7 +10,7 @@ public enum OrderStatusEnum {
     DANG_GIAO_HANG(4,"Đang giao hàng"),
     DA_NHAN_HANG(5,"Đã giao hàng"),
     HUY_DON_HANG(6,"Đơn hàng đã hủy"),
-    DA_DANH_GIA(7,"Đã đánh giá sản phẩm trong đơn hàng");
+    TRA_HANG(7,"Trả hàng");
 
     private final Integer value;
     private final String VNValue;

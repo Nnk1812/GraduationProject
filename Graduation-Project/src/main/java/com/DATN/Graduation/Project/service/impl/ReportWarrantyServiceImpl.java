@@ -2,6 +2,8 @@ package com.DATN.Graduation.Project.service.impl;
 
 import com.DATN.Graduation.Project.constant.enums.StatusWarranty;
 import com.DATN.Graduation.Project.dto.ReportWarrantyDto;
+import com.DATN.Graduation.Project.dto.WarrantyDetailDto;
+import com.DATN.Graduation.Project.dto.WarrantyDto;
 import com.DATN.Graduation.Project.entity.ProductEntity;
 import com.DATN.Graduation.Project.entity.ReportWarrantyEntity;
 import com.DATN.Graduation.Project.entity.UserEntity;
@@ -66,12 +68,19 @@ public class ReportWarrantyServiceImpl implements ReportWarrantyService {
             if (!orderRepository.findAllCodes().contains(dto.getOrder())) {
                 throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
             }
+            if(ObjectUtils.isEmpty(orderRepository.findOrdersByCodeCustomer(dto.getCustomer())))
+            {
+                throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
+            }
         }
         if(ObjectUtils.isEmpty(dto.getProduct())){
             throw new AppException(ErrorCode.REPORT_MUST_HAVE_PRODUCT);
         }else{
             if(!productRepository.findAllProductCode().contains(dto.getProduct())){
                 throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
+            }
+            if(ObjectUtils.isEmpty(orderRepository.findOrdersCustomer(dto.getCustomer(),dto.getProduct()))){
+                throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED_IN_ORDER);
             }
         }
         if(ObjectUtils.isEmpty(dto.getCustomer())){
@@ -81,19 +90,19 @@ public class ReportWarrantyServiceImpl implements ReportWarrantyService {
                 throw new AppException(ErrorCode.USER_NOT_EXISTED);
             }
         }
-        if(ObjectUtils.isEmpty(dto.getEmployee())){
-            throw new AppException(ErrorCode.REPORT_WARRANTY_MUST_HAVE_CUSTOMER);
-        }else {
-            if(!userRepository.findAllCode().contains(dto.getEmployee())){
-                throw new AppException(ErrorCode.USER_NOT_EXISTED);
-            }
-        }
         if(ObjectUtils.isEmpty(dto.getStatus()))
         {
             dto.setStatus(StatusWarranty.PENDING.getValue());
         }else {
             if (!dto.getStatus().equals(StatusWarranty.PENDING.getValue())) {
                 throw new AppException(ErrorCode.STATUS_CREATE_REPORT_WARRANTY_MUST_BE_PENDING);
+            }
+        }
+        if(ObjectUtils.isEmpty(dto.getQuantity())){
+            throw new AppException(ErrorCode.REPORT_WARRANTY_MUST_HAVE_QUANTITY);
+        }else{
+            if(dto.getQuantity() > orderRepository.findQuantityByCode(dto.getOrder(),dto.getProduct())){
+                throw new AppException(ErrorCode.QUANTITY_IN_REPORT_MUST_BE_GREATER_THAN_QUANTITY_IN_ORDER);
             }
         }
         LocalDateTime now = LocalDateTime.now();
@@ -176,14 +185,16 @@ public class ReportWarrantyServiceImpl implements ReportWarrantyService {
         reportWarrantyRepository.save(warrantyEntity);
         return "Từ chối bảo hành";
     }
-    public List<ReportWarrantyEntity> findAll(){
-        return reportWarrantyRepository.findAll();
+    @Override
+    public List<WarrantyDto> findAll(){
+        return reportWarrantyRepository.findAllWarranty();
     }
-    public List<ReportWarrantyEntity> findByUser(String username){
-        UserEntity user = userRepository.findByUserName(username).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_EXISTED)
-        );
-        return reportWarrantyRepository.findByCustomer(user.getCode());
+    @Override
+    public List<WarrantyDto> findByUser(String code){
+        return reportWarrantyRepository.findAllWarrantyByEmployee(code);
     }
-
+    @Override
+    public WarrantyDetailDto findByCode(String code){
+        return reportWarrantyRepository.findWarrantyDetail(code);
+    }
 }

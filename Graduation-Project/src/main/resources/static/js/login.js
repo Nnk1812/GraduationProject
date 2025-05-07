@@ -17,6 +17,9 @@ window.addEventListener("DOMContentLoaded", function () {
     const manageProductLink = document.getElementById("manageProductLink");
     const manageImportLink = document.getElementById("manageImportLink");
     const manageWarehouseLink = document.getElementById("manageWarehouseLink");
+    const warrantyLink = document.getElementById("warrantyLink");
+    const managerWarrantyLink = document.getElementById("managerWarrantyLink");
+    const statisticalLink = document.getElementById("statisticalLink");
 
     userInfo.addEventListener("click", function () {
         dropdownMenu.classList.toggle("hidden");
@@ -35,7 +38,8 @@ window.addEventListener("DOMContentLoaded", function () {
             manageProductLink.classList.remove("hidden");
             manageImportLink.classList.remove("hidden");
             manageWarehouseLink.classList.remove("hidden");
-
+            managerWarrantyLink.classList.remove("hidden");
+            statisticalLink.classList.remove("hidden");
         }
 
         logoutBtn.addEventListener("click", function () {

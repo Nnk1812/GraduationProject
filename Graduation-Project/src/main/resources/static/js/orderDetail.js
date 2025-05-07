@@ -40,7 +40,7 @@ function renderOrder(order) {
             case 4: return "Đang giao hàng";
             case 5: return "Hoàn thành";
             case 6: return "Đơn hàng đã hủy";
-            case 7: return "Đã đánh giá đơn hàng";
+            case 7: return "Trả hàng";
             default: return "Không xác định";
         }
     };
@@ -146,11 +146,18 @@ function renderOrder(order) {
     if (order.status === 4) {
         const actions = document.getElementById('od-actions');
         actions.innerHTML = `
+        <div class="flex gap-4">
             <button id="receiveBtn"
                 class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
               Đã nhận hàng và thanh toán
             </button>
-        `;
+            <button id="returnBtn"
+                class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+              Trả hàng
+            </button>
+        </div>
+    `;
+
         document.getElementById('receiveBtn').onclick = () => {
             if (confirm('Bạn đã nhận hàng và thanh toán chưa?')) {
                 fetch(`http://localhost:8080/DATN/order/receive?code=${order.code}`, {
@@ -158,7 +165,16 @@ function renderOrder(order) {
                 }).then(() => location.reload());
             }
         };
+
+        document.getElementById('returnBtn').onclick = () => {
+            if (confirm('Bạn muốn trả hàng?')) {
+                fetch(`http://localhost:8080/DATN/order/return?code=${order.code}`, {
+                    method: 'POST'
+                }).then(() => location.reload());
+            }
+        };
     }
+
 
     // Xử lý khi nhấn nút Đánh giá sản phẩm
     // if (order.status === 5) {
@@ -249,16 +265,5 @@ function renderOrder(order) {
             });
     };
 
-
-    if (order.status === 5) {
-        const actions = document.getElementById('od-actions');
-        actions.innerHTML = `
-        <button id="reviewBtn"
-            class="px-4 py-2 bg-yellow-500 text-white rounded ">
-          Hoàn thành đơn hàng
-        </button>
-    `;
-
-    }
 
 }

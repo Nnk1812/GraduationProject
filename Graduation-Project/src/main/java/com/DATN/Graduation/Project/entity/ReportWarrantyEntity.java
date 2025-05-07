@@ -44,6 +44,10 @@ public class ReportWarrantyEntity {
     @Basic
     private Integer status;
 
+    @Column(name = "quantity")
+    @Basic
+    private Integer quantity;
+
     @Column(name = "warranty_date")
     @Basic
     private LocalDateTime warrantyDate;
