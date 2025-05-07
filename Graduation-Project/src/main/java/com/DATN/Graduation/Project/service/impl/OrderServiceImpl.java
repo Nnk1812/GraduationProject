@@ -3,10 +3,7 @@ package com.DATN.Graduation.Project.service.impl;
 import com.DATN.Graduation.Project.constant.enums.OrderStatusEnum;
 import com.DATN.Graduation.Project.dto.OrderDetailDto;
 import com.DATN.Graduation.Project.dto.OrderDto;
-import com.DATN.Graduation.Project.entity.OrderDetailEntity;
-import com.DATN.Graduation.Project.entity.OrderEntity;
-import com.DATN.Graduation.Project.entity.ProductEntity;
-import com.DATN.Graduation.Project.entity.UserEntity;
+import com.DATN.Graduation.Project.entity.*;
 import com.DATN.Graduation.Project.exception.AppException;
 import com.DATN.Graduation.Project.exception.ErrorCode;
 import com.DATN.Graduation.Project.mapper.OrderMapper;
@@ -47,6 +44,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderMapper orderMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private StockRepository stockRepository;
 
     public OrderDto saveOrder(OrderDto dto) {
         if(!ObjectUtils.isEmpty(dto.getCode())){
@@ -100,6 +99,10 @@ public class OrderServiceImpl implements OrderService {
                 price +=entity.getRealPrice() * detail.getQuantity();
                 detailEntity.setQuantity(detail.getQuantity());
                 orderDetailRepository.save(detailEntity);
+                StockEntity stock = stockRepository.findByProduct(entity.getCode());
+                stock.setQuantity(stock.getQuantity()-detailEntity.getQuantity());
+                stockRepository.save(stock);
+
             }
         }else{
             throw new AppException(ErrorCode.ORDER_MUST_HAVE_PRODUCT);
@@ -128,7 +131,13 @@ public class OrderServiceImpl implements OrderService {
         }else {
             dto.setShippingFee(0L);
         }
-        dto.setPriceToPay(realPrice+dto.getShippingFee());
+        long deposit = realPrice *10/100;
+        if(realPrice>10000000 && realPrice <20000000){
+            dto.setDeposit(deposit);
+        }else {
+            dto.setDeposit(0L);
+        }
+        dto.setPriceToPay(realPrice+dto.getShippingFee()-dto.getDeposit());
 
         // Lưu ID cũ nếu có để tránh lỗi Hibernate
         Long oldId = orderEntity.getId();
@@ -236,6 +245,19 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
         return "Đã hủy đơn hàng thành công";
+    }
+    public String review(String code){
+        OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
+                ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
+        );
+        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DA_NHAN_HANG.getValue())){
+            dto.setStatus(OrderStatusEnum.DA_DANH_GIA.getValue());
+        }else{
+            throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_REVIEW);
+        }
+        OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
+        orderRepository.save(entity);
+        return "Đã đánh giá đơn hàng";
     }
     public List<OrderEntity> historyOrder(){
         return orderRepository.findAll();

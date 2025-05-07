@@ -21,12 +21,15 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     @Query("SELECT new com.DATN.Graduation.Project.dto.OrderDto(" +
             "o.id, o.code, o.employee, o.customer, o.status, o.totalPrice, " +
             "o.discount, o.realPrice, o.paymentMethod, o.priceToPay, o.paymentStatus, " +
-            "o.address,o.phone, o.shippingFee, o.note, o.createdAt, o.updatedAt,o.userNameCustomer) " +
+            "o.address,o.phone, o.shippingFee, o.note, o.createdAt, o.updatedAt,o.userNameCustomer,o.deposit) " +
             "FROM OrderEntity o WHERE o.code = :code")
     Optional<OrderDto> findOrderDtoById(String code);
 
     @Query(value = "select * from orders a where a.username_customer =:code ",nativeQuery = true)
     List<OrderEntity> findOrdersByCustomerCode(String code);
+
+    @Query(value = "select a.code from orders a ",nativeQuery = true)
+    List<String> findAllCodes();
 
 
 }

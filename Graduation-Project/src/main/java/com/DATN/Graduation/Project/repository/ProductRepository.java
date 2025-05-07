@@ -1,17 +1,16 @@
 package com.DATN.Graduation.Project.repository;
 
 import com.DATN.Graduation.Project.dto.FindAllProductDto;
-import com.DATN.Graduation.Project.dto.FindOutStandingDto;
+import com.DATN.Graduation.Project.dto.FindProductDto;
 import com.DATN.Graduation.Project.dto.FindProductDetailDto;
 import com.DATN.Graduation.Project.dto.ProductDto;
 import com.DATN.Graduation.Project.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
-import java.math.BigDecimal;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +27,9 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             "p.brand, p.price, p.discount, p.description ,p.image) FROM ProductEntity p " +
             "where p.id IN :ids and p.isDeleted = false ")
     List<ProductDto> findProduct(List<Long> ids);
+
+    @Query(value = "select a.code from product a",nativeQuery = true)
+    List<String> findAllProductCode();
 
 //    @Query(value = "select new com.DATN.Graduation.Project.dto.ProductDto(a.id,a.code,a.name,a.isActive,a.isDeleted,a.brand, " +
 //            "a.quantity,a.price,a.discount,a.description ) " +
@@ -52,34 +54,39 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<String> getProductNames();
 
 
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindOutStandingDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand) " +
+    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity) " +
             "FROM ProductEntity a " +
             "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
             "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
             "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
             "LEFT JOIN BrandEntity e on e.code = a.brand " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand " +
+            "inner join StockEntity f on f.product = a.code " +
+            "where f.quantity >0 " +
+            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity " +
             "ORDER BY SUM(b.quantity) DESC")
-    List<FindOutStandingDto> findTopFourByQuantity(Pageable pageable);
+    List<FindProductDto> findTopFourByQuantity(Pageable pageable);
 
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindOutStandingDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand) " +
+    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity) " +
             "FROM ProductEntity a " +
             "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
             "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
             "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
             "LEFT JOIN BrandEntity e on e.code = a.brand " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand " )
-    List<FindOutStandingDto> findAllProduct();
+            "inner join StockEntity f on f.product = a.code " +
+            "where f.quantity >0 " +
+            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand ,f.quantity" )
+    List<FindProductDto> findAllProduct();
 
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindOutStandingDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand) " +
+    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity) " +
             "FROM ProductEntity a " +
             "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
             "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
             "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
             "LEFT JOIN BrandEntity e on e.code = a.brand " +
-            "WHERE e.name =:brand " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand " )
-    List<FindOutStandingDto> findByBrand(String brand);
+            "inner join StockEntity f on f.product = a.code " +
+            "WHERE e.name =:brand and f.quantity >0 " +
+            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity " )
+    List<FindProductDto> findByBrand(String brand);
 
     @Query("select new com.DATN.Graduation.Project.dto.FindAllProductDto(a.code,a.name,a.type,b.code,b.name,c.code,c.name,a.price,a.realPrice,a.isDeleted) " +
             "from ProductEntity a " +
@@ -94,14 +101,15 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             "inner join ProductDetailEntity d on d.product = a.code " +
             "where a.isDeleted = false and a.code =:code ")
     FindProductDetailDto findAllProductsDetail(String code);
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindOutStandingDto(a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand) " +
+    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand,f.quantity) " +
             "FROM ProductEntity a " +
             "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
             "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
             "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
             "LEFT JOIN BrandEntity e ON e.code = a.brand " +
-            "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand")
-    List<FindOutStandingDto> findByProductNameIgnoreCase(String name);
+            "inner join StockEntity f on f.product = a.code " +
+            "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) and f.quantity >0 " +
+            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand,f.quantity")
+    List<FindProductDto> findByProductNameIgnoreCase(String name);
 
 }

@@ -77,6 +77,10 @@ public class OrderEntity {
     @Basic
     private Long shippingFee;
 
+    @Column(name = "deposit")
+    @Basic
+    private Long deposit;
+
     @Column(name = "note")
     @Basic
     private String note;

@@ -113,3 +113,78 @@ document.getElementById("order").addEventListener("click", function () {
             alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
         });
 });
+function renderAverageStars(avgRating) {
+    const maxStars = 5;
+    const fullStars = Math.floor(avgRating);
+    const halfStar = avgRating % 1 >= 0.5;
+    let starsHtml = '';
+
+    for (let i = 1; i <= maxStars; i++) {
+        if (i <= fullStars) {
+            starsHtml += `<i class="fas fa-star text-yellow-500"></i>`;
+        } else if (i === fullStars + 1 && halfStar) {
+            starsHtml += `<i class="fas fa-star-half-alt text-yellow-500"></i>`;
+        } else {
+            starsHtml += `<i class="far fa-star text-gray-300"></i>`;
+        }
+    }
+
+    return starsHtml;
+}
+async function fetchAndRenderReviews() {
+    try {
+        const response = await fetch(`http://localhost:8080/DATN/products/findAllReview?code=${product.code}`);
+        const result = await response.json();
+
+        if (result.code !== 200 || !Array.isArray(result.data)) {
+            throw new Error("Dữ liệu đánh giá không hợp lệ.");
+        }
+
+        const reviews = result.data;
+        const totalReviews = reviews.length;
+        const avgRating = totalReviews > 0 ? (
+            reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        ).toFixed(1) : '0.0';
+
+        // Cập nhật tổng đánh giá
+        document.getElementById("average-rating").innerText = avgRating;
+        document.getElementById("total-reviews").innerText = `(${totalReviews} đánh giá)`;
+
+        // Render sao trung bình
+        document.getElementById("average-stars").innerHTML = renderAverageStars(parseFloat(avgRating));
+
+        // Render danh sách đánh giá
+        const listContainer = document.getElementById("review-list");
+        listContainer.innerHTML = ""; // Xóa cũ
+
+        reviews.forEach(review => {
+            const createdDate = new Date(review.created_at).toLocaleDateString('vi-VN');
+            const stars = renderAverageStars(review.rating);
+
+            const reviewHTML = `
+                <div class="border-t pt-4">
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center space-x-2">
+                            <p class="font-medium text-gray-800">${review.user}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-yellow-400 text-base mb-1">
+                        ${stars}
+                    </div>
+                    <p class="text-gray-700 mb-2">${review.comment}</p>
+                    <p class="text-sm text-gray-500">${createdDate}</p>
+                </div>
+            `;
+            listContainer.insertAdjacentHTML("beforeend", reviewHTML);
+        });
+
+    } catch (error) {
+        console.error("Lỗi khi tải đánh giá:", error);
+    }
+}
+
+
+// Gọi hàm khi tải trang (ví dụ với code = 'P002')
+document.addEventListener("DOMContentLoaded", () => {
+    fetchAndRenderReviews();
+});

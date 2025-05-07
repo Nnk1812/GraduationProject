@@ -4,6 +4,7 @@ import com.DATN.Graduation.Project.dto.*;
 import com.DATN.Graduation.Project.entity.ProductDetailEntity;
 import com.DATN.Graduation.Project.entity.ProductEntity;
 import com.DATN.Graduation.Project.entity.ReviewsEntity;
+import com.DATN.Graduation.Project.entity.UserEntity;
 import com.DATN.Graduation.Project.exception.AppException;
 import com.DATN.Graduation.Project.exception.ErrorCode;
 import com.DATN.Graduation.Project.mapper.ProductMapper;
@@ -16,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -87,26 +87,6 @@ public class ProductServiceImpl implements ProductService {
         }
         if (!brandRepository.findBrand().contains(productsDto.getBrand())) {
             throw new AppException(ErrorCode.BRAND_NOT_EXISTED);
-        }
-        if(ObjectUtils.isEmpty(productsDto.getDiscount())) {
-            productsDto.setRealPrice(productsEntity.getPrice());
-        }else {
-            if (!discountRepository.findDiscount().contains(productsDto.getDiscount())) {
-                throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
-            }else{
-                if(discountService.isDiscountValid(productsDto.getDiscount())){
-                    if(discountRepository.getDiscountType(productsDto.getDiscount())==1){
-                        Long price = productsDto.getPrice() - (productsDto.getPrice() * discountRepository.getDiscountValue(productsDto.getDiscount())/100);
-                        productsDto.setRealPrice(price);
-                    }
-                    if(discountRepository.getDiscountType(productsDto.getDiscount())==2){
-                        Long price = productsDto.getPrice() - discountRepository.getDiscountValue(productsDto.getDiscount());
-                        productsDto.setRealPrice(price);
-                    }
-                }else {
-                    log.warn("Discount code expired");
-                }
-            }
         }
         modelMapper.map(productsDto, productsEntity);
         ProductEntity savedProduct = productsRepository.save(productsEntity);
@@ -224,9 +204,9 @@ public class ProductServiceImpl implements ProductService {
         if(ObjectUtils.isEmpty(productsRepository.findByCode(dto.getProduct()))) {
             throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
         }
-        if(ObjectUtils.isEmpty(userRepository.findByCode(dto.getUser()))) {
-            throw new AppException(ErrorCode.USER_NOT_EXISTED);
-        }
+        UserEntity user = userRepository.findByUserName(dto.getUser()).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_EXISTED)
+        );
         if(dto.getRating() < 1 || dto.getRating() > 5){
             throw new AppException(ErrorCode.VALIDATION_RATING_REVIEW);
         }
@@ -236,7 +216,7 @@ public class ProductServiceImpl implements ProductService {
         dto.setUpdated_at(now);
         ReviewsEntity entity = reviewsMapper.toEntity(dto);
         entity.setProduct(dto.getProduct());
-        entity.setUser(dto.getUser());
+        entity.setUser(user.getFullName());
         reviewRepository.save(entity);
         return dto;
     }
@@ -257,18 +237,21 @@ public class ProductServiceImpl implements ProductService {
                 .ratingCount(ratings.size())
                 .build();
     }
+    public List<ReviewsEntity> findAllReviewsByProduct(String code){
+        return reviewRepository.findAllReviewByProduct(code);
+    }
 
-    public List<FindOutStandingDto> findAllProducts(){
+    public List<FindProductDto> findAllProducts(){
         return productsRepository.findAllProduct();
     }
 
-    public List<FindOutStandingDto> findOutstandingProduct(Pageable pageable){
+    public List<FindProductDto> findOutstandingProduct(Pageable pageable){
         return productsRepository.findTopFourByQuantity((Pageable) pageable);
     }
     public ProductDetailEntity getProductDetail(String code){
         return productDetailsRepository.findByProduct(code).orElse(null);
     }
-    public List<FindOutStandingDto> findByBrand(String brand){
+    public List<FindProductDto> findByBrand(String brand){
         return productsRepository.findByBrand(brand);
     }
     public List<FindAllProductDto> findAll(){
@@ -277,7 +260,7 @@ public class ProductServiceImpl implements ProductService {
     public FindProductDetailDto findProductDetail(String code){
         return productsRepository.findAllProductsDetail(code);
     }
-    public List<FindOutStandingDto> findByName(String name){
+    public List<FindProductDto> findByName(String name){
         return productsRepository.findByProductNameIgnoreCase(name);
     }
     public String activeProduct(String code){

@@ -21,4 +21,8 @@ public class StockServiceImpl implements StockService {
     public List<StockEntity> findAll(){
         return stockRepository.findAll();
     }
+//    @Override
+//    public String findQuantityByProduct(String code){
+//        StockEntity stock = stockRepository.
+//    }
 }

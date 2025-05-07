@@ -3,7 +3,7 @@ package com.DATN.Graduation.Project.controller;
 import com.DATN.Graduation.Project.dto.*;
 import com.DATN.Graduation.Project.dto.response.ApiResponse;
 import com.DATN.Graduation.Project.entity.ProductDetailEntity;
-import com.DATN.Graduation.Project.entity.ProductEntity;
+import com.DATN.Graduation.Project.entity.ReviewsEntity;
 import com.DATN.Graduation.Project.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +56,22 @@ public class ProductController {
         response.setData(productsService.ratingProduct(code));
         return response;
     }
+    @GetMapping("/findAllReview")
+    public ApiResponse<List<ReviewsEntity>> findAllReview(@RequestParam String code) {
+        ApiResponse<List<ReviewsEntity>> response = new ApiResponse<>();
+        response.setData(productsService.findAllReviewsByProduct(code));
+        return response;
+    }
+
     @GetMapping("findAll")
-    public ApiResponse<List<FindOutStandingDto>> ratingProduct() {
-        ApiResponse<List<FindOutStandingDto>> response = new ApiResponse<>();
+    public ApiResponse<List<FindProductDto>> ratingProduct() {
+        ApiResponse<List<FindProductDto>> response = new ApiResponse<>();
         response.setData(productsService.findAllProducts());
         return response;
     }
     @GetMapping("/findOutstanding")
-    public ApiResponse<List<FindOutStandingDto>> findOutstandingProduct(@PageableDefault(page = 0, size = 4) Pageable pageable) {
-        ApiResponse<List<FindOutStandingDto>> response = new ApiResponse<>();
+    public ApiResponse<List<FindProductDto>> findOutstandingProduct(@PageableDefault(page = 0, size = 4) Pageable pageable) {
+        ApiResponse<List<FindProductDto>> response = new ApiResponse<>();
         response.setData(productsService.findOutstandingProduct(pageable));
         return response;
     }
@@ -75,8 +82,8 @@ public class ProductController {
         return response;
     }
     @GetMapping("/findByBrand")
-    public ApiResponse<List<FindOutStandingDto>> findByBrand(@RequestParam String brand) {
-        ApiResponse<List<FindOutStandingDto>> response = new ApiResponse<>();
+    public ApiResponse<List<FindProductDto>> findByBrand(@RequestParam String brand) {
+        ApiResponse<List<FindProductDto>> response = new ApiResponse<>();
         response.setData(productsService.findByBrand(brand));
         return response;
     }
@@ -93,8 +100,8 @@ public class ProductController {
         return response;
     }
     @GetMapping("/findByName")
-    public ApiResponse<List<FindOutStandingDto>> findByName(@RequestParam String name) {
-        ApiResponse<List<FindOutStandingDto>> response = new ApiResponse<>();
+    public ApiResponse<List<FindProductDto>> findByName(@RequestParam String name) {
+        ApiResponse<List<FindProductDto>> response = new ApiResponse<>();
         response.setData(productsService.findByName(name));
         return response;
     }

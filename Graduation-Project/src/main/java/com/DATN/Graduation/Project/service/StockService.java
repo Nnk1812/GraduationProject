@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface StockService {
     List<StockEntity> findAll();
+//    String findQuantityByProduct(String code);
 }

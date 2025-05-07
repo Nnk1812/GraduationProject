@@ -1,20 +1,77 @@
 let allProducts = [];
+const username = localStorage.getItem("username");
+let fullname = "";
+
+
+let userData = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const res = await fetch(`http://localhost:8080/DATN/user/findUser?user=${username}`);
+        const json = await res.json();
+        if (json.code === 200) {
+            userData = json.data;
+            console.log(userData);
+            console.log(username);
+
+            fullname = userData.fullName;
+            console.log(fullname);
+        } else {
+            console.error("Không tìm thấy người dùng:", json.message);
+        }
+    } catch (err) {
+        console.error("Lỗi khi gọi API:", err);
+    }
+});
 
 function formatCurrency(value) {
     if (!value) return "0 ₫";
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 }
+function generateNextCode(existingCodes) {
+    let maxNumber = 0;
 
+    existingCodes.forEach(code => {
+        const match = code.match(/^W(\d{3})$/);
+        if (match) {
+            const num = parseInt(match[1]);
+            if (num > maxNumber) {
+                maxNumber = num;
+            }
+        }
+    });
+
+    const nextNumber = maxNumber + 1;
+    return `W${nextNumber.toString().padStart(3, '0')}`;
+}
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
 
     await loadDiscounts();
-    if (!code) {
-        document.getElementById("h1").textContent = "Thêm mới sản phẩm";
-
-    }
     await loadAllProducts();
+    if (!code) {
+        document.getElementById("h1").textContent = "Thêm mới phiếu nhập kho";
+        document.getElementById("employee").value = fullname;
+        fetch("http://localhost:8080/DATN/warehouse/findAll") // hoặc API bạn đang có
+            .then(res => res.json())
+            .then(result => {
+                const codes = result.data.map(d => d.code);
+                const newCode = generateNextCode(codes);
+                document.getElementById("code").value = newCode;
+                const tbody = document.getElementById("productTable");
+                tbody.innerHTML = "";
+                updateRowNumbers();
+                updateGrandTotal();
+                addProductRow();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Không thể sinh mã khuyến mãi mới.");
+            });
+        return;
+    }
+
     await loadWarehouseDetail(code);
 });
 
@@ -203,7 +260,7 @@ function updateRowEvent(row) {
         if (product) {
             row.querySelector(".productName").value = product.productName || product.name;
             row.querySelector(".brand").value = product.brandName || "";
-            row.querySelector(".price").value = product.price;
+            // row.querySelector(".price").value = product.price;
             updateTotal(row);
         }
     });
@@ -297,7 +354,6 @@ function saveReport() {
     const reportId  =document.getElementById("reportImportWarehouseId").textContent.trim();
     const payload = {
         id: reportId || null,
-        code: document.getElementById("code").value,
         name: document.getElementById("name").value,
         importDate: document.getElementById("importDate").value,
         note: document.getElementById("note").value,
@@ -310,6 +366,9 @@ function saveReport() {
     };
     console.log("Dữ liệu gửi lên server:", payload);
     const isCreate = !reportId || reportId === "" || reportId === "null";
+    if (!isCreate) {
+        payload.code = document.getElementById("code").value;
+    }
     fetch("http://localhost:8080/DATN/warehouse/save", {
         method: "POST",
         headers: {

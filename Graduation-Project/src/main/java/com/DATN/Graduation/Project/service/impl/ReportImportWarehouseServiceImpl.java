@@ -121,7 +121,7 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
                 ProductEntity product = productRepository.findByCode(productDto.getProduct()).orElseThrow(
                         ()-> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
                 );
-                long totalPrice = productDto.getQuantity() * product.getPrice();
+                long totalPrice = productDto.getQuantity() * productDto.getPrice();
                 long realPrice=0;
                 importProductEntity.setProduct(product.getCode());
                 importProductEntity.setName(product.getName());
@@ -162,6 +162,23 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
                     stockEntity.setNote("Nhập kho từ phiếu: " + warehouseEntity.getCode());
                     stockEntity.setSellingPrice((sellingPrice + (sellingPrice * 10/100) + 12000000/200 + 25000000/200)*( 1+ 30/100));
                     stockRepository.save(stockEntity);
+                    sellingPrice = stockEntity.getSellingPrice();
+                    product.setPrice(sellingPrice);
+                    long realPrice = 0;
+                    if(product.getDiscount() != null) {
+                        if(Objects.equals(discountRepository.getDiscountType(product.getDiscount()), DiscountTypeEnum.PHAN_TRAM.getValue())){
+                            realPrice = sellingPrice - (sellingPrice * discountRepository.getDiscountValue(product.getDiscount())/100);
+                            product.setRealPrice(realPrice);
+                        }if (Objects.equals(discountRepository.getDiscountType(product.getDiscount()), DiscountTypeEnum.TIEN_MAT.getValue())){
+                            realPrice = sellingPrice - discountRepository.getDiscountValue(product.getDiscount());
+                            product.setRealPrice(realPrice);
+                        }
+                    }
+                    else {
+                        realPrice = sellingPrice;
+                    }
+                    product.setRealPrice(realPrice);
+                    productRepository.save(product);
                 }
             }
 

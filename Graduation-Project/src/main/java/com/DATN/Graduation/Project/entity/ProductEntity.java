@@ -63,4 +63,7 @@ public class ProductEntity {
     @Basic
     private Integer type;
 
+    @Column(name="warranty_months")
+    @Basic
+    private Integer warrantyMonths;
 }

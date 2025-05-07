@@ -57,8 +57,7 @@ districtSelect.addEventListener("change", () => {
 });
 
 // hiển thị thông tin sản phẩm
-
-    document.addEventListener("DOMContentLoaded", function () {
+ document.addEventListener("DOMContentLoaded", function () {
 
 
     fetch(`http://localhost:8080/DATN/cart/findAll?user=${username}`)

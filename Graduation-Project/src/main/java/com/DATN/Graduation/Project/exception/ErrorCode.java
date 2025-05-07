@@ -53,6 +53,7 @@ public enum ErrorCode {
     CANNOT_CHANGE_STATUS_TO_DELIVERY(1605,"Cannot change the status to delivery "),
     CANNOT_CHANGE_STATUS_TO_RECEIVED(1606,"Cannot change the status to received "),
     CANNOT_CHANGE_STATUS_TO_CANCELED(1607,"Cannot change the status to canceled "),
+    CANNOT_CHANGE_STATUS_TO_REVIEW(1608,"Cannot change the status to review "),
 
 
     //Exception of Warehouse - 1700
@@ -62,7 +63,24 @@ public enum ErrorCode {
     STATUS_WRONG(1703,"Status of create report import warehouse must be"),
     REPORT_MUST_HAVE_PRODUCT(1704,"Report import warehouse must have product"),
     WAREHOUSE_IMPORT_PRODUCT_NOT_EXISTED(1700,"Warehouse import product not existed"),
+
+    //Exception of Report Warranty
+    REPORT_WARRANTY_NOT_EXISTED(1800,"Report warrity not existed"),
+    REPORT_WARRANTY_MUST_BE_IN_ORDER(1801,"Report warrity must be in order"),
+    REPORT_WARRANTY_MUST_HAVE_PRODUCT(1802,"Report warrity must have product"),
+    REPORT_WARRANTY_MUST_HAVE_EMPLOYEE(1803,"Repoer warrity must have employee"),
+    REPORT_WARRANTY_MUST_HAVE_CUSTOMER(1804,"Repoer warrity must have customer"),
+    STATUS_CREATE_REPORT_WARRANTY_MUST_BE_PENDING(1805,"Status of create report warehouse must be"),
+    CREATE_REPORT_WARRANTY_WITHOUT_COMPLETE_DATE(1806,"Create report warehouse must have complete date"),
+    CANNOT_CHANGE_STATUS_WARRANTY_TO_RECEIVED(1807,"Can not change status to received "),
+    CANNOT_CHANGE_STATUS_WARRANTY_TO_IN_PROGRESS(1808, "Can not change status to in progress"),
+    CANNOT_CHANGE_STATUS_WARRANTY_TO_COMPLETED(1809, "Can not change status to completed"),
+    CANNOT_CHANGE_STATUS_WARRANTY_TO_RETURNED(1810, "Can not change status to returned"),
+    CANNOT_CHANGE_STATUS_WARRANTY_TO_REJECTED(1811, "Can not change status to rejected"),
+
     ;
+
+
 
 
     private int code;

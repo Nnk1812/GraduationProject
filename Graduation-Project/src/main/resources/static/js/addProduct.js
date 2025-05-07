@@ -3,8 +3,8 @@ function saveFormToLocalStorage() {
     const formData = {
         productName: document.getElementById('productName').value,
         brandSelect: document.getElementById('brandSelect').value,
-        quantity: document.getElementById('quantity').value,
-        price: document.getElementById('price').value,
+        // quantity: document.getElementById('quantity').value,
+        // price: document.getElementById('price').value,
         discountSelect: document.getElementById('discountSelect').value,
         productType: document.getElementById('productType').value,
         imageUrl: document.getElementById('imageUrl').value,
@@ -25,8 +25,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (savedData) {
         document.getElementById('productName').value = savedData.productName || '';
         document.getElementById('brandSelect').value = savedData.brandSelect || '';
-        document.getElementById('quantity').value = savedData.quantity || '';
-        document.getElementById('price').value = savedData.price || '';
+        // document.getElementById('quantity').value = savedData.quantity || '';
+        // document.getElementById('price').value = savedData.price || '';
         document.getElementById('discountSelect').value = savedData.discountSelect || '';
         document.getElementById('productType').value = savedData.productType || '';
         document.getElementById('imageUrl').value = savedData.imageUrl || '';
@@ -104,8 +104,8 @@ document.getElementById('submitProduct').addEventListener('click', async (e) => 
     const productData = {
         name: document.getElementById('productName').value,
         brand: document.getElementById('brandSelect').value,
-        quantity: parseInt(document.getElementById('quantity').value),
-        price: parseFloat(document.getElementById('price').value),
+        // quantity: parseInt(document.getElementById('quantity').value),
+        // price: parseFloat(document.getElementById('price').value),
         discount: document.getElementById('discountSelect').value || null,
         description: document.getElementById('description')?.value || "",
         image: document.getElementById('imageUrl').value,
@@ -135,8 +135,8 @@ document.getElementById('submitProduct').addEventListener('click', async (e) => 
 
             document.getElementById('productName').value = '';
             document.getElementById('brandSelect').value = '';
-            document.getElementById('quantity').value = '';
-            document.getElementById('price').value = '';
+            // document.getElementById('quantity').value = '';
+            // document.getElementById('price').value = '';
             document.getElementById('discountSelect').value = '';
             document.getElementById('productType').value = '';
             document.getElementById('imageUrl').value = '';

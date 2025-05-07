@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class FindOutStandingDto {
+public class FindProductDto {
     private String name ;
     private Long price;
     private Long realPrice;
@@ -15,4 +15,5 @@ public class FindOutStandingDto {
     private String code;
     private Integer type;
     private String brand;
+    private Long quantity;
 }

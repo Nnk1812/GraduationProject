@@ -12,4 +12,7 @@ public interface ReviewRepository extends JpaRepository<ReviewsEntity, Long> {
     @Query(value = "select a.rating from reviews a " +
             "where a.product =:code",nativeQuery = true)
     List<Double> findAllByCode(String code);
+    @Query(value = "select * from reviews a " +
+            "where a.product =:code",nativeQuery = true)
+    List<ReviewsEntity> findAllReviewByProduct(String code);
 }

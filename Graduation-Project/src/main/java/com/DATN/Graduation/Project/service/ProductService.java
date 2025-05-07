@@ -2,8 +2,8 @@ package com.DATN.Graduation.Project.service;
 
 import com.DATN.Graduation.Project.dto.*;
 import com.DATN.Graduation.Project.entity.ProductDetailEntity;
-import com.DATN.Graduation.Project.entity.ProductEntity;
 
+import com.DATN.Graduation.Project.entity.ReviewsEntity;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface ProductService {
 
     List<ProductDto> getProductDetails(List<Long> id);
 
-    List<FindOutStandingDto> findAllProducts();
+    List<FindProductDto> findAllProducts();
 
     String deleteProduct(String code);
 
@@ -22,17 +22,19 @@ public interface ProductService {
 
     RatingDto ratingProduct(String code);
 
-    List<FindOutStandingDto> findOutstandingProduct(Pageable pageable);
+    List<ReviewsEntity> findAllReviewsByProduct(String code);
+
+    List<FindProductDto> findOutstandingProduct(Pageable pageable);
 
     ProductDetailEntity getProductDetail(String code);
 
-    List<FindOutStandingDto> findByBrand(String brand);
+    List<FindProductDto> findByBrand(String brand);
 
     List<FindAllProductDto> findAll();
 
     FindProductDetailDto findProductDetail(String code);
 
-    List<FindOutStandingDto> findByName(String productName);
+    List<FindProductDto> findByName(String productName);
 
     String activeProduct(String code);
 }

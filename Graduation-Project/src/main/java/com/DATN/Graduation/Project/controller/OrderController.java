@@ -65,6 +65,12 @@ public class OrderController {
         response.setData(orderService.cancel(code));
         return response;
     }
+    @PostMapping("/review")
+    public ApiResponse<String> review(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(orderService.review(code));
+        return response;
+    }
     @GetMapping("/findByCode")
     public ApiResponse<List<OrderDto>> userOrder(@RequestParam String code) {
         ApiResponse<List<OrderDto>> response = new ApiResponse<>();

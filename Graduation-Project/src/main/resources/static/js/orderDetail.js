@@ -1,4 +1,5 @@
-// orderDetail.js
+const username = localStorage.getItem("username");
+
 document.addEventListener('DOMContentLoaded', () => {
     // 2) Gọi API lấy chi tiết
     const urlParams = new URLSearchParams(window.location.search);
@@ -20,6 +21,7 @@ const formatDate = (dateString) => {
     const d = new Date(dateString);
     return d.toLocaleDateString('vi-VN') + " " + d.toLocaleTimeString('vi-VN');
 };
+
 function renderOrder(order) {
     // Hiển thị thông tin đơn hàng
     document.getElementById('od-customer').textContent = order.customer;
@@ -38,6 +40,7 @@ function renderOrder(order) {
             case 4: return "Đang giao hàng";
             case 5: return "Hoàn thành";
             case 6: return "Đơn hàng đã hủy";
+            case 7: return "Đã đánh giá đơn hàng";
             default: return "Không xác định";
         }
     };
@@ -46,35 +49,66 @@ function renderOrder(order) {
     // Hiển thị danh sách sản phẩm
     const itemsContainer = document.getElementById('od-items');
     itemsContainer.innerHTML = ''; // reset
-    order.orderDetails.forEach(item => {
-        const wrap = document.createElement('div');
-        wrap.className = 'flex items-center justify-between space-x-4';
 
-        // Ảnh sản phẩm
+    order.orderDetails.forEach((item, index) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'flex justify-between items-center space-x-4 p-4 border-b';
+
+        // Ảnh sản phẩm (trái)
         const img = document.createElement('img');
         img.src = item.image;
         img.alt = item.product;
-        img.className = 'w-20 h-20 object-cover rounded';
+        img.className = 'w-24 h-24 object-cover rounded';
 
-        // Phần tên sản phẩm
-        const desc = document.createElement('div');
-        desc.className = 'flex-1';
-        desc.innerHTML = `
-            <div class="text-lg font-medium">${item.name}</div>
-        `;
+        // Tên và mã sản phẩm (phải ảnh)
+        const info = document.createElement('div');
+        info.className = 'flex flex-col flex-1';
 
-        // Phần số lượng + giá tiền (xếp dọc)
+        const name = document.createElement('div');
+        name.textContent = item.name;
+        name.className = 'text-base font-semibold';
+
+        const code = document.createElement('div');
+        code.textContent = `Mã: ${item.product}`;
+        code.className = 'text-sm text-gray-500';
+
+        info.appendChild(name);
+        info.appendChild(code);
+
+        // Phần số lượng + giá + nút đánh giá nếu cần
         const rightInfo = document.createElement('div');
-        rightInfo.className = 'flex flex-col items-end';
-        rightInfo.innerHTML = `
-            <div class="text-sm text-gray-600">Số lượng: ${item.quantity}</div>
-            <div class="text-lg font-semibold text-red-600">${item.totalPrice.toLocaleString()}₫</div>
-        `;
+        rightInfo.className = 'flex flex-col items-end justify-between';
 
-        // Gom lại
-        wrap.append(img, desc, rightInfo);
+        rightInfo.innerHTML = ` 
+        <div class="text-sm text-gray-600">Số lượng: ${item.quantity}</div>
+        <div class="text-lg font-semibold text-red-600">${item.totalPrice.toLocaleString()}₫</div>
+    `;
+
+        // Nếu đã giao hàng, hiển thị nút đánh giá nếu chưa đánh giá
+        if (order.status === 5) {
+            const reviewed = JSON.parse(localStorage.getItem('reviewedProducts') || '[]');
+            if (!reviewed.includes(item.product)) {
+                const reviewBtn = document.createElement('button');
+                reviewBtn.textContent = 'Đánh giá';
+                reviewBtn.className = 'mt-2 px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600';
+                reviewBtn.onclick = () => {
+                    document.getElementById('reviewModal').classList.remove('hidden');
+                    document.getElementById('rating').value = '';
+                    document.getElementById('comment').value = '';
+                    updateStarDisplay(-1);
+                    document.getElementById('submitReview').dataset.product = item.product;
+                };
+                rightInfo.appendChild(reviewBtn);
+            }
+        }
+
+        // Thêm các phần tử vào wrap
+        wrap.append(img, info, rightInfo);
         itemsContainer.appendChild(wrap);
     });
+
+
+
 
     // Phí vận chuyển & thành tiền
     document.getElementById('od-shippingFee').textContent = `${order.shippingFee.toLocaleString()}₫`;
@@ -95,7 +129,7 @@ function renderOrder(order) {
     // Các nút Hủy / Chỉnh sửa
     if (order.status === 1 || order.status === 2) {
         const actions = document.getElementById('od-actions');
-        actions.innerHTML = `
+        actions.innerHTML = ` 
             <button id="cancelBtn"
                 class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
               Hủy đơn hàng
@@ -109,6 +143,122 @@ function renderOrder(order) {
             }
         };
     }
+    if (order.status === 4) {
+        const actions = document.getElementById('od-actions');
+        actions.innerHTML = `
+            <button id="receiveBtn"
+                class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
+              Đã nhận hàng và thanh toán
+            </button>
+        `;
+        document.getElementById('receiveBtn').onclick = () => {
+            if (confirm('Bạn đã nhận hàng và thanh toán chưa?')) {
+                fetch(`http://localhost:8080/DATN/order/receive?code=${order.code}`, {
+                    method: 'POST'
+                }).then(() => location.reload());
+            }
+        };
+    }
+
+    // Xử lý khi nhấn nút Đánh giá sản phẩm
+    // if (order.status === 5) {
+    //     const actions = document.getElementById('od-actions');
+    //     actions.innerHTML = `
+    //     <button id="reviewBtn"
+    //         class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition">
+    //       Đánh giá sản phẩm
+    //     </button>
+    // `;
+    //
+    //     document.getElementById('reviewBtn').onclick = () => {
+    //         // Hiển thị modal đánh giá với ngôi sao
+    //         document.getElementById('reviewModal').classList.remove('hidden');
+    //     };
+    // }
+
+// Đóng modal khi click vào nút Close
+    document.getElementById('closeModal').onclick = () => {
+        document.getElementById('reviewModal').classList.add('hidden');
+    };
+
+// Xử lý sự kiện click vào ngôi sao để đánh giá
+    const starRating = document.querySelectorAll('.star-rating .star');
+    starRating.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            // Cập nhật giá trị rating trong input hidden
+            document.getElementById('rating').value = index + 1; // Lưu giá trị sao đã chọn
+
+            // Cập nhật hiển thị sao để tô màu
+            updateStarDisplay(index);
+        });
+    });
+
+// Hàm cập nhật màu sắc các ngôi sao khi người dùng click
+    function updateStarDisplay(index) {
+        starRating.forEach((star, i) => {
+            if (i <= index) {
+                star.classList.add('text-yellow-500'); // Tô màu vàng cho các sao đã chọn
+                star.classList.remove('text-gray-400'); // Bỏ màu xám cho các sao đã chọn
+            } else {
+                star.classList.remove('text-yellow-500'); // Bỏ màu vàng cho các sao chưa chọn
+                star.classList.add('text-gray-400'); // Thêm màu xám cho các sao chưa chọn
+            }
+        });
+    }
+
+// Xử lý khi người dùng gửi đánh giá
+    document.getElementById('submitReview').onclick = () => {
+        const rating = document.getElementById('rating').value;
+        const comment = document.getElementById('comment').value;
+
+        if (!rating || !comment) {
+            alert('Vui lòng điền đủ thông tin!');
+            return;
+        }
+
+        const productCode = document.getElementById('submitReview').dataset.product;
+
+        fetch('http://localhost:8080/DATN/products/review', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product: productCode,
+                user: username,
+                rating: parseInt(rating),
+                comment: comment,
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                // Đánh dấu đã đánh giá sản phẩm này
+                let reviewed = JSON.parse(localStorage.getItem('reviewedProducts') || '[]');
+                if (!reviewed.includes(productCode)) {
+                    reviewed.push(productCode);
+                    localStorage.setItem('reviewedProducts', JSON.stringify(reviewed));
+                }
+
+                alert("Cảm ơn bạn đã đánh giá");
+                document.getElementById('reviewModal').classList.add('hidden');
+                location.reload();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Đã có lỗi xảy ra, vui lòng thử lại!');
+            });
+    };
+
+
+    if (order.status === 5) {
+        const actions = document.getElementById('od-actions');
+        actions.innerHTML = `
+        <button id="reviewBtn"
+            class="px-4 py-2 bg-yellow-500 text-white rounded ">
+          Hoàn thành đơn hàng
+        </button>
+    `;
+
+    }
+
 }
-
-

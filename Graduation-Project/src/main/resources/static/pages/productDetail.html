@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="/DATN/js/common.js"></script>
     <script src="/DATN/js/login.js"></script>
+
 </head>
 <body class="bg-gray-50 text-gray-800">
 <header class="bg-blue-900 text-white py-4">
@@ -17,7 +18,7 @@
         <!-- Tên cửa hàng -->
         <div class="flex items-center space-x-3 text-center sm:text-left">
             <a href="/DATN/home.html" class="flex items-center space-x-2 hover:scale-105 transition-transform duration-300">
-                <img src="/DATN/assets/images/logo-watch.png" alt="Logo" class="w-10 h-10 object-contain">
+                <img src="/DATN/images/img.png" alt="Logo" class="w-10 h-10 object-contain">
                 <h1 class="text-3xl font-bold text-white tracking-wide">Đồng Hồ Hải Nam</h1>
             </a>
         </div>
@@ -105,7 +106,7 @@
 <div id="navigation-bar"> </div>
 
 <div class="flex flex-col md:flex-row justify-center items-start gap-6">
-    <div class="md:w-1/2 w-full px-2 flex flex-col items-center">
+    <div class="md:w-1/2 w-full px-2 flex flex-col items-center relative">
         <p class="text-lg font-semibold text-gray-800 mb-2 text-left">
             Nhãn hàng:
             <a id="brand-name" href="#" class="text-blue-600 hover:underline"></a>
@@ -113,12 +114,14 @@
 
         <!-- Hình ảnh sản phẩm -->
         <h1 id="product-name" class="text-3xl font-bold text-gray-800 mb-4"></h1>
-        <div class="relative w-full max-w-[600px]">
+        <div class="w-full max-w-[600px]">
             <img id="product-img" src="" alt="" class="w-full h-72 object-contain rounded shadow" />
         </div>
 
-        <!-- Mô tả sản phẩm -->
-        <div id="description" class="mt-4 text-sm text-gray-700"></div>
+        <!-- Mô tả sản phẩm nằm bên dưới hình ảnh, không nằm trong phần viền -->
+        <div id="description" class="mt-2 text-sm text-gray-700 w-full max-w-[600px] px-2">
+            <!-- Nội dung mô tả sản phẩm sẽ được thêm vào đây -->
+        </div>
     </div>
 
     <!-- Thông tin sản phẩm -->
@@ -135,12 +138,12 @@
             <span class="text-sm font-normal">Kiểm tra hàng trước khi thanh toán</span>
         </button>
 
-
         <div class="mt-4">
             <p class="text-sm">Gọi mua hàng: <span class="font-bold">093 189 2222 - 097 189 3333</span></p>
         </div>
     </div>
 </div>
+
 <div id="product-details" class="mr-20 mt-4 text-sm text-gray-800 p-4 mb-8 ml-16 border border-gray-300 rounded-lg shadow-md">
     <h2 class="text-base font-semibold mb-2">Chi tiết sản phẩm</h2>
     <ul class="list-none space-y-1">
@@ -152,6 +155,25 @@
         <li><strong>Xuất xứ:</strong> <span id="origin"></span></li>
     </ul>
 </div>
+
+<div id="review-section" class="mr-20 ml-16 mt-4 text-sm text-gray-800 p-4 mb-8 border border-gray-300 rounded-lg shadow-md bg-white">
+    <h2 class="text-base font-semibold mb-4">Đánh giá review sản phẩm</h2>
+
+    <!-- Tổng điểm đánh giá -->
+    <div class="flex items-center space-x-3 mb-4">
+        <span class="text-4xl font-bold text-yellow-500" id="average-rating">0.0</span>
+        <div class="flex items-center text-yellow-400 text-xl" id="average-stars">
+            <!-- Ngôi sao render JS -->
+        </div>
+        <span class="text-sm text-gray-600" id="total-reviews">(0 đánh giá)</span>
+    </div>
+
+    <!-- Danh sách đánh giá -->
+    <div id="review-list" class="space-y-6">
+        <!-- Đánh giá sẽ được render ở đây -->
+    </div>
+</div>
+
 
 <div id="footer-placeholder"></div>
 <script src="/DATN/js/productdetail.js"></script>

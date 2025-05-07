@@ -15,6 +15,7 @@ public interface OrderService {
     String delivery(String code);
     String receive(String code);
     String cancel(String code);
+    String review(String code);
 
     List<OrderEntity> historyOrder();
 

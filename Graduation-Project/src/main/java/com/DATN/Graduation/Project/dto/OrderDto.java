@@ -29,6 +29,7 @@ public class OrderDto {
     private String note;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long deposit;
 
     // Optional: Thêm danh sách chi tiết đơn hàng nếu cần
     private List<OrderDetailDto> orderDetails;
@@ -36,7 +37,7 @@ public class OrderDto {
     public OrderDto(Long id, String code, String employee, String customer, Integer status,
                     Long totalPrice, String discount, Long realPrice, String paymentMethod,
                     Long priceToPay, Integer paymentStatus, String address, String phone, Long shippingFee,
-                    String note, LocalDateTime createdAt, LocalDateTime updatedAt,String userNameCustomer) {
+                    String note, LocalDateTime createdAt, LocalDateTime updatedAt,String userNameCustomer,Long deposit) {
         this.id = id;
         this.code = code;
         this.employee = employee;
@@ -55,5 +56,6 @@ public class OrderDto {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.userNameCustomer = userNameCustomer;
+        this.deposit = deposit;
     }
 }

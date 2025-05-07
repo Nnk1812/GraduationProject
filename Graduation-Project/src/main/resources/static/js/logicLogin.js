@@ -26,6 +26,8 @@ document.getElementById("loginForm").addEventListener("submit", async function (
             Swal.fire({
                 icon: 'error',
                 text: errorMessage,
+                position: 'center',
+                confirmButtonText: 'OK',
             });
             return;
         }
