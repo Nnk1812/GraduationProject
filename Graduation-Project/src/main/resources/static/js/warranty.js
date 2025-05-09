@@ -78,7 +78,7 @@ async function getUserCode(userName) {
         const result = await response.json();
 
         if (result.code === 200 && result.data && result.data.code) {
-            return result.data.code; // Trả về mã nhân viên/khách hàng
+            return result.data.code;
         } else {
             console.warn("Không tìm thấy mã người dùng.");
             return null;

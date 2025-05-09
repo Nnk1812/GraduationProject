@@ -12,7 +12,7 @@ public interface BrandService {
 
     List<BrandEntity> findAll();
 
-    String deleteBrand(Long id);
+    String deleteBrand(String code);
 
     BrandEntity getDetail(String code);
 

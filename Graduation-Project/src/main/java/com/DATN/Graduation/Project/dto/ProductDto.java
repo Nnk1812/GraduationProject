@@ -34,10 +34,12 @@ public class ProductDto {
 
     private Integer type;
 
+    private Integer warrantyMonths;
+
     private ProductDetailDto productDetail;
 
     public ProductDto(Long id, String code, String name, Boolean isDeleted, Boolean isActive,
-                      String brand, Long price, String discount, String description,String image) {
+                      String brand, Long price, String discount, String description,String image,Integer warrantyMonths) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -48,6 +50,7 @@ public class ProductDto {
         this.discount = discount;
         this.description = description;
         this.image = image;
+        this.warrantyMonths = warrantyMonths;
     }
 
 }

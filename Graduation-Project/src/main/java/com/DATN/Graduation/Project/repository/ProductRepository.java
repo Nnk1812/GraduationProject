@@ -24,7 +24,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Integer findMaxCodeByPrefix();
 
     @Query("SELECT new com.DATN.Graduation.Project.dto.ProductDto(p.id, p.code, p.name, p.isDeleted, p.isActive, " +
-            "p.brand, p.price, p.discount, p.description ,p.image) FROM ProductEntity p " +
+            "p.brand, p.price, p.discount, p.description ,p.image,p.warrantyMonths) FROM ProductEntity p " +
             "where p.id IN :ids and p.isDeleted = false ")
     List<ProductDto> findProduct(List<Long> ids);
 
@@ -54,38 +54,66 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<String> getProductNames();
 
 
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity) " +
-            "FROM ProductEntity a " +
-            "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
-            "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
-            "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
-            "LEFT JOIN BrandEntity e on e.code = a.brand " +
-            "inner join StockEntity f on f.product = a.code " +
-            "where f.quantity >0 " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity " +
-            "ORDER BY SUM(b.quantity) DESC")
+    @Query(value = """
+    SELECT new com.DATN.Graduation.Project.dto.FindProductDto(
+        a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity)
+    FROM ProductEntity a
+    LEFT JOIN OrderDetailEntity b ON a.code = b.product
+    LEFT JOIN OrderEntity c ON c.code = b.orderCode
+    LEFT JOIN DiscountEntity d ON a.discount = d.code
+    LEFT JOIN BrandEntity e ON e.code = a.brand
+    INNER JOIN StockEntity f ON f.id = (
+        SELECT f2.id
+        FROM StockEntity f2
+        WHERE f2.product = a.code
+        ORDER BY f2.importDate ASC
+        LIMIT 1
+    )
+    WHERE f.quantity > 0
+    GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity
+    ORDER BY SUM(b.quantity) DESC
+    """)
     List<FindProductDto> findTopFourByQuantity(Pageable pageable);
 
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity) " +
-            "FROM ProductEntity a " +
-            "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
-            "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
-            "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
-            "LEFT JOIN BrandEntity e on e.code = a.brand " +
-            "inner join StockEntity f on f.product = a.code " +
-            "where f.quantity >0 " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand ,f.quantity" )
+
+    @Query(value = """
+    SELECT new com.DATN.Graduation.Project.dto.FindProductDto(
+        a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity)
+    FROM ProductEntity a
+    LEFT JOIN OrderDetailEntity b ON a.code = b.product
+    LEFT JOIN OrderEntity c ON c.code = b.orderCode
+    LEFT JOIN DiscountEntity d ON a.discount = d.code
+    LEFT JOIN BrandEntity e ON e.code = a.brand
+    INNER JOIN StockEntity f ON f.id = (
+        SELECT f2.id
+        FROM StockEntity f2
+        WHERE f2.product = a.code
+        ORDER BY f2.importDate ASC
+        LIMIT 1
+    )
+    WHERE f.quantity > 0
+    GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity
+    """)
     List<FindProductDto> findAllProduct();
 
-    @Query("SELECT new com.DATN.Graduation.Project.dto.FindProductDto(a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity) " +
-            "FROM ProductEntity a " +
-            "LEFT JOIN OrderDetailEntity b ON a.code = b.product " +
-            "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
-            "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
-            "LEFT JOIN BrandEntity e on e.code = a.brand " +
-            "inner join StockEntity f on f.product = a.code " +
-            "WHERE e.name =:brand and f.quantity >0 " +
-            "GROUP BY a.name, a.price, a.realPrice, d.value, a.image,a.description,a.code,a.type,a.brand,f.quantity " )
+    @Query(value = """
+    SELECT new com.DATN.Graduation.Project.dto.FindProductDto(
+        a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity)
+    FROM ProductEntity a
+    LEFT JOIN OrderDetailEntity b ON a.code = b.product
+    LEFT JOIN OrderEntity c ON c.code = b.orderCode
+    LEFT JOIN DiscountEntity d ON a.discount = d.code
+    LEFT JOIN BrandEntity e ON e.code = a.brand
+    INNER JOIN StockEntity f ON f.id = (
+        SELECT f2.id
+        FROM StockEntity f2
+        WHERE f2.product = a.code
+        ORDER BY f2.importDate ASC
+        LIMIT 1
+    )
+    WHERE f.quantity > 0 and e.name =:brand
+    GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity
+    """)
     List<FindProductDto> findByBrand(String brand);
 
     @Query("select new com.DATN.Graduation.Project.dto.FindAllProductDto(a.code,a.name,a.type,b.code,b.name,c.code,c.name,a.price,a.realPrice,a.isDeleted) " +

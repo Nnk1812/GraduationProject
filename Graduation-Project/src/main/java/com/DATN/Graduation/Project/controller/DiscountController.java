@@ -36,9 +36,9 @@ public class DiscountController {
         return response;
     }
     @PutMapping("/delete")
-    public ApiResponse<String> deleteDiscount(@RequestParam Long id) {
+    public ApiResponse<String> deleteDiscount(@RequestParam String code) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(discountService.deleteDiscount(id));
+        response.setData(discountService.deleteDiscount(code));
         return response;
     }
     @PostMapping("/active")

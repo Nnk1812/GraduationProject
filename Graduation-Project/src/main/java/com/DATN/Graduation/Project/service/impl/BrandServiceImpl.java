@@ -89,10 +89,11 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     @Transactional
-    public String deleteBrand(Long id){
-        BrandEntity brandEntity = brandRepository.findById(id).orElseThrow(
-                () -> new AppException(ErrorCode.BRAND_NOT_EXISTED)
-        );
+    public String deleteBrand(String code){
+        BrandEntity brandEntity = brandRepository.findByCode(code);
+        if(ObjectUtils.isEmpty(brandEntity)){
+            throw new AppException(ErrorCode.BRAND_NOT_EXISTED);
+        }
         brandRepository.delete(brandEntity);
         return "Deleted Brand Successfully";
     }

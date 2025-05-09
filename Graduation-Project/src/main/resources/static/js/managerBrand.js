@@ -109,24 +109,47 @@ const fetchBrands = async () => {
 
 // Xóa nhãn hàng
 const handleDelete = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa nhãn hàng này?")) return;
+    Swal.fire({
+        title: 'Xác nhận xóa',
+        text: 'Bạn có chắc chắn muốn xóa nhãn hàng này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/brand/delete?code=${code}`, {
+                    method: 'PUT'
+                });
 
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/brand/delete?code=${code}`, {
-            method: 'PUT'
-        });
-
-        if (res.ok) {
-            alert("Đã xóa nhãn hàng!");
-            fetchBrands();
-        } else {
-            alert("Xóa thất bại!");
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã xóa nhãn hàng',
+                    });
+                    fetchBrands();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Xóa thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa nhãn hàng:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi xóa nhãn hàng:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
+
 
 // Gọi khi trang tải xong
 window.addEventListener("DOMContentLoaded", fetchBrands);

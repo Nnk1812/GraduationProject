@@ -48,12 +48,11 @@ async function fetchAccountDetail(code) {
             }
 
         } else {
-            alert("Không tìm thấy thông tin tài khoản.");
+            Swal.fire("Không tìm thấy", "Không tìm thấy thông tin tài khoản.", "warning");
         }
 
     } catch (err) {
-        console.error("Lỗi khi tải dữ liệu:", err);
-        alert("Không thể tải chi tiết tài khoản.");
+        Swal.fire("Lỗi", "Không thể tải chi tiết tài khoản.", "error");
     }
 }
 
@@ -87,24 +86,22 @@ function saveAccount() {
     })
         .then(res => {
             if (res.ok) {
-                alert("Cập nhật thành công!");
-                window.location.href = "managerAccount.html";
+                Swal.fire("Thành công", "Cập nhật thành công!", "success").then(() => {
+                    window.location.href = "managerAccount.html";
+                });
             } else {
-                // alert("Cập nhật thất bại.");
                 return res.json();
-
             }
         })
         .then(errorData => {
             if (errorData) {
-                // Lấy thông điệp lỗi từ API
                 const errorMessage = errorData.message || "Có lỗi xảy ra!";
-                alert(`Lỗi: ${errorMessage}`);
+                Swal.fire("Lỗi", errorMessage, "error");
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Lỗi khi gửi dữ liệu.");
+            Swal.fire("Lỗi", "Lỗi khi gửi dữ liệu.", "error");
         });
 }
 

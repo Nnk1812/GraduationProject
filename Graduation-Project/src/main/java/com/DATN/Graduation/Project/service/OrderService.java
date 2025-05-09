@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface OrderService {
-    OrderDto saveOrder(OrderDto orderDto);
+    OrderDto saveOrder(OrderDto dto);
 
     OrderDto orderDetail(String code);
 
@@ -21,7 +21,8 @@ public interface OrderService {
     String receive(String code);
     String cancel(String code);
     String returnProduct(String code);
-
+    String confirm(String code);
+    String returnProductToStock(String code);
     List<OrderEntity> historyOrder();
 
     List<OrderDto> userOrder(String code);

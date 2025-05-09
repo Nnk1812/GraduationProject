@@ -117,74 +117,158 @@ const fetchAccounts = async () => {
 
 // Xóa tài khoản
 const handleDelete = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa tài khoản này?")) return;
     if (role !== "ROLE_ADMIN") {
-        alert("Bạn không có quyền xóa tài khoản này!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Bạn không có quyền xóa tài khoản này!',
+        });
         return;
     }
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/user/delete?code=${code}`, {
-            method: 'PUT'
-        });
 
-        if (res.ok) {
-            alert("Đã xóa tài khoản!");
-            fetchAccounts();
-        } else {
-            alert("Xóa thất bại!");
+    Swal.fire({
+        title: 'Xác nhận xóa',
+        text: 'Bạn có chắc chắn muốn xóa tài khoản này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/user/delete?code=${code}`, {
+                    method: 'PUT'
+                });
+
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã xóa tài khoản!',
+                    });
+                    fetchAccounts();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Xóa thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa tài khoản:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi xóa tài khoản:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
+
 
 // Ẩn tài khoản
 const handleDisable = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn vô hiệu hóa tài khoản này?")) return;
     if (role !== "ROLE_ADMIN") {
-        alert("Bạn không có quyền ẩn tài khoản này!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Bạn không có quyền vô hiệu hóa tài khoản này!',
+        });
         return;
     }
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/user/hidden?code=${code}`, {
-            method: 'POST'
-        });
 
-        if (res.ok) {
-            alert("Đã vô hiệu hóa tài khoản!");
-            fetchAccounts();
-        } else {
-            alert("Vô hiệu hóa thất bại!");
+    Swal.fire({
+        title: 'Xác nhận vô hiệu hóa',
+        text: 'Bạn có chắc chắn muốn vô hiệu hóa tài khoản này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Vô hiệu hóa',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/user/hidden?code=${code}`, {
+                    method: 'POST'
+                });
+
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã vô hiệu hóa tài khoản!',
+                    });
+                    fetchAccounts();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Vô hiệu hóa thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi vô hiệu hóa tài khoản:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi vô hiệu hóa tài khoản:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
-
-// Kích hoạt tài khoản
 const handleActivate = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn kích hoạt tài khoản này?")) return;
     if (role !== "ROLE_ADMIN") {
-        alert("Bạn không có quyền kích hoạt tài khoản này!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Bạn không có quyền kích hoạt tài khoản này!',
+        });
         return;
     }
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/user/active?code=${code}`, {
-            method: 'POST'
-        });
 
-        if (res.ok) {
-            alert("Đã kích hoạt tài khoản!");
-            fetchAccounts();
-        } else {
-            alert("Kích hoạt thất bại!");
+    Swal.fire({
+        title: 'Xác nhận kích hoạt',
+        text: 'Bạn có chắc chắn muốn kích hoạt tài khoản này?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Kích hoạt',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/user/active?code=${code}`, {
+                    method: 'POST'
+                });
+
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã kích hoạt tài khoản!',
+                    });
+                    fetchAccounts();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Kích hoạt thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi kích hoạt tài khoản:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi kích hoạt tài khoản:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
+
 
 window.addEventListener("DOMContentLoaded", fetchAccounts);

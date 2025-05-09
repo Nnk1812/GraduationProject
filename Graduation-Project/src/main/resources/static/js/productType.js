@@ -65,44 +65,56 @@ fetch('http://localhost:8080/DATN/products/findAll')
             }
 
             const html = `
-                <div class="product bg-white p-4 shadow-md rounded-lg text-center relative">
-                    <a href="productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
-                        <img src="${product.img}" alt="${product.name}" class="w-full h-64 object-cover rounded-lg">
-                    </a>
-                    <a href="productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
-                        <h3 class="text-xl font-semibold mt-4 hover:underline">${product.name}</h3>
-                    </a>
+<div class="product bg-white p-4 shadow-md rounded-lg flex flex-col text-center relative">
+  <!-- Gói toàn bộ phần trên rating vào đây -->
+  <div class="flex flex-col items-center justify-start h-[360px]">
+    <a href="productDetail.html" class="product-link" data-product='${JSON.stringify(product)}'>
+      <img src="${product.img}" alt="${product.name}" class="w-full h-64 object-cover rounded-lg">
+    </a>
+    <a href="productDetail.html" class="product-link mt-2" data-product='${JSON.stringify(product)}'>
+      <h3 class="text-xl font-semibold hover:underline line-clamp-2 leading-tight">
+        ${product.name}
+      </h3>
+    </a>
 
-                    <div class="mt-2">
-                        <span class="${hasDiscount ? 'text-red-600' : 'text-black'} text-2xl font-bold">
-                            ${hasDiscount ? product.realPrice.toLocaleString() : product.price.toLocaleString()}₫
-                        </span>
-                    </div>
+    <!-- Giá và giảm giá -->
+    <div class="h-16 flex flex-col justify-center items-center mt-2">
+      <span class="${hasDiscount ? 'text-red-600' : 'text-black'} text-2xl font-bold">
+        ${hasDiscount ? product.realPrice.toLocaleString() : product.price.toLocaleString()}₫
+      </span>
+      ${hasDiscount ? `
+        <div class="flex items-center justify-center space-x-2 mt-1">
+          <span class="line-through text-gray-500 text-base">
+            ${product.price.toLocaleString()}₫
+          </span>
+          <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded">
+            -${product.discount}%
+          </span>
+        </div>
+      ` : ''}
+    </div>
+  </div>
 
-                    ${hasDiscount ? `
-                        <div class="flex items-center justify-center space-x-2 mt-1">
-                            <span class="line-through text-gray-500 text-base">
-                                ${product.price.toLocaleString()}₫
-                            </span>
-                            <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded">
-                                -${product.discount}%
-                            </span>
-                        </div>
-                    ` : ''}
+  <!-- Phần đánh giá và nút -->
+  <div class="flex flex-col mt-4 h-full justify-between">
+  <div class="flex items-center justify-between mb-2">
+    ${rating > 0 ? `
+      <div class="flex items-center space-x-2">
+        ${starsHtml}
+        <span class="text-gray-600 text-sm">(${rating.toFixed(1)})</span>
+      </div>
+    ` : '<div></div>'}
+    
+    <div class="text-sm text-gray-600">Tồn kho: ${product.quantity}</div>
+  </div>
 
-                    <div class="flex items-center justify-between mt-3 text-sm text-gray-600 px-2">
-                        ${rating > 0 ? `
-                            <div class="flex items-center space-x-1">
-                                ${starsHtml}
-                                <span>(${rating.toFixed(1)})</span>
-                            </div>
-                        ` : '<div></div>'}
-                        <div>Tồn kho: ${product.quantity}</div>
-                    </div>
+  <a href="#" class="buy-now bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500 mt-auto">Mua Ngay</a>
+</div>
 
-                    <a href="#" class="buy-now mt-4 inline-block bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500">Mua Ngay</a>
-                </div>
-            `;
+
+</div>
+
+        `;
 
             container.insertAdjacentHTML("beforeend", html);
 
@@ -113,7 +125,10 @@ fetch('http://localhost:8080/DATN/products/findAll')
                 e.preventDefault();
                 const username = localStorage.getItem("username");
                 if (!username) {
-                    alert("Vui lòng đăng nhập trước khi mua hàng.");
+                    Swal.fire({
+                        icon: 'warning',
+                        text: 'Vui lòng đăng nhập trước khi mua hàng',
+                    });
                     return;
                 }
 
@@ -137,7 +152,11 @@ fetch('http://localhost:8080/DATN/products/findAll')
                     })
                     .catch(err => {
                         console.error("Lỗi:", err);
-                        alert("Không thể thêm sản phẩm vào giỏ hàng.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Không thể thêm sản phẩm vào giỏ hàng',
+                        });
                     });
             });
         }

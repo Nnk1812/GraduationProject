@@ -133,62 +133,129 @@ const fetchDiscounts = async () => {
 
 // Xóa mã giảm giá
 const handleDelete = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa mã giảm giá này?")) return;
+    Swal.fire({
+        title: 'Xác nhận xóa',
+        text: 'Bạn có chắc chắn muốn xóa mã giảm giá này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/discount/delete?code=${code}`, {
+                    method: 'PUT'
+                });
 
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/discount/delete?code=${code}`, {
-            method: 'PUT'
-        });
-
-        if (res.ok) {
-            alert("Đã xóa mã giảm giá!");
-            fetchDiscounts();
-        } else {
-            alert("Xóa thất bại!");
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã xóa mã giảm giá!',
+                    });
+                    fetchDiscounts();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Xóa thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa mã:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi xóa mã:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
+
 const handleDisable = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn vô hiệu hóa mã giảm giá này?")) return;
+    Swal.fire({
+        title: 'Xác nhận vô hiệu hóa',
+        text: 'Bạn có chắc chắn muốn vô hiệu hóa mã giảm giá này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Vô hiệu hóa',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/discount/hidden?code=${code}`, {
+                    method: 'POST'
+                });
 
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/discount/hidden?code=${code}`, {
-            method: 'POST'
-        });
-
-        if (res.ok) {
-            alert("Đã vô hiệu hóa mã giảm giá!");
-            fetchDiscounts();
-        } else {
-            alert("Vô hiệu hóa thất bại!");
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã vô hiệu hóa mã giảm giá!',
+                    });
+                    fetchDiscounts();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Vô hiệu hóa thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi vô hiệu hóa mã:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi vô hiệu hóa mã:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
 
 const handleActivate = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn kích hoạt lại mã giảm giá này?")) return;
+    Swal.fire({
+        title: 'Xác nhận kích hoạt',
+        text: 'Bạn có chắc chắn muốn kích hoạt lại mã giảm giá này?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Kích hoạt',
+        cancelButtonText: 'Hủy',
+        reverseButtons: true
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                const res = await fetch(`http://localhost:8080/DATN/discount/active?code=${code}`, {
+                    method: 'POST',
+                });
 
-    try {
-        const res = await fetch(`http://localhost:8080/DATN/discount/active?code=${code}`, {
-            method: 'POST',
-        });
-
-        if (res.ok) {
-            alert("Đã kích hoạt mã giảm giá!");
-            fetchDiscounts(); // Gọi lại để load danh sách mới
-        } else {
-            alert("Kích hoạt thất bại!");
+                if (res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Đã kích hoạt mã giảm giá!',
+                    });
+                    fetchDiscounts();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Kích hoạt thất bại!',
+                    });
+                }
+            } catch (error) {
+                console.error("Lỗi khi kích hoạt mã:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
+            }
         }
-    } catch (error) {
-        console.error("Lỗi khi kích hoạt mã:", error);
-        alert("Lỗi kết nối server!");
-    }
+    });
 };
 
 

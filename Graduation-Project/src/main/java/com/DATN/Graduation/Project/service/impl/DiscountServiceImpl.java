@@ -107,10 +107,11 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     @Transactional
-    public String deleteDiscount(Long id){
-        DiscountEntity entity = discountRepository.findById(id).orElseThrow(
-                () -> new AppException(ErrorCode.DISCOUNT_NOT_EXISTED)
-        );
+    public String deleteDiscount(String code){
+        DiscountEntity entity = discountRepository.findByCode(code);
+        if(ObjectUtils.isEmpty(entity)){
+            throw new AppException(ErrorCode.DISCOUNT_NOT_EXISTED);
+        }
         discountRepository.delete(entity);
         return "Deleted Discount successfully";
     }

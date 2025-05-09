@@ -1,9 +1,11 @@
 package com.DATN.Graduation.Project.service.impl;
 
+import com.DATN.Graduation.Project.constant.enums.OrderStatusEnum;
 import com.DATN.Graduation.Project.constant.enums.StatusWarranty;
 import com.DATN.Graduation.Project.dto.ReportWarrantyDto;
 import com.DATN.Graduation.Project.dto.WarrantyDetailDto;
 import com.DATN.Graduation.Project.dto.WarrantyDto;
+import com.DATN.Graduation.Project.entity.OrderEntity;
 import com.DATN.Graduation.Project.entity.ProductEntity;
 import com.DATN.Graduation.Project.entity.ReportWarrantyEntity;
 import com.DATN.Graduation.Project.entity.UserEntity;
@@ -79,8 +81,22 @@ public class ReportWarrantyServiceImpl implements ReportWarrantyService {
             if(!productRepository.findAllProductCode().contains(dto.getProduct())){
                 throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
             }
-            if(ObjectUtils.isEmpty(orderRepository.findOrdersCustomer(dto.getCustomer(),dto.getProduct()))){
-                throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED_IN_ORDER);
+            OrderEntity order = orderRepository.findByCode(dto.getOrder()).orElseThrow(
+                    () -> new AppException(ErrorCode.ORDER_NOT_EXISTED)
+            );
+            if(ObjectUtils.isEmpty(orderRepository.findOrdersCustomer(dto.getCustomer(),dto.getProduct(),dto.getOrder()))){
+                throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED_IN_ORDER_OR_STATUS_IN_OR_UNCOMPLETED);
+            }else {
+                ProductEntity product = productRepository.findByCode(dto.getProduct()).orElseThrow(
+                        () -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
+                );
+                LocalDateTime ngayHoanThanh = order.getUpdatedAt();
+                Integer thoiGianBaoHanh = product.getWarrantyMonths();
+                LocalDateTime hanBaoHanh = ngayHoanThanh.plusMonths(thoiGianBaoHanh);
+                LocalDateTime now = LocalDateTime.now();
+                if (now.isAfter(hanBaoHanh)) {
+                    throw new AppException(ErrorCode.WARRANTY_TIME_EXPIRED);
+                }
             }
         }
         if(ObjectUtils.isEmpty(dto.getCustomer())){
@@ -101,6 +117,10 @@ public class ReportWarrantyServiceImpl implements ReportWarrantyService {
         if(ObjectUtils.isEmpty(dto.getQuantity())){
             throw new AppException(ErrorCode.REPORT_WARRANTY_MUST_HAVE_QUANTITY);
         }else{
+            if(orderRepository.findQuantityByCode(dto.getOrder(),dto.getProduct())==null)
+            {
+                throw new AppException(ErrorCode.QUANTITY_IN_REPORT_MUST_BE_GREATER_THAN_QUANTITY_IN_ORDER);
+            }
             if(dto.getQuantity() > orderRepository.findQuantityByCode(dto.getOrder(),dto.getProduct())){
                 throw new AppException(ErrorCode.QUANTITY_IN_REPORT_MUST_BE_GREATER_THAN_QUANTITY_IN_ORDER);
             }

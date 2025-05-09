@@ -12,7 +12,7 @@ public interface DiscountService {
 
     String hiddenDiscount(String code);
 
-    String deleteDiscount(Long id);
+    String deleteDiscount(String code);
 
     boolean isDiscountValid(String code);
 

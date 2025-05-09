@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReportWarrantyRepository extends JpaRepository<ReportWarrantyEntity,Long> {
-    @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from report_warranty where code like 'O%' ", nativeQuery = true)
+    @Query(value ="select max(cast(substring(code, 3,length(code) ) as unsigned ) ) from report_warranty where code like 'RW%' ", nativeQuery = true)
     Integer findMaxCodeByPrefix();
 
     @Query(value = "select * from report_warranty where " +

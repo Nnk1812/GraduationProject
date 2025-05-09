@@ -8,11 +8,20 @@ document.getElementById('changePasswordForm').addEventListener('submit', functio
     const code = params.get("code");
 
     if (!oldPassword || !newPassword || !confirmPassword) {
-        alert('Vui lòng điền đầy đủ thông tin.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cảnh báo',
+            text: 'Vui lòng điền đầy đủ thông tin.'
+        });
         return;
     }
+
     if (newPassword !== confirmPassword) {
-        alert('Mật khẩu mới và xác nhận không khớp.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Mật khẩu mới và xác nhận không khớp.'
+        });
         return;
     }
 
@@ -23,14 +32,27 @@ document.getElementById('changePasswordForm').addEventListener('submit', functio
         .then(response => response.json())
         .then(data => {
             if (data.code === 200) {
-                alert('Đổi mật khẩu thành công!');
-                window.location.href = '/DATN/pages/accountDetail.html';
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Đổi mật khẩu thành công!'
+                }).then(() => {
+                    window.location.href = '/DATN/pages/accountDetail.html';
+                });
             } else {
-                alert('Đổi mật khẩu thất bại: ' + (data.message || 'Có lỗi xảy ra.'));
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Đổi mật khẩu thất bại: ' + (data.message || 'Có lỗi xảy ra.')
+                });
             }
         })
         .catch(error => {
             console.error('Lỗi khi đổi mật khẩu:', error);
-            alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Đã xảy ra lỗi. Vui lòng thử lại.'
+            });
         });
 });

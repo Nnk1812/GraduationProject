@@ -30,7 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(err => {
                 console.error(err);
-                alert("Không thể sinh mã khuyến mãi mới.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể sinh mã khuyến mãi mới.'
+                });
             });
         return;
     }
@@ -56,7 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(err => {
             console.error(err);
-            alert("Lỗi khi tải dữ liệu.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Lỗi khi tải dữ liệu.'
+            });
         });
 });
 
@@ -86,14 +94,27 @@ function saveDiscount() {
     })
         .then(res => {
             if (res.ok) {
-                alert(isUpdate ? "Cập nhật thành công!" : "Thêm mới thành công!");
-                window.location.href = "managerDiscount.html";
+                Swal.fire({
+                    icon: 'success',
+                    title: isUpdate ? 'Cập nhật thành công!' : 'Thêm mới thành công!',
+                    text: isUpdate ? 'Thông tin khuyến mãi đã được cập nhật.' : 'Khuyến mãi mới đã được thêm.'
+                }).then(() => {
+                    window.location.href = "managerDiscount.html";
+                });
             } else {
-                alert(isUpdate ? "Cập nhật thất bại." : "Thêm mới thất bại.");
+                Swal.fire({
+                    icon: 'error',
+                    title: isUpdate ? 'Cập nhật thất bại.' : 'Thêm mới thất bại.',
+                    text: 'Có lỗi xảy ra khi thực hiện thao tác.'
+                });
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Lỗi khi gửi dữ liệu.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi khi gửi dữ liệu',
+                text: 'Đã xảy ra lỗi khi lưu thông tin khuyến mãi. Vui lòng thử lại.'
+            });
         });
 }

@@ -31,36 +31,55 @@ const renderProducts = (products) => {
     const paginatedProducts = products.slice(startIndex, startIndex + pageSize);
 
     paginatedProducts.forEach((product, index) => {
-        const row = `
-      <tr>
-        <td class="px-4 py-2 border">${startIndex + index + 1}</td>
-        <td class="px-4 py-2 border text-blue-600 hover:underline cursor-pointer">
-          <a href="productManagerDetail.html?code=${product.code}">
-            ${product.productName}
-          </a>
-        </td>
-        <td class="px-4 py-2 border">${getCategoryName(product.productType)}</td>
-        <td class="px-4 py-2 border">${product.brandName}</td>
-        <td class="px-4 py-2 border">${product.discountName || "-"}</td>
-        <td class="px-4 py-2 border">${formatCurrency(product.price)}</td>
-        <td class="px-4 py-2 border">${formatCurrency(product.realPrice)}</td>
-        <td class="px-4 py-2 border font-bold ${product.isDeleted ? 'text-red-500' : 'text-green-600'}">
-                    ${product.isDeleted ? '❌' : '✅'}
-                </td>
-        <td class="px-4 py-2 border space-x-2">
-          ${product.isDeleted
-            ? `<button onclick="handleActivate('${product.code}')" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Kích hoạt</button>`
-            : `<button onclick="handleHide('${product.code}')" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">Vô hiệu hóa</button>`
+        const statusClass = product.isDeleted ? 'text-red-500' : 'text-green-600';
+        const statusText = product.isDeleted ? '❌' : '✅';
+
+        const actionButtons = `
+  <div class="flex justify-center items-center gap-2">
+      ${product.isDeleted
+            ? `<button onclick="handleActivate('${product.code}')" 
+                      class="bg-green-500 text-white px-3 py-1 rounded font-semibold w-24 hover:bg-green-600">
+                  Kích hoạt
+             </button>`
+            : `<button onclick="handleHide('${product.code}')" 
+                      class="bg-yellow-400 text-black px-3 py-1 rounded font-semibold w-24 hover:bg-yellow-500">
+                  Vô hiệu hóa
+             </button>`
         }
-          <button onclick="handleDelete('${product.code}')" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Xóa</button>
-        </td>
-      </tr>
-    `;
+      <button onclick="handleDelete('${product.code}')" 
+              class="bg-red-600 text-white px-3 py-1 rounded font-semibold w-24 hover:bg-red-700">
+          Xóa
+      </button>
+  </div>
+`;
+
+
+
+        const row = `
+            <tr>
+                <td class="px-4 py-2 border text-center">${startIndex + index + 1}</td>
+                <td class="px-4 py-2 border text-center">${product.code}</td>
+                <td class="px-4 py-2 border text-blue-600 hover:underline text-center">
+                    <a href="productManagerDetail.html?code=${product.code}">
+                        ${product.productName}
+                    </a>
+                </td>
+                <td class="px-4 py-2 border text-center">${getCategoryName(product.productType)}</td>
+                <td class="px-4 py-2 border text-center">${product.brandName}</td>
+                <td class="px-4 py-2 border text-center">${product.discountName || "-"}</td>
+                <td class="px-4 py-2 border text-center">${formatCurrency(product.price)}</td>
+                <td class="px-4 py-2 border text-center">${formatCurrency(product.realPrice)}</td>
+                <td class="px-4 py-2 border font-bold text-center ${statusClass}">${statusText}</td>
+                <td class="px-4 py-2 border">${actionButtons}</td>
+            </tr>
+        `;
+
         productTable.innerHTML += row;
     });
 
     renderPagination(products.length);
 };
+
 
 // Hiển thị phân trang
 const renderPagination = (totalItems) => {
@@ -137,62 +156,87 @@ const fetchProducts = async () => {
 // Gọi API khi trang tải xong
 window.addEventListener("DOMContentLoaded", fetchProducts);
 
+const confirmAction = async ({ title, text, confirmText = 'Xác nhận', cancelText = 'Hủy' }) => {
+    const result = await Swal.fire({
+        title,
+        text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: cancelText,
+        reverseButtons: true
+    });
+    return result.isConfirmed;
+};
+// Xóa sản phẩm
 const handleDelete = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return;
+    const confirmed = await confirmAction({
+        title: 'Xóa sản phẩm',
+        text: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+        confirmText: 'Xóa'
+    });
+
+    if (!confirmed) return;
 
     try {
-        const res = await fetch(`http://localhost:8080/DATN/products/delete?code=${code}`, {
-            method: 'PUT'
-        });
-
+        const res = await fetch(`http://localhost:8080/DATN/products/delete?code=${code}`, { method: 'PUT' });
         if (res.ok) {
-            alert("Xóa sản phẩm thành công!");
+            Swal.fire('Thành công', 'Đã xóa sản phẩm!', 'success');
             fetchProducts();
         } else {
-            alert("Xóa thất bại!");
+            Swal.fire('Lỗi', 'Xóa sản phẩm thất bại!', 'error');
         }
     } catch (error) {
         console.error("Lỗi khi xóa sản phẩm:", error);
-        alert("Lỗi kết nối server!");
+        Swal.fire('Lỗi', 'Lỗi kết nối server!', 'error');
     }
 };
 
+// Ẩn sản phẩm
 const handleHide = async (code) => {
-    if (!confirm("Bạn có muốn ẩn sản phẩm này?")) return;
+    const confirmed = await confirmAction({
+        title: 'Ẩn sản phẩm',
+        text: 'Bạn có muốn ẩn sản phẩm này?',
+        confirmText: 'Ẩn'
+    });
+
+    if (!confirmed) return;
 
     try {
-        const res = await fetch(`http://localhost:8080/DATN/products/hidden?code=${code}`, {
-            method: 'POST'
-        });
-
+        const res = await fetch(`http://localhost:8080/DATN/products/hidden?code=${code}`, { method: 'POST' });
         if (res.ok) {
-            alert("Sản phẩm đã được ẩn!");
+            Swal.fire('Thành công', 'Đã ẩn sản phẩm!', 'success');
             fetchProducts();
         } else {
-            alert("Ẩn thất bại!");
+            Swal.fire('Lỗi', 'Ẩn sản phẩm thất bại!', 'error');
         }
     } catch (error) {
         console.error("Lỗi khi ẩn sản phẩm:", error);
-        alert("Lỗi kết nối server!");
+        Swal.fire('Lỗi', 'Lỗi kết nối server!', 'error');
     }
 };
 
+// Kích hoạt sản phẩm
 const handleActivate = async (code) => {
-    if (!confirm("Bạn có chắc chắn muốn kích hoạt lại mã giảm giá này?")) return;
+    const confirmed = await confirmAction({
+        title: 'Kích hoạt sản phẩm',
+        text: 'Bạn có chắc chắn muốn kích hoạt lại mã giảm giá này?',
+        confirmText: 'Kích hoạt'
+    });
+
+    if (!confirmed) return;
 
     try {
-        const res = await fetch(`http://localhost:8080/DATN/products/active?code=${code}`, {
-            method: 'POST',
-        });
-
+        const res = await fetch(`http://localhost:8080/DATN/products/active?code=${code}`, { method: 'POST' });
         if (res.ok) {
-            alert("Đã kích hoạt sản phẩm !");
-            fetchProducts(); // Gọi lại để load danh sách mới
+            Swal.fire('Thành công', 'Kích hoạt sản phẩm thành công!', 'success');
+            fetchProducts();
         } else {
-            alert("Kích hoạt thất bại!");
+            Swal.fire('Lỗi', 'Kích hoạt sản phẩm thất bại!', 'error');
         }
     } catch (error) {
         console.error("Lỗi khi kích hoạt sản phẩm:", error);
-        alert("Lỗi kết nối server!");
+        Swal.fire('Lỗi', 'Lỗi kết nối server!', 'error');
     }
 };
+

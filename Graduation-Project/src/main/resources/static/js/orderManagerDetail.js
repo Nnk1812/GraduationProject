@@ -154,9 +154,11 @@ const convertOrderStatus = (status) => {
         case 2: return "Đã xác nhận";
         case 3: return "Đã đóng gói và chờ chuyển giao tới đơn vị giao hàng";
         case 4: return "Đang giao hàng";
-        case 5: return "Hoàn thành";
-        case 6: return "Đơn hàng đã hủy";
-        case 7: return "Trả hàng";
+        case 5: return "Đã giao hàng";
+        case 6: return "Đã nhận hàng";
+        case 7: return "Đơn hàng đã hủy";
+        case 8: return "Trả hàng";
+        case 9: return "Khách hàng đã trả hàng và hàng đã về kho";
         default: return "Không xác định";
     }
 };
@@ -213,14 +215,26 @@ document.getElementById('saveOrderBtn').addEventListener('click', async () => {
         });
 
         if (res.ok) {
-            alert('Cập nhật đơn hàng thành công');
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Cập nhập đơn hàng thành công!',
+            });
             window.location.href = "/DATN/pages/managerOrder.html"; // Quay lại danh sách đơn hàng
         } else {
-            alert('Cập nhật đơn hàng thất bại');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Cập nhập thất bại!',
+            });
         }
     } catch (error) {
         console.error('Lỗi khi lưu đơn hàng:', error);
-        alert('Lỗi kết nối server');
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Lỗi kết nối server!',
+        });
     }
 });
 // Gọi load khi trang load

@@ -10,6 +10,18 @@ if (product) {
         imgEl.src = product.img;
         imgEl.alt = product.name;
     }
+    const orderBtn = document.getElementById("order");
+    const contactBtn = document.getElementById("contact-order");
+
+    if (product.realPrice > 20000000) {
+        // Ẩn nút mua ngay, hiện nút liên hệ
+        if (orderBtn) orderBtn.style.display = "none";
+        if (contactBtn) contactBtn.classList.remove("hidden");
+    } else {
+        // Ngược lại, hiện nút mua ngay, ẩn nút liên hệ
+        if (orderBtn) orderBtn.style.display = "block";
+        if (contactBtn) contactBtn.classList.add("hidden");
+    }
 
     const brandEl = document.getElementById("brand-name");
     if (brandEl) {
@@ -83,6 +95,17 @@ if (product) {
     document.getElementById("product-name").textContent = "Không có sản phẩm";
 }
 
+document.getElementById("contact-order").addEventListener("click", function () {
+    Swal.fire({
+        title: 'Liên hệ đặt hàng qua Zalo',
+        text: 'Quét mã QR bên dưới để chat trực tiếp với chúng tôi:',
+        imageUrl: '/DATN/images/zalo.jpg',
+        imageWidth: 200,
+        imageHeight: 200,
+        imageAlt: 'QR Zalo',
+        confirmButtonText: 'Đã hiểu',
+    });
+});
 // Mua hàng
 document.getElementById("order").addEventListener("click", function () {
     const username = localStorage.getItem("username");
@@ -105,12 +128,15 @@ document.getElementById("order").addEventListener("click", function () {
             return response.json();
         })
         .then(data => {
-            console.log("Thêm vào giỏ hàng thành công:", data);
             window.location.href = "/DATN/pages/shoppingcart.html";
         })
         .catch(error => {
             console.error("Lỗi khi thêm vào giỏ hàng:", error);
-            alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Không thể thêm sản phẩm vào giỏ hàng vui lòng thử lại!',
+            });
         });
 });
 function renderAverageStars(avgRating) {

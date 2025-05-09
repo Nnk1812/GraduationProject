@@ -8,6 +8,7 @@ function saveFormToLocalStorage() {
         discountSelect: document.getElementById('discountSelect').value,
         productType: document.getElementById('productType').value,
         imageUrl: document.getElementById('imageUrl').value,
+        warrantyMonths : document.getElementById('warranty').value,
         description: document.getElementById('description').value,
         caseMaterial: document.getElementById('caseMaterial').value,
         strapMaterial: document.getElementById('strapMaterial').value,
@@ -30,6 +31,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('discountSelect').value = savedData.discountSelect || '';
         document.getElementById('productType').value = savedData.productType || '';
         document.getElementById('imageUrl').value = savedData.imageUrl || '';
+        document.getElementById('warranty').value = savedData.warrantyMonths || '';
         document.getElementById('description').value = savedData.description || '';
         document.getElementById('caseMaterial').value = savedData.caseMaterial || '';
         document.getElementById('strapMaterial').value = savedData.strapMaterial || '';
@@ -52,11 +54,16 @@ async function loadDiscounts() {
         const response = await fetch('http://localhost:8080/DATN/discount/findAllDiscountValid');
         const result = await response.json();
         const discounts = result.data;
-
+        console.log("Discounts:", discounts);
         const select = document.getElementById('discountSelect');
-
+        console.log("Select element:", select);
         discounts.forEach(discount => {
-            if (!discount.isDeleted && discount.isActive && discount.type === 1) {
+            if (
+                !discount.isDeleted &&
+                discount.isActive &&
+                discount.type === 1
+            )
+            {
                 const option = document.createElement('option');
                 option.value = discount.code;
                 option.textContent = `Mã giảm giá: ${discount.code} - Giảm: ${discount.value}%`;
@@ -64,7 +71,8 @@ async function loadDiscounts() {
             }
         });
     } catch (err) {
-        console.error('Lỗi khi gọi API discount:', err);
+        console.error(err);
+        Swal.fire("Lỗi", "Không thể tải danh sách mã giảm giá.", "error");
     }
 }
 document.addEventListener('DOMContentLoaded', loadDiscounts);
@@ -93,7 +101,7 @@ async function loadBrands() {
             console.log("Mã code nhãn hàng được chọn:", selectedBrandCode);
         });
     } catch (err) {
-        console.error('Lỗi khi gọi API brand:', err);
+        Swal.fire("Lỗi", "Không thể tải danh sách mã brand.", "error");
     }
 }
 document.addEventListener('DOMContentLoaded', loadBrands);
@@ -109,6 +117,7 @@ document.getElementById('submitProduct').addEventListener('click', async (e) => 
         discount: document.getElementById('discountSelect').value || null,
         description: document.getElementById('description')?.value || "",
         image: document.getElementById('imageUrl').value,
+        warrantyMonths : document.getElementById('warranty').value,
         type: parseInt(document.getElementById('productType').value),
         productDetail: {
             material: document.getElementById('caseMaterial').value,
@@ -129,17 +138,25 @@ document.getElementById('submitProduct').addEventListener('click', async (e) => 
             body: JSON.stringify(productData)
         });
 
-        if (response.ok) {
-            alert('Thêm sản phẩm thành công!');
+        const result = await response.json();
+
+        if (result.code === 200 && result.data) {
+            await Swal.fire({
+                title: 'Thành công!',
+                text: 'Thêm sản phẩm thành công!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+
             localStorage.removeItem('productFormData');
 
+            // Reset form
             document.getElementById('productName').value = '';
             document.getElementById('brandSelect').value = '';
-            // document.getElementById('quantity').value = '';
-            // document.getElementById('price').value = '';
             document.getElementById('discountSelect').value = '';
             document.getElementById('productType').value = '';
             document.getElementById('imageUrl').value = '';
+            document.getElementById('warranty').value = '';
             document.getElementById('description').value = '';
             document.getElementById('caseMaterial').value = '';
             document.getElementById('strapMaterial').value = '';
@@ -150,11 +167,19 @@ document.getElementById('submitProduct').addEventListener('click', async (e) => 
 
             window.location.href = "/DATN/pages/managerProduct.html";
         } else {
-            const errMsg = await response.text();
-            alert('Lỗi khi lưu sản phẩm: ' + errMsg);
+            await Swal.fire({
+                title: 'Lỗi!',
+                text: result.message || 'Có lỗi xảy ra khi thêm sản phẩm.',
+                icon: 'error'
+            });
         }
+
     } catch (error) {
         console.error('Lỗi kết nối API:', error);
-        alert('Không thể kết nối đến server!');
+        Swal.fire({
+            title: 'Lỗi kết nối!',
+            text: 'Không thể kết nối đến server!',
+            icon: 'error'
+        });
     }
 });

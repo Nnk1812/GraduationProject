@@ -39,9 +39,9 @@ public class BrandController {
     }
 
     @PutMapping("/delete")
-    public ApiResponse<String> deleteBrand(@RequestParam Long id) {
+    public ApiResponse<String> deleteBrand(@RequestParam String code) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(brandService.deleteBrand(id));
+        response.setData(brandService.deleteBrand(code));
         return response;
     }
 

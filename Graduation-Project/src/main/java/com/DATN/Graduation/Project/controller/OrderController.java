@@ -40,7 +40,7 @@ public class OrderController {
         response.setData(orderService.historyOrder());
         return response;
     }
-    @PostMapping("/confirm")
+    @PostMapping("/confirmOrder")
     public ApiResponse<String> confirmOrder(@RequestParam String code,@RequestParam String user) {
         ApiResponse<String> response = new ApiResponse<>();
         response.setData(orderService.confirmOrder(code,user));
@@ -64,6 +64,12 @@ public class OrderController {
         response.setData(orderService.receive(code));
         return response;
     }
+    @PostMapping("/confirm")
+    public ApiResponse<String> confirm(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(orderService.confirm(code));
+        return response;
+    }
     @PostMapping("/cancel")
     public ApiResponse<String> cancel(@RequestParam String code) {
         ApiResponse<String> response = new ApiResponse<>();
@@ -74,6 +80,12 @@ public class OrderController {
     public ApiResponse<String> review(@RequestParam String code) {
         ApiResponse<String> response = new ApiResponse<>();
         response.setData(orderService.returnProduct(code));
+        return response;
+    }
+    @PostMapping("/returnToStock")
+    public ApiResponse<String> returnToStock(@RequestParam String code) {
+        ApiResponse<String> response = new ApiResponse<>();
+        response.setData(orderService.returnProductToStock(code));
         return response;
     }
     @GetMapping("/findByCode")

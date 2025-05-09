@@ -111,34 +111,29 @@
 
 <main class="container mx-auto px-4 py-8">
 
-    <!-- Tiêu đề và nút Add nếu cần -->
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Quản Lý Đơn Hàng</h2>
-        <!-- Nếu có thêm chức năng tạo mới đơn -->
-        <!-- <a href="/DATN/pages/AddOrder.html" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Thêm Đơn Mới
-        </a> -->
     </div>
 
-    <!-- Search / Filter đơn hàng -->
     <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
         <input id="searchInput" type="text" placeholder="Tìm kiếm mã đơn, khách hàng..." class="w-full md:w-1/3 p-2 border rounded shadow-sm focus:outline-none focus:ring focus:border-blue-300">
         <div class="flex space-x-2">
-            <!-- Ví dụ filter theo trạng thái -->
             <select id="statusFilter" class="p-2 border rounded shadow-sm">
                 <option value="">Tất cả trạng thái</option>
                 <option value="1">Chưa xác nhận</option>
                 <option value="2">Đã xác nhận</option>
-                <option value="3">Đã chuyển giao tới đơn vị giao hàng</option>
+                <option value="3">Đã đóng gói và chờ chuyển giao tới đơn vị giao hàng</option>
                 <option value="4">Đang giao hàng</option>
                 <option value="5">Đã giao hàng</option>
-                <option value="6">Đơn hàng đã hủy</option>
+                <option value="6">Đã nhận hàng</option>
+                <option value="7">Đơn hàng đã hủy</option>
+                <option value="8">Trả hàng</option>
+                <option value="9">Khách hàng đã trả hàng và hàng đã về kho</option>
             </select>
             <button id="filterBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lọc</button>
         </div>
     </div>
 
-    <!-- Order Table -->
     <div class="overflow-x-auto bg-white rounded-lg shadow">
         <table class="min-w-full text-gray-700">
             <thead class="bg-gray-100">
@@ -151,17 +146,16 @@
                 <th class="px-4 py-3 border">Ngày Cập Nhập</th>
                 <th class="px-4 py-3 border">Trạng Thái Đơn Hàng</th>
                 <th class="px-4 py-3 border">Tổng Tiền</th>
+                <th class="px-4 py-3 border">Số điện thoại</th>
                 <th class="px-4 py-3 border">Thanh Toán</th>
                 <th class="px-4 py-3 border">Hành Động</th>
             </tr>
             </thead>
             <tbody id="orderTable" class="text-center">
-            <!-- JS sẽ render các dòng đơn hàng ở đây -->
             </tbody>
         </table>
     </div>
 
-    <!-- Phân trang nếu cần -->
     <div id="pagination" class="flex justify-center gap-2 mt-4 flex-wrap"></div>
 
 </main>

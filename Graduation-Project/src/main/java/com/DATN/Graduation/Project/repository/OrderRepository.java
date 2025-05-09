@@ -22,6 +22,9 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
             "if(?1 is not null ,id <> ?1,1=1) and code = ?2 ",nativeQuery = true)
     List<OrderEntity> findByCode(Long id , String code);
 
+    @Query(value = "select * from orders a where a.code =:code ",nativeQuery = true)
+    Optional<OrderEntity> findByCode(String code);
+
     @Query("SELECT new com.DATN.Graduation.Project.dto.OrderDto(" +
             "o.id, o.code, o.employee, o.customer, o.status, o.totalPrice, " +
             "o.discount, o.realPrice, o.paymentMethod, o.priceToPay, o.paymentStatus, " +
@@ -36,34 +39,33 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     List<String> findAllCodes();
 
     @Query(value = "select b.quantity from orders a " +
-            "left join order_detail b on a.code = b.order_code " +
-            "left join product c on b.product = c.code " +
+            "inner join order_detail b on a.code = b.order_code " +
             "where a.code =:code and b.product =:product",nativeQuery = true)
     Integer findQuantityByCode(String code,String product);
-
-    Optional<OrderEntity> findByCode(String code);
 
     @Query(value = "select * from orders a " +
             "where a.code_customer =:code",nativeQuery = true)
     List<OrderEntity> findOrdersByCodeCustomer(String code);
 
-    @Query(value = "select * from orders a " +
-            "where a.code_customer =:code and a.product =:product ",nativeQuery = true)
-    List<OrderEntity> findOrdersCustomer(String code,String product);
+    @Query(value = "select a.* from orders a " +
+            "left join order_detail b on a.code = b.order_code " +
+            "where a.code_customer =:customer and b.product =:product and a.code=:order and a.status = 6",nativeQuery = true)
+    List<OrderEntity> findOrdersCustomer(String customer,String product,String order);
     @Query("SELECT new com.DATN.Graduation.Project.dto.StatisticalDto(" +
             "    COUNT(*), " +
             "    SUM(realPrice) , " +
-            "    SUM(CASE WHEN status = 5 THEN 1 ELSE 0 END) , " +
-            "    SUM(CASE WHEN status = 6 THEN 1 ELSE 0 END)) " +
-            "FROM OrderEntity ")
+            "    SUM(CASE WHEN status = 6 THEN 1 ELSE 0 END) , " +
+            "    SUM(CASE WHEN status = 7 THEN 1 ELSE 0 END)) " +
+            "FROM OrderEntity " +
+            "where status =6 ")
     StatisticalDto findAllStatistical();
     @Query("SELECT new com.DATN.Graduation.Project.dto.StatisticalDto(" +
             "    COUNT(*), " +
             "    SUM(realPrice) , " +
-            "    SUM(CASE WHEN status = 5 THEN 1 ELSE 0 END) , " +
-            "    SUM(CASE WHEN status = 6 THEN 1 ELSE 0 END)) " +
+            "    SUM(CASE WHEN status = 6 THEN 1 ELSE 0 END) , " +
+            "    SUM(CASE WHEN status = 7 THEN 1 ELSE 0 END)) " +
             "FROM OrderEntity " +
-            "where DATE (updatedAt) between :startDate and :endDate ")
+            "where DATE (updatedAt) between :startDate and :endDate and status = 6")
     StatisticalDto findByDate(Date startDate , Date endDate);
 
     @Query(value =

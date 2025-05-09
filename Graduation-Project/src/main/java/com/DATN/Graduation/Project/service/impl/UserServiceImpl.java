@@ -83,8 +83,12 @@ public class UserServiceImpl implements UserService {
             dto.setIsActive(dto.getIsActive());
         }
         UserEntity  user  = userMapper.toUserEntity(dto);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassWord(passwordEncoder.encode(dto.getPassWord()));
+        if (!ObjectUtils.isEmpty(dto.getPassWord())) {
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            user.setPassWord(passwordEncoder.encode(dto.getPassWord()));
+        } else if (!ObjectUtils.isEmpty(dto.getId())) {
+            user.setPassWord(userRepository.findById(dto.getId()).orElseThrow().getPassWord());
+        }
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         if(!ObjectUtils.isEmpty(dto.getDateIn())){
             user.setDateIn(dto.getDateIn());

@@ -91,7 +91,11 @@ async function loadProductFromAPI() {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     if (!code) {
-        alert("Không tìm thấy mã sản phẩm!");
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Không tìm thấy mã sản phẩm',
+        });
         return;
     }
 
@@ -125,10 +129,18 @@ async function loadProductFromAPI() {
 
             calculateRealPrice();
         } else {
-            alert("Không tìm thấy sản phẩm!");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Không tìm thấy mã sản phẩm',
+            });
         }
     } catch (err) {
-        alert("Lỗi khi tải dữ liệu: " + err.message);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Lỗi khi tải dữ liệu' +err.messages,
+        });
     }
 }
 
@@ -179,15 +191,27 @@ async function saveProduct() {
         const json = await res.json();
 
         if (res.ok && json.code === 200) {
-            alert("Cập nhật sản phẩm thành công!");
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Cập nhập sản phẩm thành công',
+            });
             window.location.href = "/DATN/pages/managerProduct.html";
         } else {
             const errorMessage = json.message || "Có lỗi xảy ra!";
-            alert(`Lỗi: ${errorMessage}`);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Lỗi ' + errorMessage,
+            });
         }
     } catch (err) {
         console.error("Lỗi khi gửi dữ liệu:", err);
-        alert("Có lỗi khi lưu sản phẩm.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Lỗi kết nối server!',
+        });
     }
 }
 document.addEventListener('DOMContentLoaded', loadProductFromAPI);

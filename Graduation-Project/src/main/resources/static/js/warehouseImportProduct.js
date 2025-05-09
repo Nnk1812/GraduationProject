@@ -67,7 +67,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             })
             .catch(err => {
                 console.error(err);
-                alert("Không thể sinh mã khuyến mãi mới.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không thể sinh mã mới',
+                });
             });
         return;
     }
@@ -124,16 +128,29 @@ async function loadWarehouseDetail(code) {
         const json = await res.json();
 
         if (json.code !== 200 || !json.data) {
-            return alert("Không tìm thấy dữ liệu phiếu nhập!");
+            return Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Không tìm thấy dữ liệu phiếu nhập',
+            });
         }
 
         const data = json.data;
         const isEditable = data.status === 1;
+        const isReadonly = data.status === 3;
 
         const deleteTh = document.querySelector("#productTable thead th:last-child");
         if (deleteTh) deleteTh.style.display = isEditable ? "table-cell" : "none";
+
         const addBtn = document.getElementById("addProductBtn");
         if (addBtn) addBtn.style.display = isEditable ? "inline-block" : "none";
+
+        if (isReadonly) {
+            const allButtons = document.querySelectorAll("button:not(#backBtn)");
+            allButtons.forEach(btn => {
+                if (btn.id !== "backBtn") btn.style.display = "none";
+            });
+        }
         document.getElementById("reportImportWarehouseId").textContent = data.id;
         document.getElementById("reportName").textContent = data.code;
         document.getElementById("code").value = data.code;
@@ -146,14 +163,20 @@ async function loadWarehouseDetail(code) {
         document.getElementById("price").value = data.price;
         document.getElementById("realPrice").value = data.realPrice;
 
-        const inputs = document.querySelectorAll("#code, #name, #importDate, #discountSelect, #price, #realPrice, #note");
+        const inputs = document.querySelectorAll("#code, #name, #importDate, #discountSelect, #price, #realPrice, #note,#status");
         inputs.forEach(input => {
             input.disabled = !isEditable;
             if (!isEditable) {
                 input.classList.add("bg-gray-100");
             }
         });
-
+        const inputss = document.querySelectorAll("#status");
+        inputss.forEach(input => {
+            input.disabled = isReadonly;
+            if (isReadonly) {
+                input.classList.add("bg-gray-100");
+            }
+        });
         document.querySelector("#productTable").innerHTML = "";
 
         data.products.forEach((item, index) => {
@@ -179,7 +202,11 @@ async function loadWarehouseDetail(code) {
 
     } catch (err) {
         console.error("Lỗi lấy dữ liệu:", err);
-        alert("Có lỗi xảy ra khi tải dữ liệu.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Có lỗi xảy ra khi tải dữ liệu',
+        });
     }
 }
 
@@ -320,38 +347,51 @@ function saveReport() {
 
         const quantity = parseFloat(quantityValue);
         const price = parseFloat(priceValue);
-        const totalPrice = !isNaN(quantity) && !isNaN(price) ? quantity * price : 0;
 
         const discountCode = row.querySelector('.discountSelectProduct')?.value || null;
-        const realPriceText = row.querySelector('.realPrice')?.textContent?.replace(/[^\d]/g, "") || "0";
-        const realPrice = parseFloat(realPriceText);
 
         if (!productCode || !productName || isNaN(quantity) || isNaN(price)) {
             isValid = false;
             return true; // Dừng lại nếu có dòng sai
         }
 
-        products.push({
-            id: warehouseProductId,
-            reportImportWarehouse: reportImportWarehouse,
-            product: productCode,
-            name: productName,
-            brand: brand,
-            quantity: quantity,
-            price: price,
-            // totalPrice: totalPrice,
-            // realPrice: realPrice,
-            discount: discountCode
-        });
+        const isCreate = document.getElementById("reportImportWarehouseId").textContent.trim();
 
-        return false; // tiếp tục vòng lặp
+        if (isCreate) {
+            products.push({
+                id: warehouseProductId,
+                reportImportWarehouse: reportImportWarehouse,
+                product: productCode,
+                name: productName,
+                brand: brand,
+                quantity: quantity,
+                price: price,
+                discount: discountCode
+            });
+        } else {
+            products.push({
+                product: productCode,
+                quantity: quantity,
+                price: price,
+                discount: discountCode
+            });
+        }
+
+        return false;
     });
 
-    if (hasInvalid ) {
-        alert("Vui lòng nhập đầy đủ thông tin sản phẩm (mã, tên, số lượng, đơn giá).");
+    if (hasInvalid) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Vui lòng nhập đầy đủ thông tin sản phẩm (mã, tên, số lượng, đơn giá).',
+        });
         return;
     }
-    const reportId  =document.getElementById("reportImportWarehouseId").textContent.trim();
+
+    const reportId = document.getElementById("reportImportWarehouseId").textContent.trim();
+    const isCreate = !reportId || reportId === "" || reportId === "null";
+
     const payload = {
         id: reportId || null,
         name: document.getElementById("name").value,
@@ -360,15 +400,15 @@ function saveReport() {
         employee: document.getElementById("employee").value,
         discount: document.getElementById("discountSelect").value,
         status: document.getElementById("status").value,
-        // price: document.getElementById("price").value,
-        // realPrice: document.getElementById("realPrice").value,
         products: products
     };
-    console.log("Dữ liệu gửi lên server:", payload);
-    const isCreate = !reportId || reportId === "" || reportId === "null";
+
     if (!isCreate) {
         payload.code = document.getElementById("code").value;
     }
+
+    console.log("Dữ liệu gửi lên server:", payload);
+
     fetch("http://localhost:8080/DATN/warehouse/save", {
         method: "POST",
         headers: {
@@ -379,15 +419,31 @@ function saveReport() {
         .then(res => res.json())
         .then(json => {
             if (json.code === 200) {
-                alert(isCreate ? "Thêm mới phiếu nhập thành công!" : "Cập nhật phiếu nhập thành công!");
-                window.location.href = "/DATN/pages/managerReportImportWarehouse.html";
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: isCreate ? 'Thêm mới phiếu nhập thành công!' : 'Cập nhật phiếu nhập thành công!',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = "/DATN/pages/managerReportImportWarehouse.html";
+                });
             } else {
-                alert("Lỗi khi lưu dữ liệu!");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Có lỗi xảy ra khi tải dữ liệu',
+                });
             }
         })
         .catch(err => {
             console.error("Lỗi:", err);
-            alert("Có lỗi xảy ra khi lưu dữ liệu.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Lỗi kết nối server!',
+            });
         });
 }
+
 

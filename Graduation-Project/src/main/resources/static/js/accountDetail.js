@@ -28,11 +28,19 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.getElementById('gender_female').checked = true;
                 }
             } else {
-                console.error('Không lấy được dữ liệu người dùng.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: result.message || 'Không lấy được dữ liệu người dùng.'
+                });
             }
         })
         .catch(error => {
-            console.error('Lỗi khi gọi API:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi kết nối',
+                text: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.'
+            });
         });
 });
 
@@ -43,7 +51,7 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
         id: document.getElementById('accountId').value,
         code: document.getElementById('accountCode').value,
         userName: document.getElementById('username').value,
-        passWord: document.getElementById('accountPassword').value,
+        // passWord: document.getElementById('accountPassword').value,
         role: document.getElementById('accountRole').value,
         dateOut: document.getElementById('accountDateout').value,
         fullName: document.getElementById('fullname').value,
@@ -63,13 +71,25 @@ document.getElementById('profileForm').addEventListener('submit', function(e) {
         .then(res => res.json())
         .then(data => {
             if (data.code === 200) {
-                alert('Cập nhật thành công!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: 'Cập nhật thông tin thành công!'
+                });
             } else {
-                alert('Có lỗi xảy ra khi cập nhật.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: data.message || 'Có lỗi xảy ra khi cập nhật.'
+                });
             }
         })
         .catch(error => {
             console.error('Lỗi khi cập nhật:', error);
-            alert('Có lỗi xảy ra.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Có lỗi xảy ra trong quá trình gửi dữ liệu.'
+            });
         });
 });

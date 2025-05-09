@@ -20,14 +20,28 @@ document.getElementById('register-form').addEventListener('submit', async functi
         });
 
         if (response.ok) {
-            alert('Đăng ký thành công!');
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: 'Đăng ký thành công',
+            });
             document.getElementById('register-form').reset();
+            window.location.href = "login.html";
         } else {
             const err = await response.json();
-            alert('Lỗi: ' + (err.message || 'Không xác định'));
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Lỗi: ' + (err.message || 'Không xác định'),
+            });
         }
     } catch (error) {
-        alert('Lỗi kết nối tới máy chủ!');
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Lỗi kết nối server!',
+        });
         console.error(error);
     }
 });

@@ -10,6 +10,7 @@ import com.DATN.Graduation.Project.mapper.OrderMapper;
 import com.DATN.Graduation.Project.repository.*;
 import com.DATN.Graduation.Project.service.DiscountService;
 import com.DATN.Graduation.Project.service.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -52,6 +53,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Override
+    @Transactional
     public OrderDto saveOrder(OrderDto dto) {
         if(!ObjectUtils.isEmpty(dto.getCode())){
             if(!ObjectUtils.isEmpty(orderRepository.findByCode(dto.getId(),dto.getCode()))){
@@ -65,7 +68,11 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity orderEntity;
         if(ObjectUtils.isEmpty(dto.getId())){
             orderEntity = new OrderEntity();
-            dto.setStatus(1);
+            if(ObjectUtils.isEmpty(dto.getUserNameCustomer()))
+            {
+                dto.setStatus(OrderStatusEnum.DA_NHAN_HANG.getValue());
+            }
+            dto.setStatus(OrderStatusEnum.CHUA_XAC_NHAN.getValue());
             if(ObjectUtils.isEmpty(dto.getCode())){
                 dto.setCode(generateNextCode());
             }
@@ -107,10 +114,13 @@ public class OrderServiceImpl implements OrderService {
                 detailEntity.setTotalPrice(entity.getRealPrice() * detail.getQuantity());
                 price +=entity.getRealPrice() * detail.getQuantity();
                 detailEntity.setQuantity(detail.getQuantity());
-                orderDetailRepository.save(detailEntity);
                 StockEntity stock = stockRepository.findByProduct(entity.getCode());
+                if(detail.getQuantity()>stock.getQuantity()){
+                    throw new AppException(ErrorCode.QUANTITY_IN_ORDER_MUST_BE_SMALLER_THAN_QUANTITY_IN_STOCK);
+                }
                 stock.setQuantity(stock.getQuantity()-detailEntity.getQuantity());
                 stockRepository.save(stock);
+                orderDetailRepository.save(detailEntity);
 
             }
         }else{
@@ -148,25 +158,20 @@ public class OrderServiceImpl implements OrderService {
         }
         dto.setPriceToPay(realPrice+dto.getShippingFee()-dto.getDeposit());
 
-        // Lưu ID cũ nếu có để tránh lỗi Hibernate
-        Long oldId = orderEntity.getId();
+//        Long oldId = orderEntity.getId();
 
-        // Map dữ liệu từ DTO vào entity
         modelMapper.map(dto, orderEntity);
         OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
-        orderEntity.setId(oldId);
+//        orderEntity.setId(oldId);
         List<OrderDetailEntity> savedDetails = orderDetailRepository
                 .findAllByOrderCode(savedOrderEntity.getCode());
 
-        // 3) Map từng entity thành DTO
         List<OrderDetailDto> detailDtos = savedDetails.stream()
                 .map(entity -> modelMapper.map(entity, OrderDetailDto.class))
                 .collect(Collectors.toList());
 
-        // 4) Map OrderEntity về OrderDto
         OrderDto resultDto = modelMapper.map(savedOrderEntity, OrderDto.class);
 
-        // 5) Gán list details vào DTO
         resultDto.setOrderDetails(detailDtos);
         return resultDto;
     }
@@ -227,13 +232,26 @@ public class OrderServiceImpl implements OrderService {
         }
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
-        return "Giao đơn hàng thành công";
+        return "Đang giao hàng";
     }
     public String receive(String code){
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
         if(Objects.equals(dto.getStatus(), OrderStatusEnum.DANG_GIAO_HANG.getValue())){
+            dto.setStatus(OrderStatusEnum.DA_GIAO_HANG.getValue());
+        }else{
+            throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RECEIVED);
+        }
+        OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
+        orderRepository.save(entity);
+        return "Đã giao hàng";
+    }
+    public String confirm(String code){
+        OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
+                ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
+        );
+        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DA_GIAO_HANG.getValue())){
             dto.setStatus(OrderStatusEnum.DA_NHAN_HANG.getValue());
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RECEIVED);
@@ -241,13 +259,13 @@ public class OrderServiceImpl implements OrderService {
         dto.setPaymentStatus(StatusPaymentEnum.DA_THANH_TOAN.getValue());
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
-        return "Đã nhận đơn hàng thành công";
+        return "Đã giao hàng";
     }
     public String cancel(String code){
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
-        if(!Objects.equals(dto.getStatus(), OrderStatusEnum.DANG_GIAO_HANG.getValue())){
+        if(!Objects.equals(dto.getStatus(), OrderStatusEnum.DA_GIAO_HANG.getValue())){
             dto.setStatus(OrderStatusEnum.HUY_DON_HANG.getValue());
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_CANCELED);
@@ -256,22 +274,62 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(entity);
         return "Đã hủy đơn hàng thành công";
     }
+    @Override
     public String returnProduct(String code){
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 ()-> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
-        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DANG_GIAO_HANG.getValue())){
+        if(Objects.equals(dto.getStatus(), OrderStatusEnum.DA_GIAO_HANG.getValue())){
             dto.setStatus(OrderStatusEnum.TRA_HANG.getValue());
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RETURN);
         }
+        dto.setPaymentStatus(StatusPaymentEnum.TRA_HANG.getValue());
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
-        return "Đã đánh giá đơn hàng";
+        return "Đã trả hàng";
     }
+    @Override
+    public String returnProductToStock(String code) {
+        // Lấy thông tin đơn hàng
+        OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
+                () -> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
+        );
+
+        // Lấy chi tiết đơn hàng theo mã
+        List<OrderDetailEntity> entities = orderDetailRepository.findAllByOrderCode(code);
+
+        // Kiểm tra trạng thái đơn hàng
+        if (Objects.equals(dto.getStatus(), OrderStatusEnum.TRA_HANG.getValue())) {
+            dto.setStatus(OrderStatusEnum.HANG_VE_KHO.getValue());
+        } else {
+            throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RETURN);
+        }
+
+        // Trả số lượng sản phẩm về kho
+        for (OrderDetailEntity detail : entities) {
+            StockEntity stock = stockRepository.findByProduct(detail.getProduct());
+
+            if (stock != null) {
+                long newQuantity = stock.getQuantity() + detail.getQuantity();
+                stock.setQuantity(newQuantity);
+                stockRepository.save(stock);
+            }
+        }
+
+        // Cập nhật trạng thái đơn hàng
+        OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
+        orderRepository.save(entity);
+
+        return "Đã trả hàng về kho";
+    }
+
+
+    @Override
     public List<OrderEntity> historyOrder(){
         return orderRepository.findAll();
     }
+    @Override
     public List<OrderDto> userOrder(String user){
 
         List<OrderEntity> entities = orderRepository.findOrdersByCustomerCode(user);

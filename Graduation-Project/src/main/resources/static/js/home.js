@@ -1,6 +1,7 @@
 fetch("http://localhost:8080/DATN/products/findOutstanding")
     .then(response => {
-        if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+        if (!response.ok)
+            throw new Error(`Lỗi HTTP: ${response.status}`);
         return response.json();
     })
     .then(async data => {
@@ -99,7 +100,11 @@ fetch("http://localhost:8080/DATN/products/findOutstanding")
 
                     const username = localStorage.getItem("username");
                     if (!username) {
-                        alert("Vui lòng đăng nhập trước khi mua hàng.");
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Chưa đăng nhập',
+                            text: 'Vui lòng đăng nhập trước khi mua hàng.'
+                        });
                         return;
                     }
 
@@ -123,15 +128,23 @@ fetch("http://localhost:8080/DATN/products/findOutstanding")
                         })
                         .catch(err => {
                             console.error("Lỗi:", err);
-                            alert("Không thể thêm sản phẩm vào giỏ hàng.");
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: 'Không thể thêm sản phẩm vào giỏ hàng.'
+                            });
                         });
                 });
             }
-
             addClickEvents();
         }
         else {
             console.error("Dữ liệu không đúng định dạng mảng:", data);
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Không thể tải sản phẩm nổi bật.'
+            });
         }
     })
 

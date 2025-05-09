@@ -12,7 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(json => renderOrder(json.data))
         .catch(err => {
             console.error(err);
-            alert('Không tải được chi tiết đơn hàng.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: 'Không tải được chi tiết đơn hàng!',
+            });
         });
 });
 
@@ -38,9 +42,11 @@ function renderOrder(order) {
             case 2: return "Đã xác nhận";
             case 3: return "Đã đóng gói và chờ chuyển giao tới đơn vị giao hàng";
             case 4: return "Đang giao hàng";
-            case 5: return "Hoàn thành";
-            case 6: return "Đơn hàng đã hủy";
-            case 7: return "Trả hàng";
+            case 5: return "Đã giao hàng";
+            case 6: return "Đã nhận hàng";
+            case 7: return "Đơn hàng đã hủy";
+            case 8: return "Trả hàng";
+            case 9: return "Khách hàng đã trả hàng và hàng đã về kho";
             default: return "Không xác định";
         }
     };
@@ -85,7 +91,7 @@ function renderOrder(order) {
     `;
 
         // Nếu đã giao hàng, hiển thị nút đánh giá nếu chưa đánh giá
-        if (order.status === 5) {
+        if (order.status === 6) {
             const reviewed = JSON.parse(localStorage.getItem('reviewedProducts') || '[]');
             if (!reviewed.includes(item.product)) {
                 const reviewBtn = document.createElement('button');
@@ -136,14 +142,11 @@ function renderOrder(order) {
             </button>
         `;
         document.getElementById('cancelBtn').onclick = () => {
-            if (confirm('Bạn chắc chắn muốn hủy đơn hàng này?')) {
-                fetch(`http://localhost:8080/DATN/order/cancel?code=${order.code}`, {
-                    method: 'POST'
-                }).then(() => location.reload());
-            }
+            const url = `http://localhost:8080/DATN/order/cancel?code=${order.code}`;
+            handleAction(url, 'Bạn chắc chắn muốn hủy đơn hàng này?');
         };
     }
-    if (order.status === 4) {
+    if (order.status === 5) {
         const actions = document.getElementById('od-actions');
         actions.innerHTML = `
         <div class="flex gap-4">
@@ -157,20 +160,81 @@ function renderOrder(order) {
             </button>
         </div>
     `;
+        document.getElementById('receiveBtn').onclick = async () => {
+            const result = await Swal.fire({
+                title: 'Xác nhận',
+                text: 'Bạn đã nhận hàng và thanh toán chưa?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Có',
+                cancelButtonText: 'Không'
+            });
 
-        document.getElementById('receiveBtn').onclick = () => {
-            if (confirm('Bạn đã nhận hàng và thanh toán chưa?')) {
-                fetch(`http://localhost:8080/DATN/order/receive?code=${order.code}`, {
-                    method: 'POST'
-                }).then(() => location.reload());
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch(`http://localhost:8080/DATN/order/confirm?code=${order.code}`, {
+                        method: 'POST'
+                    });
+                    if (res.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: 'Đã cập nhật trạng thái đơn hàng!'
+                        });
+                        location.reload();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thất bại',
+                            text: 'Không thể cập nhật đơn hàng.'
+                        });
+                    }
+                } catch (e) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi kết nối',
+                        text: 'Không thể kết nối tới server.'
+                    });
+                }
             }
         };
 
-        document.getElementById('returnBtn').onclick = () => {
-            if (confirm('Bạn muốn trả hàng?')) {
-                fetch(`http://localhost:8080/DATN/order/return?code=${order.code}`, {
-                    method: 'POST'
-                }).then(() => location.reload());
+        document.getElementById('returnBtn').onclick = async () => {
+            const result = await Swal.fire({
+                title: 'Xác nhận trả hàng',
+                text: 'Bạn chắc chắn muốn trả hàng?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Trả hàng',
+                cancelButtonText: 'Hủy'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch(`http://localhost:8080/DATN/order/return?code=${order.code}`, {
+                        method: 'POST'
+                    });
+                    if (res.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã trả hàng',
+                            text: 'Đơn hàng đã được xử lý.'
+                        });
+                        location.reload();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: 'Không thể thực hiện thao tác.'
+                        });
+                    }
+                } catch (e) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi kết nối',
+                        text: 'Không thể kết nối tới server.'
+                    });
+                }
             }
         };
     }
@@ -228,7 +292,11 @@ function renderOrder(order) {
         const comment = document.getElementById('comment').value;
 
         if (!rating || !comment) {
-            alert('Vui lòng điền đủ thông tin!');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin',
+                text: 'Vui lòng điền đủ thông tin!',
+            });
             return;
         }
 
@@ -255,13 +323,24 @@ function renderOrder(order) {
                     localStorage.setItem('reviewedProducts', JSON.stringify(reviewed));
                 }
 
-                alert("Cảm ơn bạn đã đánh giá");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cảm ơn bạn!',
+                    text: 'Cảm ơn bạn đã đánh giá',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
                 document.getElementById('reviewModal').classList.add('hidden');
                 location.reload();
             })
             .catch(err => {
                 console.error(err);
-                alert('Đã có lỗi xảy ra, vui lòng thử lại!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Lỗi kết nối server!',
+                });
             });
     };
 

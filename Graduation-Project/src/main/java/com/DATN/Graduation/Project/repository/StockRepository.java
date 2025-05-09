@@ -7,6 +7,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StockRepository extends JpaRepository<StockEntity,Long> {
-    @Query(value = "select * from stock a where a.product =:code",nativeQuery = true)
+    @Query(value = "SELECT * " +
+            "FROM stock s " +
+            "WHERE s.product = :code AND s.import_date = ( " +
+            "    SELECT MIN(import_date) FROM stock WHERE product = :code " +
+            ") " +
+            "LIMIT 1", nativeQuery = true)
     StockEntity findByProduct(String code);
+
 }
