@@ -82,7 +82,10 @@ fetch("http://localhost:8080/DATN/products/findOutstanding")
     <div class="text-sm text-gray-600">Tồn kho: ${product.quantity}</div>
   </div>
 
-  <a href="#" class="buy-now bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500 mt-auto">Mua Ngay</a>
+  ${product.realPrice <= 20000000 ? `
+      <a href="#" class="buy-now bg-blue-600 text-white py-2 px-6 rounded-full text-lg hover:bg-blue-500 mt-auto">Mua Ngay</a>
+    ` : ''}
+  </div>
 </div>
 
 

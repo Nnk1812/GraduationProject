@@ -5,6 +5,7 @@ import com.DATN.Graduation.Project.dto.FindProductDto;
 import com.DATN.Graduation.Project.dto.FindProductDetailDto;
 import com.DATN.Graduation.Project.dto.ProductDto;
 import com.DATN.Graduation.Project.entity.ProductEntity;
+import com.DATN.Graduation.Project.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -69,7 +70,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
         ORDER BY f2.importDate ASC
         LIMIT 1
     )
-    WHERE f.quantity > 0
+    WHERE f.quantity > 0 and a.isDeleted = false
     GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity
     ORDER BY SUM(b.quantity) DESC
     """)
@@ -91,7 +92,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
         ORDER BY f2.importDate ASC
         LIMIT 1
     )
-    WHERE f.quantity > 0
+    WHERE f.quantity > 0 and a.isDeleted = false
     GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity
     """)
     List<FindProductDto> findAllProduct();
@@ -111,7 +112,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
         ORDER BY f2.importDate ASC
         LIMIT 1
     )
-    WHERE f.quantity > 0 and e.name =:brand
+    WHERE f.quantity > 0 and e.name =:brand and a.isDeleted = false
     GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand, f.quantity
     """)
     List<FindProductDto> findByBrand(String brand);
@@ -136,8 +137,13 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
             "LEFT JOIN BrandEntity e ON e.code = a.brand " +
             "inner join StockEntity f on f.product = a.code " +
-            "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) and f.quantity >0 " +
+            "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) and f.quantity >0 and a.isDeleted = false " +
             "GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand,f.quantity")
     List<FindProductDto> findByProductNameIgnoreCase(String name);
-
+    @Query(value = "SELECT p.* " +
+            "FROM product p " +
+            "JOIN order_detail a ON a.product = p.code " +
+            "JOIN orders b ON a.order_code =b.code " +
+            "WHERE p.code = :code",nativeQuery = true)
+    List<ProductEntity> findProductInOrder(String code);
 }

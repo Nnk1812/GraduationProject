@@ -202,7 +202,8 @@ public class OrderServiceImpl implements OrderService {
         }else {
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_CONFIRMED);
         }
-
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         entity.setEmployee(user);
         orderRepository.save(entity);
@@ -217,6 +218,8 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_TRANSFERRED);
         }
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
         return "Chuyển giao đơn hàng thành công";
@@ -230,6 +233,8 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_DELIVERY);
         }
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
         return "Đang giao hàng";
@@ -243,6 +248,8 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RECEIVED);
         }
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
         return "Đã giao hàng";
@@ -256,6 +263,8 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RECEIVED);
         }
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         dto.setPaymentStatus(StatusPaymentEnum.DA_THANH_TOAN.getValue());
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
@@ -270,6 +279,8 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_CANCELED);
         }
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
         return "Đã hủy đơn hàng thành công";
@@ -284,6 +295,8 @@ public class OrderServiceImpl implements OrderService {
         }else{
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RETURN);
         }
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         dto.setPaymentStatus(StatusPaymentEnum.TRA_HANG.getValue());
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
@@ -291,33 +304,26 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     public String returnProductToStock(String code) {
-        // Lấy thông tin đơn hàng
         OrderDto dto = orderRepository.findOrderDtoById(code).orElseThrow(
                 () -> new AppException(ErrorCode.ORDER_DETAIL_NOT_EXISTED)
         );
-
-        // Lấy chi tiết đơn hàng theo mã
         List<OrderDetailEntity> entities = orderDetailRepository.findAllByOrderCode(code);
 
-        // Kiểm tra trạng thái đơn hàng
         if (Objects.equals(dto.getStatus(), OrderStatusEnum.TRA_HANG.getValue())) {
             dto.setStatus(OrderStatusEnum.HANG_VE_KHO.getValue());
         } else {
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_TO_RETURN);
         }
-
-        // Trả số lượng sản phẩm về kho
         for (OrderDetailEntity detail : entities) {
             StockEntity stock = stockRepository.findByProduct(detail.getProduct());
-
             if (stock != null) {
                 long newQuantity = stock.getQuantity() + detail.getQuantity();
                 stock.setQuantity(newQuantity);
                 stockRepository.save(stock);
             }
         }
-
-        // Cập nhật trạng thái đơn hàng
+        LocalDateTime now = LocalDateTime.now();
+        dto.setUpdatedAt(now);
         OrderEntity entity = modelMapper.map(dto, OrderEntity.class);
         orderRepository.save(entity);
 
@@ -335,18 +341,14 @@ public class OrderServiceImpl implements OrderService {
         List<OrderEntity> entities = orderRepository.findOrdersByCustomerCode(user);
         return entities.stream()
                 .map(orderEntity -> {
-                    // 1. Map từ OrderEntity -> OrderDto
                     OrderDto orderDto = modelMapper.map(orderEntity, OrderDto.class);
 
-                    // 2. Sau đó, tìm list OrderDetailEntity theo orderId
                     List<OrderDetailEntity> orderDetails = orderDetailRepository.findAllByOrderCode(orderEntity.getCode());
 
-                    // 3. Map list OrderDetailEntity -> list OrderDetailDto
                     List<OrderDetailDto> detailDtos = orderDetails.stream()
                             .map(detail -> modelMapper.map(detail, OrderDetailDto.class))
                             .collect(Collectors.toList());
 
-                    // 4. Set vào OrderDto
                     orderDto.setOrderDetails(detailDtos);
 
                     return orderDto;

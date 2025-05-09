@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface UserService {
 
+//    String sendSimpleEmail(String email);
+
     String setRole(String code,String role);
 
 
@@ -28,6 +30,6 @@ public interface UserService {
 
     String changePassword(String code,String password,String newPassword);
 
-    String setPassword(String code,String password);
+    String setPassword(String phone,String email);
 
 }

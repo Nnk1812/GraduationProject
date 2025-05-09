@@ -41,7 +41,6 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
     Optional<UserEntity> findByCode(String code);
     @Query(value = "select * from user a where a.username =:userName",nativeQuery = true)
     Optional<UserEntity> findFullNameByUserName(String userName);
-    @Query(value = "select a.role from user a where a.username =:userName",nativeQuery = true)
-    String findRoleByUserName(String userName);
-
+    @Query(value = "select * from user a where a.phone =:phone and a.email =:email",nativeQuery = true)
+    UserEntity findUser(String phone,String email);
 }

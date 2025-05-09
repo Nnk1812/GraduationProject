@@ -179,6 +179,9 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity entity = productsRepository.findByCode(code).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
         );
+        if(!ObjectUtils.isEmpty(productsRepository.findProductInOrder(entity.getCode()))){
+            throw new AppException(ErrorCode.PRODUCT_IN_THE_ORDER_CANNOT_BE_DELETE);
+        }
         productsRepository.delete(entity);
         ProductDetailEntity detail = productDetailsRepository.findByProduct(entity.getCode()).orElse(null);
         if(!ObjectUtils.isEmpty(detail)) {
@@ -187,10 +190,14 @@ public class ProductServiceImpl implements ProductService {
         return "Product deleted successfully";
     }
     @Override
+    @Transactional
     public String hiddenProduct (String code){
         ProductEntity entity = productsRepository.findByCode(code).orElseThrow(
                 () -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED)
         );
+        if(!ObjectUtils.isEmpty(productsRepository.findProductInOrder(entity.getCode()))){
+            throw new AppException(ErrorCode.PRODUCT_IN_THE_ORDER_CANNOT_BE_HIDDEN);
+        }
         entity.setIsDeleted(true);
         productsRepository.save(entity);
         return "Product hidden successfully";

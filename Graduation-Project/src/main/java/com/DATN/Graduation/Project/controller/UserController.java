@@ -74,10 +74,16 @@ public class UserController {
         response.setData(userService.changePassword(code,password,newPassword));
         return response;
     }
-    @PostMapping("/setPassword")
-    public ApiResponse<String> setPassword(@RequestParam String code, @RequestParam String password) {
+    @GetMapping("/setPassword")
+    public ApiResponse<String> setPassword(@RequestParam String phone, @RequestParam String email) {
         ApiResponse<String> response = new ApiResponse<>();
-        response.setData(userService.setPassword(code,password));
+        response.setData(userService.setPassword(phone,email));
         return response;
     }
+//    @PostMapping("/send")
+//    public ApiResponse<String> sendEmail(@RequestParam String emial) {
+//        ApiResponse<String> response = new ApiResponse<>();
+//        response.setData(userService.sendSimpleEmail(emial));
+//        return response;
+//    }
 }

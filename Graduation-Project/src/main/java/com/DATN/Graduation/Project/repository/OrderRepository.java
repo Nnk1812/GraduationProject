@@ -53,19 +53,20 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     List<OrderEntity> findOrdersCustomer(String customer,String product,String order);
     @Query("SELECT new com.DATN.Graduation.Project.dto.StatisticalDto(" +
             "    COUNT(*), " +
-            "    SUM(realPrice) , " +
+            "    SUM(CASE WHEN status = 6 THEN realPrice ELSE 0 END), " +
             "    SUM(CASE WHEN status = 6 THEN 1 ELSE 0 END) , " +
-            "    SUM(CASE WHEN status = 7 THEN 1 ELSE 0 END)) " +
-            "FROM OrderEntity " +
-            "where status =6 ")
+            "    SUM(CASE WHEN status = 7 THEN 1 ELSE 0 END) , " +
+            "   SUM(CASE WHEN status = 9 THEN 1 ELSE 0 END)) " +
+            "FROM OrderEntity " )
     StatisticalDto findAllStatistical();
     @Query("SELECT new com.DATN.Graduation.Project.dto.StatisticalDto(" +
             "    COUNT(*), " +
-            "    SUM(realPrice) , " +
+            "    SUM(CASE WHEN status = 6 THEN realPrice ELSE 0 END), " +
             "    SUM(CASE WHEN status = 6 THEN 1 ELSE 0 END) , " +
-            "    SUM(CASE WHEN status = 7 THEN 1 ELSE 0 END)) " +
+            "    SUM(CASE WHEN status = 7 THEN 1 ELSE 0 END) , " +
+            "   SUM(CASE WHEN status = 9 THEN 1 ELSE 0 END)) " +
             "FROM OrderEntity " +
-            "where DATE (updatedAt) between :startDate and :endDate and status = 6")
+            "where DATE (updatedAt) between :startDate and :endDate ")
     StatisticalDto findByDate(Date startDate , Date endDate);
 
     @Query(value =
@@ -86,7 +87,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
                     ") AS months " +
                     "LEFT JOIN orders o ON MONTH(o.created_at) = months.month " +
                     "AND YEAR(o.created_at) = :year " +
-                    "AND o.status = 5 " +
+                    "AND o.status = 6 " +
                     "GROUP BY months.month " +
                     "ORDER BY months.month", nativeQuery = true)
     List<Object[]> getMonthlyIncome(Integer year);

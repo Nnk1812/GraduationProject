@@ -532,6 +532,20 @@ async function saveOrder() {
         product: input.getAttribute("data-code"),
         quantity: parseInt(input.value)
     }));
+    if (updatedCartItems.length === 0) {
+        return Swal.fire({
+            icon: 'warning',
+            title: 'Giỏ hàng trống',
+            text: 'Bạn không có sản phẩm nào trong giỏ hàng',
+        });
+    }
+    if (!fullName || !phone || !addressDetail) {
+        return Swal.fire({
+            icon: 'warning',
+            title: 'Thiếu thông tin',
+            text: 'Vui lòng điền đầy đủ họ tên, số điện thoại và địa chỉ',
+        });
+    }
     const orderData = {
         customer: fullName,
         phone: phone,

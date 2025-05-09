@@ -163,14 +163,14 @@ async function loadWarehouseDetail(code) {
         document.getElementById("price").value = data.price;
         document.getElementById("realPrice").value = data.realPrice;
 
-        const inputs = document.querySelectorAll("#code, #name, #importDate, #discountSelect, #price, #realPrice, #note,#status");
+        const inputs = document.querySelectorAll("#code, #name, #importDate, #discountSelect, #price, #realPrice, #note");
+        const inputss = document.querySelectorAll("#status");
         inputs.forEach(input => {
             input.disabled = !isEditable;
             if (!isEditable) {
                 input.classList.add("bg-gray-100");
             }
         });
-        const inputss = document.querySelectorAll("#status");
         inputss.forEach(input => {
             input.disabled = isReadonly;
             if (isReadonly) {

@@ -184,7 +184,7 @@ const handleDelete = async (code) => {
             Swal.fire('Thành công', 'Đã xóa sản phẩm!', 'success');
             fetchProducts();
         } else {
-            Swal.fire('Lỗi', 'Xóa sản phẩm thất bại!', 'error');
+            Swal.fire('Lỗi', 'Product in the order cannot be delete', 'error');
         }
     } catch (error) {
         console.error("Lỗi khi xóa sản phẩm:", error);
@@ -208,7 +208,7 @@ const handleHide = async (code) => {
             Swal.fire('Thành công', 'Đã ẩn sản phẩm!', 'success');
             fetchProducts();
         } else {
-            Swal.fire('Lỗi', 'Ẩn sản phẩm thất bại!', 'error');
+            Swal.fire('Lỗi', 'Product in the order cannot be hidden', 'error');
         }
     } catch (error) {
         console.error("Lỗi khi ẩn sản phẩm:", error);

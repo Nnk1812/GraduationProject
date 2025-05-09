@@ -18,6 +18,8 @@ public enum ErrorCode {
     YOU_DO_NOT_HAVE_PERMISSION(1007,"You don't have permission to perform this action "),
     DISABLE_ACCOUNT(1008,"Tài khoản đã bị vô hiệu hóa"),
     INVALID_OLD_PASSWORD(1009,"invalid old password"),
+    PRODUCT_IN_THE_ORDER_CANNOT_BE_HIDDEN(1010,"product in order cannot be hidden"),
+    PRODUCT_IN_THE_ORDER_CANNOT_BE_DELETE(1010,"product in order cannot be delete"),
 
     //Exception of Product -1100
     PRODUCT_NOT_EXISTED(1100,"Product not existed"),

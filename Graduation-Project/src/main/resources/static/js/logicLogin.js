@@ -61,3 +61,55 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         });
     }
 });
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+const modal = document.getElementById('forgotPasswordModal');
+const cancelBtn = document.getElementById('cancelBtn');
+
+forgotPasswordLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log("Quên mật khẩu clicked");
+    modal.classList.remove('hidden');
+});
+
+cancelBtn.addEventListener('click', () => {
+    console.log("Cancel clicked");
+    modal.classList.add('hidden');
+});
+
+document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    try {
+        console.log("API đang được gọi...");
+        const response = await fetch(`http://localhost:8080/DATN/user/setPassword?phone=${phone}&email=${email}`);
+        const result = await response.json();
+
+        if (result.code === 200) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: `Mật khẩu mới của bạn là: ${result.data}`,
+                confirmButtonText: 'Đã hiểu'
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Thất bại',
+                text: 'Không tìm thấy tài khoản hoặc thông tin không hợp lệ!',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: 'Đã xảy ra lỗi, vui lòng thử lại sau.',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    modal.classList.add('hidden');
+});

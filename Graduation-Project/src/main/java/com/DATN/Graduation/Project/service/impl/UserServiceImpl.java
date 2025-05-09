@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.config.authentication.PasswordEncoderParser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -36,12 +38,33 @@ public class UserServiceImpl implements UserService {
     private  UserMapper userMapper;
     @Autowired
     private CartRepository cartRepository;
-    @Autowired
-    private JavaMailSender mailSender;
-//    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
-//        this.userRepository = userRepository;
-//        this.userMapper = userMapper;
+//    @Autowired
+//    private JavaMailSender mailSender;
+
+//    @Override
+//    public String sendSimpleEmail(String email) {
+//        String rawPassword = generateRandomPassword(4);
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+//        String encodedPassword = passwordEncoder.encode(rawPassword);
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        message.setFrom("nnk18122002@gmail.com");
+//        message.setTo(email);
+//        message.setSubject("new Password");
+//        message.setText(encodedPassword);
+//        mailSender.send(message);
+//        return "email sent successfully";
 //    }
+
+    private String generateRandomPassword(int length) {
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            password.append(CHARACTERS.charAt(index));
+        }
+        return password.toString();
+    }
 
     @Override
     public String setRole(String code,String role) {
@@ -193,14 +216,16 @@ public class UserServiceImpl implements UserService {
         return "Đổi mật khẩu thành công!";
     }
     @Override
-    public String setPassword(String code,String password){
-        UserEntity user = userRepository.findByCode(code).orElseThrow(
-                () -> new AppException(ErrorCode.USER_NOT_FOUND)
-        );
+    public String setPassword(String phone,String email){
+        UserEntity user = userRepository.findUser(phone,email);
+        if(ObjectUtils.isEmpty(user)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        String rawPassword = generateRandomPassword(4);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassWord(passwordEncoder.encode(password));
-
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        user.setPassWord(encodedPassword);
         userRepository.save(user);
-        return "success";
+        return rawPassword;
     }
 }

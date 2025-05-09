@@ -14,4 +14,5 @@ public class StatisticalDto {
     private Long revenue;
     private Long successOrder;
     private Long failedOrder;
+    private Long returnOrder;
 }

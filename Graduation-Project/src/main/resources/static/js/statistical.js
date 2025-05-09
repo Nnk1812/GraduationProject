@@ -44,6 +44,7 @@ function fetchData(apiUrl) {
             document.getElementById('totalRevenue').textContent = formatCurrency(data.revenue ?? 0);
             document.getElementById('successfulOrders').textContent = data.successOrder ?? 0;
             document.getElementById('canceledOrders').textContent = data.failedOrder ?? 0;
+            document.getElementById('returnProduct').textContent = data.failedOrder ?? 0;
 
             if (isFiltering) {
                 Swal.fire({
