@@ -208,9 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
-
-
-
 function updateSummary() {
     const quantityInputs = document.querySelectorAll(".quantity-input");
     let totalPrice = 0;
@@ -230,8 +227,7 @@ function updateSummary() {
         }
     });
 
-    // Hiển thị tổng trước giảm và số tiền tiết kiệm
-    document.getElementById("total-price").textContent = totalPrice.toLocaleString() + "₫";
+    document.getElementById("total-price").textContent = "Tổng đơn hàng: " + totalPrice.toLocaleString() + "₫";
     const savedElement = document.getElementById("saved-amount");
     if (hasDiscount) {
         savedElement.textContent = "Tiết kiệm " + totalSaved.toLocaleString() + "₫";
@@ -240,28 +236,38 @@ function updateSummary() {
         savedElement.classList.add("hidden");
     }
 
-    // Tính giảm giá
     let discountAmount = 0;
     if (selectedDiscount) {
         if (selectedDiscount.type === 1) {
-            // Giảm phần trăm
             discountAmount = totalPrice * selectedDiscount.value / 100;
         } else if (selectedDiscount.type === 2) {
-            // Giảm số tiền
             discountAmount = selectedDiscount.value;
         }
     }
 
-    const finalTotal = Math.max(0, totalPrice - discountAmount);
+    let finalTotalBeforeDeposit = Math.max(0, totalPrice - discountAmount);
+    let finalTotal = finalTotalBeforeDeposit;
+
+    const selected = document.querySelector('input[name="payment-method"]:checked')?.value;
+    let depositAmount = 0;
+
+    if (selected === "cod" && finalTotalBeforeDeposit >= 10000000) {
+        depositAmount = Math.floor(finalTotalBeforeDeposit * 0.1);
+        // Hiển thị tiền cần ứng trước
+        document.getElementById("deposit-amount").classList.remove("hidden");
+        document.getElementById("deposit-amount-value").textContent = depositAmount.toLocaleString() + "₫";
+
+        finalTotal = finalTotalBeforeDeposit - depositAmount;
+    } else {
+        document.getElementById("deposit-amount").classList.add("hidden");
+    }
+
+    document.getElementById("original-total").classList.remove("hidden");
+    document.getElementById("original-total-value").textContent = finalTotalBeforeDeposit.toLocaleString() + "₫";
+
     document.getElementById("final-price").textContent = finalTotal.toLocaleString() + "₫";
 
-    const shippingFeeElement = document.getElementById('ShippingFee');
-    if (finalTotal.toLocaleString() < 2000000) {
-        shippingFeeElement.innerText = 'Phí vận chuyển: 50.000đ';
-    } else {
-        shippingFeeElement.innerText = 'Miễn phí vận chuyển';
-    }
-    updateBankQR();
+    updateBankQR(finalTotalBeforeDeposit);
 }
 
 
@@ -393,43 +399,69 @@ fetch("http://localhost:8080/DATN/discount/findAllDiscountValid")
         console.error("Không thể tải mã giảm giá:", err);
     });
 
-function updateBankQR() {
+document.querySelectorAll('input[name="payment-method"]').forEach(input => {
+    input.addEventListener("change", () => {
+        updateSummary();
+        updateBankQR();
+    });
+});
+
+
+
+function updateBankQR(originalTotal) {
     const selected = document.querySelector('input[name="payment-method"]:checked')?.value;
     const qrContainer = document.getElementById("bank-transfer-qr");
     const submitButton = document.getElementById("submit-btn");
-    const paymentStatusMessage = document.getElementById("payment-status-message"); // Thông báo trạng thái thanh toán
+    const paymentStatusMessage = document.getElementById("payment-status-message");
+    const confirmBtn = document.getElementById("confirmPaymentBtn");
+
+    qrContainer.classList.add("hidden");
+    paymentStatusMessage.classList.add("hidden");
+    confirmBtn.classList.add("hidden");
+    submitButton.disabled = false;
 
     if (selected === "bank") {
-        const amountText = document.getElementById("final-price").textContent.replace(/[^\d]/g, "");
-        const amount = parseInt(amountText);
-
-        const qrLink = `https://img.vietqr.io/image/VCB-1017409232-compact2.png?amount=${amount}&addInfo=Thanh+toan+don+hang`;
+        const qrLink = `https://img.vietqr.io/image/VCB-1017409232-compact2.png?amount=${originalTotal}&addInfo=Thanh+toan+don+hang`;
         document.getElementById("qr-image").src = qrLink;
 
         qrContainer.classList.remove("hidden");
-
         submitButton.disabled = true;
         paymentStatusMessage.textContent = "Bạn cần hoàn tất thanh toán trước khi hoàn thành đơn hàng.";
         paymentStatusMessage.classList.remove("hidden");
-    } else {
-        qrContainer.classList.add("hidden");
+        paymentStatusMessage.classList.remove("text-green-600");
 
-        paymentStatusMessage.classList.add("hidden");
-        submitButton.disabled = false;
+        confirmBtn.classList.remove("hidden");
+    }
+
+    if (selected === "cod" && originalTotal >= 10000000 && originalTotal < 20000000) {
+        const deposit = Math.floor(originalTotal * 0.1);
+        const qrLink = `https://img.vietqr.io/image/VCB-1017409232-compact2.png?amount=${deposit}&addInfo=Ung+truoc+10+phan+tram+don+COD`;
+        document.getElementById("qr-image").src = qrLink;
+
+        qrContainer.classList.remove("hidden");
+        paymentStatusMessage.textContent = `Bạn cần ứng trước 10% đơn hàng (${deposit.toLocaleString()}₫) qua chuyển khoản.`;
+        paymentStatusMessage.classList.remove("hidden");
+        paymentStatusMessage.classList.remove("text-green-600");
+
+        confirmBtn.classList.remove("hidden");
+        submitButton.disabled = true;
     }
 }
 
-const origUpdateBankQR = updateBankQR;
-updateBankQR = function() {
-    origUpdateBankQR();
 
-    const confirmBtn = document.getElementById("confirmPaymentBtn");
-    if (document.querySelector('input[name="payment-method"]:checked').value === "bank") {
-        confirmBtn.classList.remove("hidden");
-    } else {
-        confirmBtn.classList.add("hidden");
-    }
-};
+
+
+// const origUpdateBankQR = updateBankQR;
+// // updateBankQR = function() {
+// //     origUpdateBankQR();
+// //
+// //     const confirmBtn = document.getElementById("confirmPaymentBtn");
+// //     if (document.querySelector('input[name="payment-method"]:checked').value === "bank") {
+// //         confirmBtn.classList.remove("hidden");
+// //     } else {
+// //         confirmBtn.classList.add("hidden");
+// //     }
+// // };
 
 document
     .getElementById("confirmPaymentBtn")
@@ -444,16 +476,12 @@ function onPaymentSuccess() {
 
     qrContainer.classList.add("hidden");
     paymentStatusMessage.textContent = "Thanh toán thành công!";
-    paymentStatusMessage.classList.add("text-green-600"); // Thêm màu xanh để thông báo thành công
+    paymentStatusMessage.classList.add("text-green-600");
 
     submitButton.disabled = false;
     submitButton.classList.remove("bg-blue-600", "hover:bg-blue-500");
-    submitButton.classList.add("bg-green-600", "hover:bg-green-500"); // Nút hoàn tất đơn hàng sẽ chuyển sang màu xanh lá khi thanh toán thành công
+    submitButton.classList.add("bg-green-600", "hover:bg-green-500");
 }
-
-document.querySelectorAll('input[name="payment-method"]').forEach(input => {
-    input.addEventListener("change", updateBankQR);
-});
 
 document.getElementById("product-list").addEventListener("click", function (e) {
     if (e.target.classList.contains("delete-btn")) {
