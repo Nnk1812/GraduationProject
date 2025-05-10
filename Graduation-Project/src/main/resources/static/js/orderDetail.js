@@ -27,15 +27,13 @@ const formatDate = (dateString) => {
 };
 
 function renderOrder(order) {
-    // Hiển thị thông tin đơn hàng
     document.getElementById('od-customer').textContent = order.customer;
     document.getElementById('od-phone').textContent = order.phone;
     document.getElementById('od-address').textContent = order.address;
 
-    // Thêm phần thông tin đơn hàng
-    document.getElementById('od-employee').textContent = order.employee;  // Nhân viên
-    document.getElementById('od-createdDate').textContent = formatDate(order.createdAt); // Ngày tạo
-    document.getElementById('od-updatedDate').textContent = formatDate(order.updatedAt); // Ngày cập nhật
+    document.getElementById('od-employee').textContent = order.employee;
+    document.getElementById('od-createdDate').textContent = formatDate(order.createdAt);
+    document.getElementById('od-updatedDate').textContent = formatDate(order.updatedAt);
     const convertOrderStatus = (status) => {
         switch (status) {
             case 1: return "Chưa xác nhận";
@@ -52,21 +50,20 @@ function renderOrder(order) {
     };
     document.getElementById('od-orderStatus').textContent = convertOrderStatus(order.status);
 
-    // Hiển thị danh sách sản phẩm
     const itemsContainer = document.getElementById('od-items');
     itemsContainer.innerHTML = ''; // reset
 
     order.orderDetails.forEach((item, index) => {
+        const realPrice = item.price || 0;
+        console.log(item);
         const wrap = document.createElement('div');
         wrap.className = 'flex justify-between items-center space-x-4 p-4 border-b';
 
-        // Ảnh sản phẩm (trái)
         const img = document.createElement('img');
         img.src = item.image;
         img.alt = item.product;
         img.className = 'w-24 h-24 object-cover rounded';
 
-        // Tên và mã sản phẩm (phải ảnh)
         const info = document.createElement('div');
         info.className = 'flex flex-col flex-1';
 
@@ -81,16 +78,14 @@ function renderOrder(order) {
         info.appendChild(name);
         info.appendChild(code);
 
-        // Phần số lượng + giá + nút đánh giá nếu cần
         const rightInfo = document.createElement('div');
         rightInfo.className = 'flex flex-col items-end justify-between';
 
         rightInfo.innerHTML = ` 
         <div class="text-sm text-gray-600">Số lượng: ${item.quantity}</div>
-        <div class="text-lg font-semibold text-red-600">${item.totalPrice.toLocaleString()}₫</div>
+        <div class="text-lg font-semibold text-red-600">${realPrice.toLocaleString()}₫</div>
     `;
 
-        // Nếu đã giao hàng, hiển thị nút đánh giá nếu chưa đánh giá
         if (order.status === 6) {
             const reviewed = JSON.parse(localStorage.getItem('reviewedProducts') || '[]');
             if (!reviewed.includes(item.product)) {
@@ -108,17 +103,23 @@ function renderOrder(order) {
             }
         }
 
-        // Thêm các phần tử vào wrap
         wrap.append(img, info, rightInfo);
         itemsContainer.appendChild(wrap);
     });
 
 
 
+    if (order.shippingFee) {
+        document.getElementById('od-shippingFee').textContent = `${order.shippingFee.toLocaleString()}₫`;
+    } else {
+        document.getElementById('od-shippingFee').textContent = "0₫";
+    }
 
-    // Phí vận chuyển & thành tiền
-    document.getElementById('od-shippingFee').textContent = `${order.shippingFee.toLocaleString()}₫`;
-    document.getElementById('od-priceToPay').textContent = `${order.priceToPay.toLocaleString()}₫`;
+    if (order.priceToPay) {
+        document.getElementById('od-priceToPay').textContent = `${order.priceToPay.toLocaleString()}₫`;
+    } else {
+        document.getElementById('od-priceToPay').textContent = "0₫";  // Giá trị mặc định
+    }
 
     // Phương thức & trạng thái thanh toán
     document.getElementById('od-paymentMethod').textContent =
