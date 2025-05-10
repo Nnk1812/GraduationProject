@@ -12,28 +12,17 @@ const renderOrders = (orders) => {
 
         order.orderDetails.forEach(product => {
             productsHtml += `
-                <div class="flex items-center mb-4">
-                    <img src="${product.image}" alt="Product Image" class="w-20 h-20 rounded-lg object-cover mr-4">
-                    <div class="flex-1">
-                        <div class="font-semibold text-gray-800">${product.name}</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-sm text-gray-500">Số lượng: ${product.quantity}</div>
-                        ${
-                product.price !== product.totalPrice
-                    ? `
-                                <div>
-                                    <span class="line-through text-gray-400 text-sm">${formatCurrency(product.price)}</span><br>
-                                    <span class="text-red-600 font-bold">${formatCurrency(product.totalPrice)}</span>
-                                </div>
-                            `
-                    : `
-                                <span class="text-red-600 font-bold">${formatCurrency(product.totalPrice)}</span>
-                            `
-            }
-                    </div>
-                </div>
-            `;
+    <div class="flex items-center mb-4">
+        <img src="${product.image}" alt="Product Image" class="w-20 h-20 rounded-lg object-cover mr-4">
+        <div class="flex-1">
+            <div class="font-semibold text-gray-800">${product.name}</div>
+        </div>
+        <div class="text-right">
+            <div class="text-sm text-gray-500">Số lượng: ${product.quantity}</div>
+            <div class="text-red-600 font-bold">${formatCurrency(product.price)}</div>
+        </div>
+    </div>
+`;
         });
 
         orderDiv.innerHTML = `

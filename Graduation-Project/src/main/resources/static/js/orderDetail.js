@@ -115,11 +115,20 @@ function renderOrder(order) {
         document.getElementById('od-shippingFee').textContent = "0₫";
     }
 
-    if (order.priceToPay) {
-        document.getElementById('od-priceToPay').textContent = `${order.priceToPay.toLocaleString()}₫`;
-    } else {
-        document.getElementById('od-priceToPay').textContent = "0₫";  // Giá trị mặc định
-    }
+    const totalPrice = order.totalPrice || 0;
+    document.getElementById('od-totalPrice').textContent = `${totalPrice.toLocaleString()}₫`;
+
+// Hiển thị tiền ứng
+    const deposit = order.deposit || 0;
+    document.getElementById('od-deposit').textContent = `${deposit.toLocaleString()}₫`;
+
+// Hiển thị phí vận chuyển
+    const shippingFee = order.shippingFee || 0;
+    document.getElementById('od-shippingFee').textContent = `${shippingFee.toLocaleString()}₫`;
+
+// Hiển thị thành tiền
+    const priceToPay = order.priceToPay || 0;
+    document.getElementById('od-priceToPay').textContent = `${priceToPay.toLocaleString()}₫`;
 
     // Phương thức & trạng thái thanh toán
     document.getElementById('od-paymentMethod').textContent =

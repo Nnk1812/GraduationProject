@@ -142,9 +142,23 @@
         <div id="od-items" class="px-4 py-4 space-y-4">
             <!-- JS sẽ render từng sản phẩm ở đây -->
         </div>
-        <div class="px-4 py-4 flex justify-end space-x-8 text-lg font-semibold">
-            <div>Phí vận chuyển: <span id="od-shippingFee"></span></div>
-            <div>Thành tiền: <span id="od-priceToPay" class="text-red-600"></span></div>
+        <div class="px-4 py-4 space-y-4">
+            <div class="flex justify-between text-lg font-semibold">
+                <span>Tổng đơn hàng:</span>
+                <span id="od-totalPrice" class="text-red-600"></span>
+            </div>
+            <div class="flex justify-between text-lg font-semibold">
+                <span>Tiền ứng:</span>
+                <span id="od-deposit"></span>
+            </div>
+            <div class="flex justify-between text-lg font-semibold">
+                <span>Phí vận chuyển:</span>
+                <span id="od-shippingFee"></span>
+            </div>
+            <div class="flex justify-between text-lg font-semibold">
+                <span>Thành tiền:</span>
+                <span id="od-priceToPay" class="text-red-600"></span>
+            </div>
         </div>
     </div>
 
