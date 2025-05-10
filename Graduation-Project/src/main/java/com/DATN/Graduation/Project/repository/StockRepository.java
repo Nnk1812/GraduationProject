@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface StockRepository extends JpaRepository<StockEntity,Long> {
     @Query(value = "SELECT * " +
@@ -14,5 +16,6 @@ public interface StockRepository extends JpaRepository<StockEntity,Long> {
             ") " +
             "LIMIT 1", nativeQuery = true)
     StockEntity findByProduct(String code);
-
+    @Query("SELECT s FROM StockEntity s WHERE s.product = :product AND s.importPrice = :importPrice")
+    Optional<StockEntity> findByProductAndImportPrice(String product, Long importPrice);
 }

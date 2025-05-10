@@ -15,7 +15,6 @@ const titleMap = {
     treotuong: 'Đồng hồ treo tường'
 };
 
-// Gán tiêu đề
 const h1 = document.createElement('h1');
 h1.id = 'product-title';
 h1.className = 'text-3xl font-bold mb-10 text-blue-900 text-center';

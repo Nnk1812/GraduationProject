@@ -1,11 +1,13 @@
 package com.DATN.Graduation.Project.repository;
 
 import com.DATN.Graduation.Project.entity.ReportImportWarehouseEntity;
+import com.DATN.Graduation.Project.entity.StockEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReportImportWarehouseRepository extends JpaRepository<ReportImportWarehouseEntity,Long> {
     @Query(value = "select * from report_import_warehouse where  " +

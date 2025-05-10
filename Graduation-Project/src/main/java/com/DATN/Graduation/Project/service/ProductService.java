@@ -37,5 +37,7 @@ public interface ProductService {
     List<FindProductDto> findByName(String productName);
 
     String activeProduct(String code);
+
+    List<String> findAllNameProducts();
 }
 

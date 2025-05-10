@@ -111,4 +111,10 @@ public class ProductController {
         response.setData(productsService.activeProduct(code));
         return response;
     }
+    @GetMapping("/getAllNames")
+    public ApiResponse<List<String>> getAllNames() {
+        ApiResponse<List<String>> response = new ApiResponse<>();
+        response.setData(productsService.findAllNameProducts());
+        return response;
+    }
 }

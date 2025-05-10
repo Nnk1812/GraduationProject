@@ -136,10 +136,23 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             "LEFT JOIN OrderEntity c ON c.code = b.orderCode " +
             "LEFT JOIN DiscountEntity d ON a.discount = d.code " +
             "LEFT JOIN BrandEntity e ON e.code = a.brand " +
-            "inner join StockEntity f on f.product = a.code " +
+            "inner join StockEntity f on f.id =( " +
+            "select f2.id " +
+            "from StockEntity f2 " +
+            "where f2.product = a.code " +
+            "order by  f2.importDate asc " +
+            "limit 1) " +
             "WHERE LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) and f.quantity >0 and a.isDeleted = false " +
             "GROUP BY a.name, a.price, a.realPrice, d.value, a.image, a.description, a.code, a.type, a.brand,f.quantity")
-    List<FindProductDto> findByProductNameIgnoreCase(String name);
+    List<FindProductDto> searchByProductNameCustom(String name);
+
+    @Query(value = "SELECT DISTINCT a.name FROM product a " +
+            "WHERE a.is_deleted = false AND EXISTS (" +
+            "   SELECT 1 FROM stock b2 " +
+            "   WHERE b2.product = a.code AND b2.quantity > 0 " +
+            ")", nativeQuery = true)
+    List<String> findAllProductNames();
+
     @Query(value = "SELECT p.* " +
             "FROM product p " +
             "JOIN order_detail a ON a.product = p.code " +

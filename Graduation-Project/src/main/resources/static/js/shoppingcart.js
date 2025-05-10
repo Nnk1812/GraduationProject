@@ -408,26 +408,22 @@ function updateBankQR() {
 
         qrContainer.classList.remove("hidden");
 
-        // Chắc chắn ẩn nút "Hoàn tất đơn hàng" và hiển thị thông báo yêu cầu thanh toán
         submitButton.disabled = true;
         paymentStatusMessage.textContent = "Bạn cần hoàn tất thanh toán trước khi hoàn thành đơn hàng.";
         paymentStatusMessage.classList.remove("hidden");
     } else {
         qrContainer.classList.add("hidden");
 
-        // Hủy thông báo thanh toán và hiển thị nút "Hoàn tất đơn hàng"
         paymentStatusMessage.classList.add("hidden");
         submitButton.disabled = false;
     }
 }
 
-// 1. Khi updateBankQR hiển thị QR thì cũng bật nút "Tôi đã thanh toán"
 const origUpdateBankQR = updateBankQR;
 updateBankQR = function() {
-    origUpdateBankQR(); // giữ nguyên logic hiện tại
+    origUpdateBankQR();
 
     const confirmBtn = document.getElementById("confirmPaymentBtn");
-    // nếu đang chọn chuyển khoản => show nút, ngược lại ẩn
     if (document.querySelector('input[name="payment-method"]:checked').value === "bank") {
         confirmBtn.classList.remove("hidden");
     } else {
@@ -435,31 +431,25 @@ updateBankQR = function() {
     }
 };
 
-// 2. Gắn sự kiện cho nút "Tôi đã thanh toán"
 document
     .getElementById("confirmPaymentBtn")
     .addEventListener("click", onPaymentSuccess);
 
-// 3. Khởi chạy lần đầu để đảm bảo nút và trạng thái đúng
 window.addEventListener("DOMContentLoaded", updateBankQR);
 
-// Khi thanh toán thành công
 function onPaymentSuccess() {
     const qrContainer = document.getElementById("bank-transfer-qr");
     const submitButton = document.getElementById("submit-btn");
     const paymentStatusMessage = document.getElementById("payment-status-message");
 
-    // Ẩn QR và thông báo thanh toán
     qrContainer.classList.add("hidden");
     paymentStatusMessage.textContent = "Thanh toán thành công!";
     paymentStatusMessage.classList.add("text-green-600"); // Thêm màu xanh để thông báo thành công
 
-    // Kích hoạt lại nút "Hoàn tất đơn hàng"
     submitButton.disabled = false;
     submitButton.classList.remove("bg-blue-600", "hover:bg-blue-500");
     submitButton.classList.add("bg-green-600", "hover:bg-green-500"); // Nút hoàn tất đơn hàng sẽ chuyển sang màu xanh lá khi thanh toán thành công
 }
-
 
 document.querySelectorAll('input[name="payment-method"]').forEach(input => {
     input.addEventListener("change", updateBankQR);

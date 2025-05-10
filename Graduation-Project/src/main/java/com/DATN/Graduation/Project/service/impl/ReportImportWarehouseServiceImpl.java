@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -152,31 +149,41 @@ public class ReportImportWarehouseServiceImpl implements ReportImportWarehouseSe
                     long sellingPrice = productDto.getPrice();
                     ProductEntity product = productRepository.findByCode(productDto.getProduct())
                             .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
-                    StockEntity stockEntity = new StockEntity();
-                    stockEntity.setProduct(product.getCode());
-                    stockEntity.setReport(dto.getCode());
-                    stockEntity.setQuantity(productDto.getQuantity());
-                    stockEntity.setImportDate(now);
-                    stockEntity.setName(product.getName());
-                    stockEntity.setImportPrice(sellingPrice);
-                    stockEntity.setNote("Nhập kho từ phiếu: " + warehouseEntity.getCode());
-                    stockEntity.setSellingPrice((sellingPrice + (sellingPrice * 10/100) + 12000000/200 + 25000000/200)*( 1+ 30/100));
+                    Optional<StockEntity> optionalStock = stockRepository.findByProductAndImportPrice(product.getCode(), productDto.getPrice());
+
+                    StockEntity stockEntity;
+                    if (optionalStock.isPresent()) {
+                        stockEntity = optionalStock.get();
+                        stockEntity.setQuantity(stockEntity.getQuantity() + productDto.getQuantity());
+                        stockEntity.setImportDate(LocalDateTime.now());
+                    } else {
+                        stockEntity = new StockEntity();
+                        stockEntity.setProduct(product.getCode());
+                        stockEntity.setReport(dto.getCode());
+                        stockEntity.setQuantity(productDto.getQuantity());
+                        stockEntity.setImportDate(now);
+                        stockEntity.setName(product.getName());
+                        stockEntity.setImportPrice(productDto.getPrice());
+                        stockEntity.setNote("Nhập kho từ phiếu: " + warehouseEntity.getCode());
+                        stockEntity.setSellingPrice((sellingPrice + (sellingPrice * 10 / 100) + 12000000 / 200 + 25000000 / 200) * (1 + 30 / 100));
+                    }
+
                     stockRepository.save(stockEntity);
+
                     sellingPrice = stockEntity.getSellingPrice();
                     product.setPrice(sellingPrice);
+
                     long realPrice = 0;
-                    if(product.getDiscount() != null) {
-                        if(Objects.equals(discountRepository.getDiscountType(product.getDiscount()), DiscountTypeEnum.PHAN_TRAM.getValue())){
-                            realPrice = sellingPrice - (sellingPrice * discountRepository.getDiscountValue(product.getDiscount())/100);
-                            product.setRealPrice(realPrice);
-                        }if (Objects.equals(discountRepository.getDiscountType(product.getDiscount()), DiscountTypeEnum.TIEN_MAT.getValue())){
+                    if (product.getDiscount() != null) {
+                        if (Objects.equals(discountRepository.getDiscountType(product.getDiscount()), DiscountTypeEnum.PHAN_TRAM.getValue())) {
+                            realPrice = sellingPrice - (sellingPrice * discountRepository.getDiscountValue(product.getDiscount()) / 100);
+                        } else if (Objects.equals(discountRepository.getDiscountType(product.getDiscount()), DiscountTypeEnum.TIEN_MAT.getValue())) {
                             realPrice = sellingPrice - discountRepository.getDiscountValue(product.getDiscount());
-                            product.setRealPrice(realPrice);
                         }
-                    }
-                    else {
+                    } else {
                         realPrice = sellingPrice;
                     }
+
                     product.setRealPrice(realPrice);
                     productRepository.save(product);
                 }

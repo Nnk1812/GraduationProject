@@ -268,7 +268,7 @@ public class ProductServiceImpl implements ProductService {
         return productsRepository.findAllProductsDetail(code);
     }
     public List<FindProductDto> findByName(String name){
-        return productsRepository.findByProductNameIgnoreCase(name);
+        return productsRepository.searchByProductNameCustom(name);
     }
     public String activeProduct(String code){
         ProductEntity entity = productsRepository.findByCode(code).orElseThrow(
@@ -277,6 +277,10 @@ public class ProductServiceImpl implements ProductService {
         entity.setIsDeleted(false);
         productsRepository.save(entity);
         return "Product activated successfully";
+    }
+    @Override
+    public List<String> findAllNameProducts(){
+        return productsRepository.findAllProductNames();
     }
 }
 

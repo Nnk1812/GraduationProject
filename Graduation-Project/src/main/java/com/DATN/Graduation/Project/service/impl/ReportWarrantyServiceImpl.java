@@ -181,6 +181,8 @@ public class ReportWarrantyServiceImpl implements ReportWarrantyService {
         }else {
             throw new AppException(ErrorCode.CANNOT_CHANGE_STATUS_WARRANTY_TO_COMPLETED);
         }
+        LocalDateTime now = LocalDateTime.now();
+        warrantyEntity.setCompleteDate(now);
         reportWarrantyRepository.save(warrantyEntity);
         return "Đã hoàn thành bảo hành sản phẩm";
     }
